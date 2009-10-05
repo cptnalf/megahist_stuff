@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFSMegaHistoryGui", "TFSMegaHistoryGui.csproj", "{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistory", "..\TFSMegaHistory\megahistory.csproj", "{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://rnoengtfs:8080/
+		SccProjectUniqueName0 = TFSMegaHistoryGui.csproj
+		SccProjectName0 = .
+		SccAuxPath0 = http://rnoengtfs:8080
+		SccLocalPath0 = .
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = ..\\TFSMegaHistory\\megahistory.csproj
+		SccProjectName1 = ../TFSMegaHistory
+		SccAuxPath1 = http://rnoengtfs:8080
+		SccLocalPath1 = ..\\TFSMegaHistory
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
