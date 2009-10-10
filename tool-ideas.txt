@@ -1,0 +1,13 @@
+some stuff to think about tool-izing
+
+1) check for other changes to the files in the changeset you're merging
+  - this tool would take a changeset and figure out if there were any unmerged changes which you would end up merging if you merged this changeset.
+
+2) diff the changes made in the dev branch to changes made in the release banch.
+ - the idea here is that most common changes should/will be the same when moved from the release branch. if there are differences, there should be obvious reasons for it.
+
+3) tool to do the merge and fill in all the necessary infos on the check-in
+ - perhaps just the check-in part.
+   but necessary parts:
+   work-item list
+   comment-pasting from the original changeset.
