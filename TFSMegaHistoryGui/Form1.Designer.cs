@@ -30,13 +30,14 @@
 			{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.button1 = new System.Windows.Forms.Button();
 			this._tfsPath = new System.Windows.Forms.TextBox();
 			this._changeset = new System.Windows.Forms.TextBox();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.changesetCtrl1 = new tfs_fullhistory.ChangesetCtrl();
+			this.treeListView1 = new BrightIdeasSoftware.TreeListView();
+			this._csID = new BrightIdeasSoftware.OLVColumn();
+			this._branch = new BrightIdeasSoftware.OLVColumn();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -44,29 +45,25 @@
 			this._noRecurse = new System.Windows.Forms.CheckBox();
 			this._allowBranchRevisiting = new System.Windows.Forms.CheckBox();
 			this._forceDecomposition = new System.Windows.Forms.CheckBox();
+			this._branchesToo = new System.Windows.Forms.CheckBox();
 			this._maxChanges = new System.Windows.Forms.NumericUpDown();
 			this._time = new System.Windows.Forms.TextBox();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this._branchesToo = new System.Windows.Forms.CheckBox();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.changesetCtrl1 = new tfs_fullhistory.ChangesetCtrl();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
 			this.flowLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._maxChanges)).BeginInit();
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
+			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// treeView1
-			// 
-			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeView1.Location = new System.Drawing.Point(0, 0);
-			this.treeView1.Name = "treeView1";
-			this.treeView1.Size = new System.Drawing.Size(188, 323);
-			this.treeView1.TabIndex = 0;
-			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			// 
 			// progressBar1
 			// 
@@ -111,23 +108,57 @@
 			// 
 			// splitContainer1.Panel1
 			// 
-			this.splitContainer1.Panel1.Controls.Add(this.treeView1);
+			this.splitContainer1.Panel1.Controls.Add(this.treeListView1);
 			// 
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.changesetCtrl1);
-			this.splitContainer1.Size = new System.Drawing.Size(568, 323);
-			this.splitContainer1.SplitterDistance = 188;
+			this.splitContainer1.Size = new System.Drawing.Size(604, 386);
+			this.splitContainer1.SplitterDistance = 206;
 			this.splitContainer1.TabIndex = 6;
 			// 
-			// changesetCtrl1
+			// treeListView1
 			// 
-			this.changesetCtrl1.AutoSize = true;
-			this.changesetCtrl1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.changesetCtrl1.Location = new System.Drawing.Point(0, 0);
-			this.changesetCtrl1.Name = "changesetCtrl1";
-			this.changesetCtrl1.Size = new System.Drawing.Size(376, 323);
-			this.changesetCtrl1.TabIndex = 0;
+			this.treeListView1.AllColumns.Add(this._csID);
+			this.treeListView1.AllColumns.Add(this._branch);
+			this.treeListView1.AlternateRowBackColor = System.Drawing.Color.LightCyan;
+			this.treeListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this._csID,
+            this._branch});
+			this.treeListView1.ContextMenuStrip = this.contextMenuStrip1;
+			this.treeListView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treeListView1.EmptyListMsg = "No Changesets Found";
+			this.treeListView1.EmptyListMsgFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.treeListView1.FullRowSelect = true;
+			this.treeListView1.HideSelection = false;
+			this.treeListView1.Location = new System.Drawing.Point(0, 0);
+			this.treeListView1.Name = "treeListView1";
+			this.treeListView1.OwnerDraw = true;
+			this.treeListView1.SelectedColumnTint = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(255)))), ((int)(((byte)(250)))), ((int)(((byte)(205)))));
+			this.treeListView1.ShowGroups = false;
+			this.treeListView1.Size = new System.Drawing.Size(206, 386);
+			this.treeListView1.TabIndex = 0;
+			this.treeListView1.TintSortColumn = true;
+			this.treeListView1.UseAlternatingBackColors = true;
+			this.treeListView1.UseCompatibleStateImageBehavior = false;
+			this.treeListView1.UseHotItem = true;
+			this.treeListView1.View = System.Windows.Forms.View.Details;
+			this.treeListView1.VirtualMode = true;
+			this.treeListView1.CellToolTipShowing += new System.EventHandler<BrightIdeasSoftware.ToolTipShowingEventArgs>(this.treeListView1_CellToolTipShowing);
+			this.treeListView1.SelectionChanged += new System.EventHandler(this.treeListView1_SelectionChanged);
+			// 
+			// _csID
+			// 
+			this._csID.AspectName = "id";
+			this._csID.AspectToStringFormat = "{0:d}";
+			this._csID.IsEditable = false;
+			this._csID.Text = "Changeset";
+			this._csID.Width = 69;
+			// 
+			// _branch
+			// 
+			this._branch.IsEditable = false;
+			this._branch.Text = "Branch";
 			// 
 			// label1
 			// 
@@ -167,7 +198,7 @@
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-			this.flowLayoutPanel1.Size = new System.Drawing.Size(568, 108);
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(604, 108);
 			this.flowLayoutPanel1.TabIndex = 9;
 			// 
 			// button2
@@ -215,6 +246,18 @@
 			this.toolTip1.SetToolTip(this._forceDecomposition, resources.GetString("_forceDecomposition.ToolTip"));
 			this._forceDecomposition.UseVisualStyleBackColor = true;
 			// 
+			// _branchesToo
+			// 
+			this._branchesToo.AutoSize = true;
+			this.flowLayoutPanel1.SetFlowBreak(this._branchesToo, true);
+			this._branchesToo.Location = new System.Drawing.Point(355, 29);
+			this._branchesToo.Name = "_branchesToo";
+			this._branchesToo.Size = new System.Drawing.Size(90, 17);
+			this._branchesToo.TabIndex = 15;
+			this._branchesToo.Text = "BranchesToo";
+			this.toolTip1.SetToolTip(this._branchesToo, resources.GetString("_branchesToo.ToolTip"));
+			this._branchesToo.UseVisualStyleBackColor = true;
+			// 
 			// _maxChanges
 			// 
 			this._maxChanges.Location = new System.Drawing.Point(359, 78);
@@ -255,27 +298,39 @@
 			// splitContainer2.Panel2
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.splitContainer1);
-			this.splitContainer2.Size = new System.Drawing.Size(568, 435);
+			this.splitContainer2.Size = new System.Drawing.Size(604, 498);
 			this.splitContainer2.SplitterDistance = 108;
 			this.splitContainer2.TabIndex = 10;
 			// 
-			// _branchesToo
+			// contextMenuStrip1
 			// 
-			this._branchesToo.AutoSize = true;
-			this.flowLayoutPanel1.SetFlowBreak(this._branchesToo, true);
-			this._branchesToo.Location = new System.Drawing.Point(355, 29);
-			this._branchesToo.Name = "_branchesToo";
-			this._branchesToo.Size = new System.Drawing.Size(90, 17);
-			this._branchesToo.TabIndex = 15;
-			this._branchesToo.Text = "BranchesToo";
-			this.toolTip1.SetToolTip(this._branchesToo, resources.GetString("_branchesToo.ToolTip"));
-			this._branchesToo.UseVisualStyleBackColor = true;
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.ShowImageMargin = false;
+			this.contextMenuStrip1.Size = new System.Drawing.Size(116, 26);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+			this.toolStripMenuItem1.Text = "Compare...";
+			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+			// 
+			// changesetCtrl1
+			// 
+			this.changesetCtrl1.AutoSize = true;
+			this.changesetCtrl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.changesetCtrl1.Location = new System.Drawing.Point(0, 0);
+			this.changesetCtrl1.Name = "changesetCtrl1";
+			this.changesetCtrl1.Size = new System.Drawing.Size(394, 386);
+			this.changesetCtrl1.TabIndex = 0;
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(568, 435);
+			this.ClientSize = new System.Drawing.Size(604, 498);
 			this.Controls.Add(this.splitContainer2);
 			this.Name = "Form1";
 			this.Text = "Form1";
@@ -283,19 +338,20 @@
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			this.splitContainer1.Panel2.PerformLayout();
 			this.splitContainer1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.treeListView1)).EndInit();
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flowLayoutPanel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this._maxChanges)).EndInit();
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			this.splitContainer2.ResumeLayout(false);
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 			}
 
 		#endregion
 
-		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.ProgressBar progressBar1;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.TextBox _tfsPath;
@@ -314,6 +370,11 @@
 		private System.Windows.Forms.CheckBox _allowBranchRevisiting;
 		private System.Windows.Forms.CheckBox _forceDecomposition;
 		private System.Windows.Forms.CheckBox _branchesToo;
+		private BrightIdeasSoftware.TreeListView treeListView1;
+		private BrightIdeasSoftware.OLVColumn _csID;
+		private BrightIdeasSoftware.OLVColumn _branch;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		}
 	}
 

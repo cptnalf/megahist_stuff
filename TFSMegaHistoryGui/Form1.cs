@@ -12,7 +12,7 @@ namespace tfs_fullhistory
 {
 	public partial class Form1 : Form
 	{
-		static VersionControlServer _get_tfs_server(string serverName)
+		public static VersionControlServer _get_tfs_server(string serverName)
 		{
 			Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
 			
@@ -78,12 +78,82 @@ namespace tfs_fullhistory
 			};
 			
 			foreach(string part in dirs) { _tfsPath.AutoCompleteCustomSource.Add(part); }
+			
+			_setupTreeListView();
 		}
+		
+		private void _setupTreeListView()
+		{
+			treeListView1.HotItemStyle = new BrightIdeasSoftware.HotItemStyle();
+			treeListView1.HotItemStyle.BackColor = Color.CadetBlue;
+			treeListView1.HotItemStyle.ForeColor = Color.Black;
+			treeListView1.HotItemStyle.FontStyle = FontStyle.Underline;
+			//treeListView1.HotTracking = true;
+			
+			treeListView1.ShowItemToolTips = true;
+			treeListView1.CellToolTip.InitialDelay = 2000;
+			treeListView1.CellToolTip.ReshowDelay = 4000;
+			treeListView1.CellToolTip.IsBalloon = false;
+			treeListView1.CellToolTip.BackColor = System.Drawing.SystemColors.Info;
+			treeListView1.CellToolTip.BackColor = System.Drawing.SystemColors.InfoText;
+			
+			{
+				treeListView1.EmptyListMsg = "No Changesets Found.";
+				BrightIdeasSoftware.TextOverlay textOverlay =
+					treeListView1.EmptyListMsgOverlay as BrightIdeasSoftware.TextOverlay;
+				textOverlay.TextColor = Color.Firebrick;
+				textOverlay.BackColor = Color.MistyRose;
+				textOverlay.BorderColor = Color.DarkRed;
+				textOverlay.BorderWidth = 4.0f;
+				textOverlay.Font = new Font("Tahoma", 26);
+				textOverlay.Rotation = -5;
+			}
+			
+			_branch.AspectGetter =
+				delegate(object model)
+				{
+					megahistory.Visitor.PatchInfo p = model as megahistory.Visitor.PatchInfo;
+					string str = string.Empty;
+					
+					if (p != null)
+						{
+							if (p.treeBranches != null && p.treeBranches.Count > 0)
+								{
+									str = p.treeBranches[0];
+								}
+						}
+					return str;
+				};
 
+			BrightIdeasSoftware.TypedObjectListView<megahistory.Visitor.PatchInfo> patches = new BrightIdeasSoftware.TypedObjectListView<megahistory.Visitor.PatchInfo>(treeListView1);
+			patches.GenerateAspectGetters();
+			
+			treeListView1.CanExpandGetter = _canExpandGetter;
+			treeListView1.ChildrenGetter = _childrenGetter;
+		}
+		
+		private bool _canExpandGetter(object o)
+		{
+			bool result = false;
+			megahistory.Visitor.PatchInfo patch = o as megahistory.Visitor.PatchInfo;
+			if (patch != null) { result = patch.partCount > 0; }
+			return result;
+		}
+		
+		private System.Collections.IEnumerable _childrenGetter(object model)
+		{
+			List<megahistory.Visitor.PatchInfo> patches = null;
+			megahistory.Visitor.PatchInfo patch = model as megahistory.Visitor.PatchInfo;
+			if (patch != null) { patches = patch.parts; }
+			else { patches = new List<megahistory.Visitor.PatchInfo>(); }
+			
+			return patches;
+		}
+		
 		void _worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			if (treeView1.InvokeRequired)
-				{ treeView1.BeginInvoke(new RunWorkerCompletedEventHandler(_worker_RunWorkerCompleted)); }
+			if (treeListView1.InvokeRequired)
+				{ treeListView1.BeginInvoke(new RunWorkerCompletedEventHandler(_worker_RunWorkerCompleted)); }
 			else
 				{
 					if (e.Error != null)
@@ -103,15 +173,16 @@ namespace tfs_fullhistory
 		
 		void _worker_ProgressChanged(object sender, ProgressChangedEventArgs args)
 		{
-			if (treeView1.InvokeRequired)
-				{ treeView1.BeginInvoke(new ProgressChangedEventHandler(_worker_ProgressChanged)); }
+			if (treeListView1.InvokeRequired)
+				{ treeListView1.BeginInvoke(new ProgressChangedEventHandler(_worker_ProgressChanged)); }
 			else
 				{
-					TreeNode node = args.UserState as TreeNode;
+					megahistory.Visitor.PatchInfo commit = args.UserState as megahistory.Visitor.PatchInfo;
 					
-					if (node != null)
+					if (commit != null)
 						{
-							treeView1.Nodes.Add(node);
+							treeListView1.AddObject(commit);
+							treeListView1.RefreshObject(commit);
 						}
 				}
 		}
@@ -125,7 +196,7 @@ namespace tfs_fullhistory
 			bool branchesToo = false;
 			VersionControlServer vcs = _get_tfs_server("rnoengtfs");
 			object[] args = e.Argument as object[];
-			MegaHistory.Options options = new MegaHistory.Options();
+			megahistory.MegaHistory.Options options = new megahistory.MegaHistory.Options();
 			
 			tfspath = args[0] as string;
 			changeset =args[1] as string;
@@ -137,7 +208,7 @@ namespace tfs_fullhistory
 			options.ForceDecomposition = (bool)args[5];
 			if (branchesToo)
 				{
-					MegaHistory.IsChangeToConsider = 
+					megahistory.MegaHistory.IsChangeToConsider = 
 						delegate(Change cng)
 						{
 						return (
@@ -163,43 +234,44 @@ namespace tfs_fullhistory
 						{
 							Changeset cs = o as Changeset;
 							bool isMerge = false;
-							TreeNode node = null;
+							megahistory.Visitor.PatchInfo commit = null;
+							int changesCount = cs.Changes.Length;
 							
-							foreach(Change cng in cs.Changes)
-								{
-									isMerge =
-										((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch
-										 ||
-										 (cng.ChangeType & ChangeType.Merge) == ChangeType.Merge);
-									if (isMerge) { break; }
-								}
+							for(int i=0; i < changesCount; ++i)
+							  {
+							    Change cng = cs.Changes[i];
+									
+							    isMerge =
+							      ((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch
+							       ||
+							       (cng.ChangeType & ChangeType.Merge) == ChangeType.Merge);
+							    if (isMerge) { break; }
+							  }
 							
 							if (isMerge)
 								{
 									ChangesetVersionSpec ver = new ChangesetVersionSpec(cs.ChangesetId);
 									
-									node = _run_recursive_query(vcs, tfspath, ver, options);
-									if (node == null) { node = new TreeNode(cs.ChangesetId.ToString()); }
+									commit = _run_recursive_query(vcs, tfspath, ver, options);
+									if (commit == null) { commit = new megahistory.Visitor.PatchInfo(cs); }
 								}
 							else
 								{
-									node = new TreeNode(cs.ChangesetId.ToString());
-									node.Tag = new Visitor.PatchInfo(0, cs, null);
+									commit = new megahistory.Visitor.PatchInfo(0, cs, null);
 								}
 							
-							if (node != null)
+							if (commit != null)
 								{
-									_worker.ReportProgress(99, node);
+									_worker.ReportProgress(99, commit);
 								}
 						}
 				}
 			else
 				{
 					ChangesetVersionSpec ver = new ChangesetVersionSpec(changeset);
-					TreeNode node = _run_recursive_query(vcs, tfspath, ver, options);
+					megahistory.Visitor.PatchInfo commit = _run_recursive_query(vcs, tfspath, ver, options);
 					
-					if (node == null) { node = new TreeNode("no changesets found."); }
-					_worker.ReportProgress(10, node);
+					_worker.ReportProgress(10, null);
 				}
 			
 			{
@@ -208,10 +280,10 @@ namespace tfs_fullhistory
 			}
 		}
 		
-		private TreeNode _run_recursive_query(VersionControlServer vcs, string tfspath, ChangesetVersionSpec ver, MegaHistory.Options options)
+		private megahistory.Visitor.PatchInfo _run_recursive_query(VersionControlServer vcs, string tfspath, ChangesetVersionSpec ver, megahistory.MegaHistory.Options options)
 		{
 			HistoryCollector visitor = new HistoryCollector();
-			MegaHistory history = new MegaHistory(options, vcs, visitor);
+			megahistory.MegaHistory history = new megahistory.MegaHistory(options, vcs, visitor);
 			bool result = history.visit(0, tfspath, ver, ver, ver);
 			
 			return (result ? visitor.Root : null);
@@ -225,7 +297,7 @@ namespace tfs_fullhistory
 			
 			progressBar1.Style = ProgressBarStyle.Marquee;
 			progressBar1.MarqueeAnimationSpeed = 10;
-			treeView1.Nodes.Clear();
+			treeListView1.ClearObjects();
 			
 			button1.Enabled = false;
 			int maxChanges = (int)_maxChanges.Value;
@@ -237,42 +309,7 @@ namespace tfs_fullhistory
 		
 		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
-			Visitor.PatchInfo p = e.Node.Tag as Visitor.PatchInfo;
-			
-			changesetCtrl1.reset();
-			changesetCtrl1.ID = p.cs.ChangesetId;
-			changesetCtrl1.Owner = p.cs.Owner;
-			changesetCtrl1.Comment = p.cs.Comment;
-			changesetCtrl1.CreationDate = p.cs.CreationDate;
-			
-			if (p.cs.Changes.Length < 100)
-				{
-					/* do the whole thing here. */
-					tables.Changes cngs = new tfs_fullhistory.tables.Changes();
-					
-					foreach(Change cng in p.cs.Changes) { cngs.add(cng); }
-					changesetCtrl1.Changes = cngs;
-				}
-			else
-				{
-					/* background it. */
-					tables.Changes cngs = new tfs_fullhistory.tables.Changes();
-					cngs.add(string.Format("found {0} items, not listing them.", p.cs.Changes.Length), 
-					         string.Empty, string.Empty);
-					changesetCtrl1.Changes = cngs;
-				}
-			/* provide a way to view some of the changes. */
-			
-			/* just background this.
-			 * i'm thinking this is the culprit in the long pauses, 
-			 * (especially for short change lists)
-			 */
-			if (_getWIData == null)
-			{
-				_getWIData = new tfs_fullhistory.BackgroundJobs.GetWorkItemData(changesetCtrl1, p.cs);
-				_getWIData.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_getWIData_RunWorkerCompleted);
-				_getWIData.RunWorkerAsync();
-			}
+
 		}
 		
 		private void  _getWIData_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -299,5 +336,119 @@ namespace tfs_fullhistory
 			  }
 		}
 
+		private void treeListView1_CellToolTipShowing(object sender, BrightIdeasSoftware.ToolTipShowingEventArgs e)
+		{
+			megahistory.Visitor.PatchInfo patch = e.Model as megahistory.Visitor.PatchInfo;
+			
+			if (patch != null)
+				{
+					e.Title = string.Format("Changeset {0}", patch.id);
+					e.Text = string.Format("Parent {0}\r\nBranch {1}\r\nCreated {2}\r\nCreated By {3}\r\n{4}",
+					                       patch.parent, string.Empty, patch.user, patch.creationDate, patch.comment);
+				}
+		}
+
+		private void toolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			if (treeListView1.SelectedIndices.Count > 1)
+				{
+					megahistory.Visitor.PatchInfo p1 = treeListView1.GetModelObject(treeListView1.SelectedIndices[0]) as megahistory.Visitor.PatchInfo;
+					megahistory.Visitor.PatchInfo p2 = treeListView1.GetModelObject(treeListView1.SelectedIndices[1]) as megahistory.Visitor.PatchInfo;
+					
+					SortedDictionary<string, pair<int,int>> paths = new SortedDictionary<string, pair<int,int>>();
+					System.Text.RegularExpressions.Regex egs_re = new System.Text.RegularExpressions.Regex(".+/EGS/", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+					
+					Change[] changes = p1.cs.Changes;
+					int cngCount = changes.Length;
+					for(int i =0; i < cngCount; ++i)
+						{
+							string path = egs_re.Replace(changes[i].Item.ServerItem, string.Empty);
+							
+							paths.Add(path, new pair<int,int>(i, -1));
+						}
+					
+					changes = p2.cs.Changes;
+					cngCount = changes.Length;
+					for(int i=0; i < changes.Length; ++i)
+						{
+							string path = egs_re.Replace(changes[i].Item.ServerItem, string.Empty);
+							
+							if (paths.ContainsKey(path)) { paths[path].second = i; }
+						}
+					/* well, crap. now i need to remove all of the paths which have a -1 for the second item. */
+					List<string> removes = new List<string>();
+					
+					foreach(KeyValuePair<string,pair<int,int>> item in paths) { if (item.Value.second == -1) { removes.Add(item.Key); } }
+					
+					foreach(string key in removes) { paths.Remove(key); }
+					
+					if (paths.Count > 0)
+						{
+							FileSelectionForm fsf = new FileSelectionForm();
+							fsf.Paths = paths;
+							if (fsf.ShowDialog() == DialogResult.OK)
+								{
+									string key = fsf.SelectedPath;
+									pair<int,int> items = paths[key];
+									
+									string left = System.IO.Path.GetTempFileName();
+									string right = System.IO.Path.GetTempFileName();
+									
+									p1.cs.Changes[items.first].Item.DownloadFile(left);
+									p2.cs.Changes[items.second].Item.DownloadFile(right);
+									
+									System.Diagnostics.Process.Start(@"c:\program files\TortoiseSVN\bin\TortoiseMerge.exe",
+									  string.Format("-base:\"{0}\" -basename:\"{1}\" -mine:\"{2}\" -minename:\"{3}\" ",
+									                left, p1.cs.Changes[items.first].Item.ServerItem, right, p2.cs.Changes[items.second].Item.ServerItem));
+								}
+						}
+					else { MessageBox.Show("No files in common between the selected changesets."); }
+				}
+		}
+
+		private void treeListView1_SelectionChanged(object sender, EventArgs e)
+		{
+			changesetCtrl1.reset();
+			
+			if (treeListView1.SelectedIndices.Count > 0 && treeListView1.SelectedIndices.Count < 2)
+				{
+					/* only one item is selected... */
+					megahistory.Visitor.PatchInfo p = treeListView1.GetModelObject(treeListView1.SelectedIndex) as megahistory.Visitor.PatchInfo;
+
+					changesetCtrl1.ID = p.cs.ChangesetId;
+					changesetCtrl1.Owner = p.cs.Owner;
+					changesetCtrl1.Comment = p.cs.Comment;
+					changesetCtrl1.CreationDate = p.cs.CreationDate;
+					
+					if (p.cs.Changes.Length < 100)
+						{
+							/* do the whole thing here. */
+							tables.Changes cngs = new tfs_fullhistory.tables.Changes();
+
+							foreach (Change cng in p.cs.Changes) { cngs.add(cng); }
+							changesetCtrl1.Changes = cngs;
+						}
+					else
+						{
+							/* background it. */
+							tables.Changes cngs = new tfs_fullhistory.tables.Changes();
+							cngs.add(string.Format("found {0} items, not listing them.", p.cs.Changes.Length),
+									 string.Empty, string.Empty);
+							changesetCtrl1.Changes = cngs;
+						}
+					/* provide a way to view some of the changes. */
+
+					/* just background this.
+					 * i'm thinking this is the culprit in the long pauses, 
+					 * (especially for short change lists)
+					 */
+					if (_getWIData == null)
+						{
+							_getWIData = new tfs_fullhistory.BackgroundJobs.GetWorkItemData(changesetCtrl1, p.cs);
+							_getWIData.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_getWIData_RunWorkerCompleted);
+							_getWIData.RunWorkerAsync();
+						}
+				}
+		}
 	}
 }

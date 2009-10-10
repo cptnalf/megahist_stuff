@@ -117,34 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <data name="_allowBranchRevisiting.ToolTip" xml:space="preserve">
-    <value>Turns on recursive decomposition.
-This will decompose ALL changesets which contain changes of Merge+anything.
-(DO NOT TURN THIS ON UNLESS YOU 
-REALLY, REALLY, REALLY ,REALLY, REALLY, REALLY, REALLY 
-KNOW THAT YOUR CHANGESETS ARE SIMPLE.
-Even then don't do it.
-)
-Default: Off.</value>
-  </data>
-  <data name="_forceDecomposition.ToolTip" xml:space="preserve">
-    <value>if the changeset in the initial query just contains ChangeType.Merge changes,
-turning this option ON makes it continue to decompose the changeset.
-Off (default) stops the recursion.
-(eg: discard merges)</value>
-  </data>
-  <data name="_branchesToo.ToolTip" xml:space="preserve">
-    <value>Include ChangeType.Branch in the ChangeTypes that give a changeset a branch.
-(branches are used in recursive queries. if there are no branches, no recursive query is done)
-By default only ChangeType.Merge + anything trigger adding a branch.
-(eg: Merge, Edit; Merge, Delete; Merge, Undelete, Edit, EncodingType)
-Default is Off.
-</value>
-  </data>
-  <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>109, 17</value>
-  </metadata>
 </root>

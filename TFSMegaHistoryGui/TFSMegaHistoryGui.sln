@@ -5,9 +5,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFSMegaHistoryGui", "TFSMeg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistory", "..\TFSMegaHistory\megahistory.csproj", "{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectListView2008", "..\ObjectListView\ObjectListView2008.csproj", "{18FEDA0C-D147-4286-B39A-01204808106A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BranchDifferGui", "..\BranchDifferGui\BranchDifferGui.csproj", "{606C6A97-924C-43D1-A4A4-744C19FC228C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistorylib", "..\megahistorylib\megahistorylib.csproj", "{8723DA6D-9CBD-43D6-9218-88278099A063}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
+		SccNumberOfProjects = 3
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://rnoengtfs:8080/
 		SccProjectUniqueName0 = TFSMegaHistoryGui.csproj
@@ -20,6 +26,11 @@ Global
 		SccAuxPath1 = http://rnoengtfs:8080
 		SccLocalPath1 = ..\\TFSMegaHistory
 		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName2 = ..\\megahistorylib\\megahistorylib.csproj
+		SccProjectName2 = ../megahistorylib
+		SccAuxPath2 = http://rnoengtfs:8080
+		SccLocalPath2 = ..\\megahistorylib
+		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +45,16 @@ Global
 		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18FEDA0C-D147-4286-B39A-01204808106A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18FEDA0C-D147-4286-B39A-01204808106A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18FEDA0C-D147-4286-B39A-01204808106A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18FEDA0C-D147-4286-B39A-01204808106A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{606C6A97-924C-43D1-A4A4-744C19FC228C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{606C6A97-924C-43D1-A4A4-744C19FC228C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{606C6A97-924C-43D1-A4A4-744C19FC228C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{606C6A97-924C-43D1-A4A4-744C19FC228C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8723DA6D-9CBD-43D6-9218-88278099A063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8723DA6D-9CBD-43D6-9218-88278099A063}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

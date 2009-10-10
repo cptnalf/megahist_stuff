@@ -48,9 +48,12 @@ namespace tfs_fullhistory
 		private void _process_items(TreeNode root)
 		{
 			ItemSet items = _vcs.GetItems(root.FullPath, VersionSpec.Latest, RecursionType.OneLevel);
+			System.Text.RegularExpressions.Regex root_re = new System.Text.RegularExpressions.Regex("\\"+root.FullPath, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 			foreach(Item item in items.Items)
 				{
-					string path = item.ServerItem.Replace(root.FullPath, string.Empty);
+					/* need to do a case-insentive replace */
+					//string path = item.ServerItem.Replace(root.FullPath, string.Empty);
+					string path = root_re.Replace(item.ServerItem, string.Empty);
 					if (path.Length > 0)
 						{
 							if (path[0] == '/')

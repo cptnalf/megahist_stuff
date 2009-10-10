@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+
+using megahistory;
 
 namespace tfs_fullhistory
 {
 	class HistoryCollector : Visitor
 	{
-		public TreeNode Root = null;
-		private Stack<TreeNode> _nodes = new Stack<TreeNode>();
+		public PatchInfo Root = null;
+		private Stack<PatchInfo> _nodes = new Stack<PatchInfo>();
 		
 		public HistoryCollector() { }
 		
@@ -18,13 +17,9 @@ namespace tfs_fullhistory
 
 		protected override void _visit(Visitor.PatchInfo p)
 		{
-			
 			if (p.parent == 0 && Root == null) 
 				{
-					Root = new TreeNode(p.cs.ChangesetId.ToString());
-					Root.ToolTipText = string.Format("{0} {1} {2}", p.cs.ChangesetId, p.cs.CreationDate, p.cs.Owner);
-					Root.Tag = p;
-					
+					Root = p;					
 					_nodes.Push(Root);
 				}
 			else
@@ -38,24 +33,16 @@ namespace tfs_fullhistory
 					 */
 					
 					bool done = false;
-					TreeNode node;
-					
-					node = new TreeNode(p.cs.ChangesetId.ToString());
-					node.ToolTipText = string.Format("{0} {1} {2}", p.cs.ChangesetId, p.cs.CreationDate, p.cs.Owner);
-					node.Tag = p;
 					
 					while(!done)
 						{
-							if (((Visitor.PatchInfo)_nodes.Peek().Tag).cs.ChangesetId == p.parent)
+							if ((_nodes.Peek()).id == p.parent)
 								{
-									_nodes.Peek().Nodes.Add(node);
-									_nodes.Push(node);
+									(_nodes.Peek()).add(p);
+									_nodes.Push(p);
 									done = true;
 								}
-							else
-								{
-									_nodes.Pop();
-								}
+							else { _nodes.Pop(); }
 						}
 				}
 		}

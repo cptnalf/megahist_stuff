@@ -16,6 +16,7 @@
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
+using mh_ns = megahistory;
 
 /* for log4net. */
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
@@ -29,7 +30,7 @@ class main
 	static void print_help()
 	{
 		Console.WriteLine("megahistory <options>");
-		Console.WriteLine("lib version {0}", MegaHistory.version);
+		Console.WriteLine("lib version {0}", mh_ns.MegaHistory.version);
 		Console.WriteLine("queries tfs for the list of changesets which make up a merge");
 		Console.WriteLine();
 		Console.WriteLine("eg: megahistory -s foo --src $/foo,45 --from 10,45 $/bar,43");
@@ -152,19 +153,19 @@ class main
 			}
 		
 		values.vcs = _get_tfs_server(values.server);
-		
-		MegaHistory.Options mhopts = new MegaHistory.Options();
+
+		mh_ns.MegaHistory.Options mhopts = new mh_ns.MegaHistory.Options();
 		
 		mhopts.NoRecurse = values.noRecurse;
 		mhopts.AllowBranchRevisiting = values.allowBranchRevisiting;
 		mhopts.ForceDecomposition = values.forceDecomposition;
-		
-		Visitor visitor = new HistoryViewer(values.printWhat);
-		MegaHistory megahistory = new MegaHistory(mhopts, values.vcs, visitor);
+
+		mh_ns.Visitor visitor = new HistoryViewer(values.printWhat);
+		mh_ns.MegaHistory megahistory = new mh_ns.MegaHistory(mhopts, values.vcs, visitor);
 		
 		if (values.branchesToo)
 			{
-				MegaHistory.IsChangeToConsider = 
+				mh_ns.MegaHistory.IsChangeToConsider = 
 					delegate(Change cng)
 					{
 						return (
@@ -187,7 +188,7 @@ class main
 			{
 				Console.WriteLine("no changesets found.");
 			}
-				
+		
 		return 0;
 	}	
 }

@@ -2,6 +2,7 @@
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
+using megahistory;
 
 /** print the changeset when we see it.
  */
