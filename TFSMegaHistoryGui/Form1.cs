@@ -391,15 +391,7 @@ namespace tfs_fullhistory
 									string key = fsf.SelectedPath;
 									pair<int,int> items = paths[key];
 									
-									string left = System.IO.Path.GetTempFileName();
-									string right = System.IO.Path.GetTempFileName();
-									
-									p1.cs.Changes[items.first].Item.DownloadFile(left);
-									p2.cs.Changes[items.second].Item.DownloadFile(right);
-									
-									System.Diagnostics.Process.Start(@"c:\program files\TortoiseSVN\bin\TortoiseMerge.exe",
-									  string.Format("-base:\"{0}\" -basename:\"{1}\" -mine:\"{2}\" -minename:\"{3}\" ",
-									                left, p1.cs.Changes[items.first].Item.ServerItem, right, p2.cs.Changes[items.second].Item.ServerItem));
+									utils.visualdiff(p1, p2, items);
 								}
 						}
 					else { MessageBox.Show("No files in common between the selected changesets."); }

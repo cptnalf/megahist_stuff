@@ -58,6 +58,7 @@
     <Compile Include="megahistory.cs" />
     <Compile Include="rb_tree.cs" />
     <Compile Include="visitor.cs" />
+		<Compile Include="tfsutils.cs" />
     <Compile Include="utils.cs" />
   </ItemGroup>
   <ItemGroup>

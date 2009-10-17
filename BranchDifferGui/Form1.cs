@@ -30,22 +30,12 @@ namespace BranchDifferGui
 
 			return (srvr.GetService(typeof(Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer)) as Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer);
 		}
-
-		private sourcecontrol.utils.DiffTool _diffTool;
 		
 		public Form1()
 		{
 			InitializeComponent();
 			treeListView1.CanExpandGetter = branch_order.TreeItem.HasChildren;
 			treeListView1.ChildrenGetter = branch_order.TreeItem.ChildrenGetter;
-			
-			/* so at some point this should be configurable */
-			/* there is a fancy registry way to find tortoisemerg,
-			 * but i'm not going to implement that right now... 
-			 */
-			_diffTool = 
-				new sourcecontrol.utils.DiffTool(@"c:\program files\tortoisesvn\bin\tortoisemerge.exe",
-																				 " -base:\"%0\" -basename:\"%1\" -mine:\"%2\" -minename:\"%3\"");
 		}
 
 		private void _pathSel_Click(object sender, EventArgs e)
@@ -82,9 +72,8 @@ namespace BranchDifferGui
 					branch_order.TreeItem t2 = treeListView1.GetModelObject(treeListView1.SelectedIndices[1]) as branch_order.TreeItem;
 										
 					Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = _get_tfs_server("rnoengtfs");
-					tfs.utils.PathCompare compare = new tfs.utils.PathCompare(vcs, _diffTool, t1.FullPath, t2.FullPath);
 					
-					compare.RunWorkerAsync();
+					megahistory.Utils.VisualDiff(t1.FullPath, t2.FullPath, vcs);
 				}
 		}
 
