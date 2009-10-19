@@ -12,29 +12,10 @@ namespace tfs_fullhistory
 {
 	public partial class Form1 : Form
 	{
-		public static VersionControlServer _get_tfs_server(string serverName)
-		{
-			Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
-			
-			if (serverName != null && serverName != string.Empty)
-				{
-					srvr = Microsoft.TeamFoundation.Client.TeamFoundationServerFactory.GetServer(serverName);
-				}
-			else
-				{
-					/* hmm, they didn't specify one, so get the first in the list. */
-					Microsoft.TeamFoundation.Client.TeamFoundationServer[] servers =
-						Microsoft.TeamFoundation.Client.RegisteredServers.GetServers();
-					
-					srvr = servers[0];
-				}
-			
-			return (srvr.GetService(typeof(VersionControlServer)) as VersionControlServer);
-		}
-		
 		private BackgroundWorker _worker = new BackgroundWorker();
 		private BackgroundWorker _wiWorker = new BackgroundWorker();
 		private BackgroundJobs.GetWorkItemData _getWIData = null;
+		private string _tfsServerName = "rnoengtfs";
 		
 		public Form1()
 		{
@@ -109,27 +90,31 @@ namespace tfs_fullhistory
 				textOverlay.Rotation = -5;
 			}
 			
-			_branch.AspectGetter =
-				delegate(object model)
-				{
-					megahistory.Visitor.PatchInfo p = model as megahistory.Visitor.PatchInfo;
-					string str = string.Empty;
-					
-					if (p != null)
-						{
-							if (p.treeBranches != null && p.treeBranches.Count > 0)
-								{
-									str = p.treeBranches[0];
-								}
-						}
-					return str;
-				};
+			_branch.AspectGetter = _aspectGetter;
 
 			BrightIdeasSoftware.TypedObjectListView<megahistory.Visitor.PatchInfo> patches = new BrightIdeasSoftware.TypedObjectListView<megahistory.Visitor.PatchInfo>(treeListView1);
 			patches.GenerateAspectGetters();
 			
 			treeListView1.CanExpandGetter = _canExpandGetter;
 			treeListView1.ChildrenGetter = _childrenGetter;
+		}
+
+		/** *****************************************
+		 *  treeview handlers.
+		 */
+		private string _aspectGetter(object model)
+		{
+			megahistory.Visitor.PatchInfo p = model as megahistory.Visitor.PatchInfo;
+			string str = string.Empty;
+			
+			if (p != null)
+				{
+					if (p.treeBranches != null && p.treeBranches.Count > 0)
+						{
+							str = p.treeBranches[0];
+						}
+				}
+			return str;
 		}
 		
 		private bool _canExpandGetter(object o)
@@ -149,8 +134,12 @@ namespace tfs_fullhistory
 			
 			return patches;
 		}
+		/* ***************************************** */
 		
-		void _worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		
+		/** cleanup after the megahistory querier is done doing it's thing.
+		 */
+		private void _worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			if (treeListView1.InvokeRequired)
 				{ treeListView1.BeginInvoke(new RunWorkerCompletedEventHandler(_worker_RunWorkerCompleted)); }
@@ -171,7 +160,9 @@ namespace tfs_fullhistory
 				}
 		}
 		
-		void _worker_ProgressChanged(object sender, ProgressChangedEventArgs args)
+		/** fixup the progressbar.
+		 */
+		private void _worker_ProgressChanged(object sender, ProgressChangedEventArgs args)
 		{
 			if (treeListView1.InvokeRequired)
 				{ treeListView1.BeginInvoke(new ProgressChangedEventHandler(_worker_ProgressChanged)); }
@@ -187,16 +178,19 @@ namespace tfs_fullhistory
 				}
 		}
 		
-		void _worker_DoWork(object sender, DoWorkEventArgs e)
+		/** start the megahistory querier.
+		 */
+		private void _worker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			long start_ticks = DateTime.Now.Ticks;
 			string tfspath;
 			string changeset;
 			int maxchanges = 10;
 			bool branchesToo = false;
-			VersionControlServer vcs = _get_tfs_server("rnoengtfs");
+			VersionControlServer vcs = megahistory.Utils.GetTFSServer(_tfsServerName);
 			object[] args = e.Argument as object[];
 			megahistory.MegaHistory.Options options = new megahistory.MegaHistory.Options();
+			HistoryCollector visitor = new HistoryCollector();
 			
 			tfspath = args[0] as string;
 			changeset =args[1] as string;
@@ -223,70 +217,25 @@ namespace tfs_fullhistory
 						};
 				}
 			
+			VersionSpec ver = null;
+			
 			if (changeset == string.Empty)
 				{
-					/* list all of the history, then query ones which are merges. */
-					System.Collections.IEnumerable foo = 
-						vcs.QueryHistory(tfspath, VersionSpec.Latest,
-														 0, RecursionType.Full, null, null, null, maxchanges, true, false, false);
-					
-					foreach (object o in foo)
-						{
-							Changeset cs = o as Changeset;
-							bool isMerge = false;
-							megahistory.Visitor.PatchInfo commit = null;
-							int changesCount = cs.Changes.Length;
-							
-							for(int i=0; i < changesCount; ++i)
-							  {
-							    Change cng = cs.Changes[i];
-									
-							    isMerge =
-							      ((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch
-							       ||
-							       (cng.ChangeType & ChangeType.Merge) == ChangeType.Merge);
-							    if (isMerge) { break; }
-							  }
-							
-							if (isMerge)
-								{
-									ChangesetVersionSpec ver = new ChangesetVersionSpec(cs.ChangesetId);
-									
-									commit = _run_recursive_query(vcs, tfspath, ver, options);
-									if (commit == null) { commit = new megahistory.Visitor.PatchInfo(cs); }
-								}
-							else
-								{
-									commit = new megahistory.Visitor.PatchInfo(0, cs, null);
-								}
-							
-							if (commit != null)
-								{
-									_worker.ReportProgress(99, commit);
-								}
-						}
+					ver = VersionSpec.Latest;
 				}
 			else
 				{
-					ChangesetVersionSpec ver = new ChangesetVersionSpec(changeset);
-					megahistory.Visitor.PatchInfo commit = _run_recursive_query(vcs, tfspath, ver, options);
-					
-					_worker.ReportProgress(10, null);
+					ver = new ChangesetVersionSpec(changeset);
 				}
+			
+			megahistory.MegaHistory mh = new megahistory.MegaHistory(options, vcs, visitor);
+			
+			mh.visit(tfspath, ver, maxchanges);
 			
 			{
 				long end_ticks = DateTime.Now.Ticks;
 				e.Result = end_ticks - start_ticks;
 			}
-		}
-		
-		private megahistory.Visitor.PatchInfo _run_recursive_query(VersionControlServer vcs, string tfspath, ChangesetVersionSpec ver, megahistory.MegaHistory.Options options)
-		{
-			HistoryCollector visitor = new HistoryCollector();
-			megahistory.MegaHistory history = new megahistory.MegaHistory(options, vcs, visitor);
-			bool result = history.visit(0, tfspath, ver, ver, ver);
-			
-			return (result ? visitor.Root : null);
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -301,9 +250,18 @@ namespace tfs_fullhistory
 			
 			button1.Enabled = false;
 			int maxChanges = (int)_maxChanges.Value;
-			object[] args = new object[] 
-			{ _tfsPath.Text, _changeset.Text, maxChanges, _noRecurse.Checked, _allowBranchRevisiting.Checked,
-			  _forceDecomposition.Checked, _branchesToo.Checked };
+			object[] args = 
+				new object[] 
+				{ 
+					_tfsPath.Text, 
+					_changeset.Text, 
+					maxChanges, 
+					_noRecurse.Checked,
+					_allowBranchRevisiting.Checked,
+					_forceDecomposition.Checked,
+					_branchesToo.Checked
+				};
+			
 			_worker.RunWorkerAsync(args);
 		}
 		
@@ -316,10 +274,11 @@ namespace tfs_fullhistory
 		{
  			_getWIData = null;
 		}
-		 void button2_Click(object sender, EventArgs e)
+		
+		private void button2_Click(object sender, EventArgs e)
 		{
 			PathSelector ps = new PathSelector();
-			VersionControlServer vcs = _get_tfs_server("rnoengtfs");
+			VersionControlServer vcs = megahistory.Utils.GetTFSServer(_tfsServerName);
 			ps.setVCS(vcs);
 			ps.ShowDialog();
 			_tfsPath.Text = ps.getSelection();
@@ -329,14 +288,17 @@ namespace tfs_fullhistory
 		{
 			if (_allowBranchRevisiting.CheckState == CheckState.Checked)
 			  {
-				/* tell the user they may have choosen poorly. */
-				DialogResult res = MessageBox.Show("Are you really sure you want to do this?", 
-				"Verifying really really bad idea", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-				if (res != DialogResult.Yes) { _allowBranchRevisiting.CheckState = CheckState.Unchecked; }
+					/* tell the user they may have choosen poorly. */
+					DialogResult res = MessageBox.Show("Are you really sure you want to do this?", 
+																						 "Verifying really really bad idea", 
+																						 MessageBoxButtons.YesNoCancel, 
+																						 MessageBoxIcon.Warning);
+					if (res != DialogResult.Yes) { _allowBranchRevisiting.CheckState = CheckState.Unchecked; }
 			  }
 		}
-
-		private void treeListView1_CellToolTipShowing(object sender, BrightIdeasSoftware.ToolTipShowingEventArgs e)
+		
+		private void treeListView1_CellToolTipShowing(object sender, 
+																									BrightIdeasSoftware.ToolTipShowingEventArgs e)
 		{
 			megahistory.Visitor.PatchInfo patch = e.Model as megahistory.Visitor.PatchInfo;
 			
@@ -344,7 +306,8 @@ namespace tfs_fullhistory
 				{
 					e.Title = string.Format("Changeset {0}", patch.id);
 					e.Text = string.Format("Parent {0}\r\nBranch {1}\r\nCreated {2}\r\nCreated By {3}\r\n{4}",
-					                       patch.parent, string.Empty, patch.user, patch.creationDate, patch.comment);
+					                       patch.parent, 
+																 string.Empty, patch.user, patch.creationDate, patch.comment);
 				}
 		}
 
@@ -355,30 +318,45 @@ namespace tfs_fullhistory
 					megahistory.Visitor.PatchInfo p1 = treeListView1.GetModelObject(treeListView1.SelectedIndices[0]) as megahistory.Visitor.PatchInfo;
 					megahistory.Visitor.PatchInfo p2 = treeListView1.GetModelObject(treeListView1.SelectedIndices[1]) as megahistory.Visitor.PatchInfo;
 					
-					SortedDictionary<string, pair<int,int>> paths = new SortedDictionary<string, pair<int,int>>();
-					System.Text.RegularExpressions.Regex egs_re = new System.Text.RegularExpressions.Regex(".+/EGS/", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+					SortedDictionary<string, pair<int,int>> paths = 
+						new SortedDictionary<string, pair<int,int>>();
+					System.Text.RegularExpressions.Regex egs_re = 
+						new System.Text.RegularExpressions.Regex("(.+)/EGS/(.*)", 
+											System.Text.RegularExpressions.RegexOptions.IgnoreCase | 
+											System.Text.RegularExpressions.RegexOptions.Compiled);
 					
 					Change[] changes = p1.cs.Changes;
 					int cngCount = changes.Length;
 					for(int i =0; i < cngCount; ++i)
 						{
-							string path = egs_re.Replace(changes[i].Item.ServerItem, string.Empty);
+							string path;
+							System.Text.RegularExpressions.Match match = egs_re.Match(changes[i].Item.ServerItem);
 							
-							paths.Add(path, new pair<int,int>(i, -1));
+							if (match != null)
+								{
+									path = match.Groups[2].Value;
+									paths.Add(path, new pair<int,int>(i, -1));
+								}
 						}
 					
 					changes = p2.cs.Changes;
 					cngCount = changes.Length;
 					for(int i=0; i < changes.Length; ++i)
 						{
-							string path = egs_re.Replace(changes[i].Item.ServerItem, string.Empty);
+							string path;
+							System.Text.RegularExpressions.Match match = egs_re.Match(changes[i].Item.ServerItem);
 							
-							if (paths.ContainsKey(path)) { paths[path].second = i; }
+							if (match != null)
+								{
+									path = match.Groups[2].Value;
+									if (paths.ContainsKey(path)) { paths[path].second = i; }
+								}
 						}
 					/* well, crap. now i need to remove all of the paths which have a -1 for the second item. */
 					List<string> removes = new List<string>();
 					
-					foreach(KeyValuePair<string,pair<int,int>> item in paths) { if (item.Value.second == -1) { removes.Add(item.Key); } }
+					foreach(KeyValuePair<string,pair<int,int>> item in paths)
+						{ if (item.Value.second == -1) { removes.Add(item.Key); } }
 					
 					foreach(string key in removes) { paths.Remove(key); }
 					
@@ -391,7 +369,7 @@ namespace tfs_fullhistory
 									string key = fsf.SelectedPath;
 									pair<int,int> items = paths[key];
 									
-									utils.visualdiff(p1, p2, items);
+									megahistory.Utils.VisualDiff(p1, p2, items);
 								}
 						}
 					else { MessageBox.Show("No files in common between the selected changesets."); }

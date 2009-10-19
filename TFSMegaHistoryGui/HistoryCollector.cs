@@ -9,8 +9,24 @@ namespace tfs_fullhistory
 	{
 		public PatchInfo Root = null;
 		private Stack<PatchInfo> _nodes = new Stack<PatchInfo>();
+		private System.ComponentModel.BackgroundWorker _worker = null;
+		
+		public System.ComponentModel.BackgroundWorker Worker
+		{ get { return _worker; } set { _worker = value; } }
 		
 		public HistoryCollector() { }
+		
+		public override void reset()
+		{
+			if (Root != null)
+				{
+					_worker.ReportProgress(99, Root);
+				}
+			
+			base.reset();
+			Root = null;
+			_nodes.Clear();
+		}
 		
 		protected override void _seen(int parentID, Visitor.PatchInfo p)
 		{ }

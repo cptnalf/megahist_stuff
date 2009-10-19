@@ -16,6 +16,7 @@
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using mh_ns = megahistory;
 
 /* for log4net. */
@@ -29,8 +30,16 @@ class main
 
 	static void print_help()
 	{
+		/* get the version of the megahistory library. */
+		Version version = null;
+		Assembly asm = Assembly.GetAssembly(typeof(megahistory.MegaHistory));
+		version = asm.GetName().Version;
+		/* ******************** */
+		
 		Console.WriteLine("megahistory <options>");
-		Console.WriteLine("lib version {0}", mh_ns.MegaHistory.version);
+		Console.WriteLine("lib version {0}.{1}.{2}.{3} (sp{4}/{5})", 
+											version.Major, version.Minor, version.Build, version.Revision,
+											version.MajorRevision, version.MinorRevision);
 		Console.WriteLine("queries tfs for the list of changesets which make up a merge");
 		Console.WriteLine();
 		Console.WriteLine("eg: megahistory -s foo --src $/foo,45 --from 10,45 $/bar,43");
@@ -52,26 +61,6 @@ class main
 		Console.WriteLine("     this changes the 'isChangeToConsider' function to include ChangeType.Branch.");
 		Console.WriteLine("       isChangeToConsider is used when gathering branches to QueryMerges against.");
 		Console.WriteLine("target,version\tthe required path we're looking at");
-	}
-
-	static VersionControlServer _get_tfs_server(string serverName)
-	{
-		Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
-		
-		if (serverName != null && serverName != string.Empty)
-			{
-				srvr = Microsoft.TeamFoundation.Client.TeamFoundationServerFactory.GetServer(serverName);
-			}
-		else
-			{
-				/* hmm, they didn't specify one, so get the first in the list. */
-				Microsoft.TeamFoundation.Client.TeamFoundationServer[] servers =
-					Microsoft.TeamFoundation.Client.RegisteredServers.GetServers();
-				
-				srvr = servers[0];
-			}
-		
-		return (srvr.GetService(typeof(VersionControlServer)) as VersionControlServer);
 	}
 	
 	internal struct Values
@@ -152,14 +141,14 @@ class main
 					}
 			}
 		
-		values.vcs = _get_tfs_server(values.server);
-
+		values.vcs = mh_ns.Utils.GetTFSServer(values.server);
+		
 		mh_ns.MegaHistory.Options mhopts = new mh_ns.MegaHistory.Options();
 		
 		mhopts.NoRecurse = values.noRecurse;
 		mhopts.AllowBranchRevisiting = values.allowBranchRevisiting;
 		mhopts.ForceDecomposition = values.forceDecomposition;
-
+		
 		mh_ns.Visitor visitor = new HistoryViewer(values.printWhat);
 		mh_ns.MegaHistory megahistory = new mh_ns.MegaHistory(mhopts, values.vcs, visitor);
 		

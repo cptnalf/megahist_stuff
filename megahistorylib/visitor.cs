@@ -81,7 +81,15 @@ namespace megahistory
 					return p;
 				}
 		}
-	
+		
+		/** reset the visited statistics.
+		 */
+		public virtual void reset()
+		{
+			_cache.Clear();
+			_branches.Clear();
+		}
+		
 		/** have we already visited this changeset?
 		 */
 		public bool visited(int changesetid) { return _cache.ContainsKey(changesetid); }
@@ -101,7 +109,7 @@ namespace megahistory
 				{
 					/* only print stuff we haven't already seen. */
 					List<string> treeBranches = branches;
-					if (treeBranches == null) { treeBranches = MegaHistory.FindChangesetBranches(cs); }
+					if (treeBranches == null) { treeBranches = Utils.FindChangesetBranches(cs); }
 					p = new PatchInfo(parentID, cs, treeBranches);
 				
 					_cache.Add(p.cs.ChangesetId, p);

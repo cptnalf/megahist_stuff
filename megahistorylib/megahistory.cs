@@ -13,8 +13,6 @@ namespace megahistory
 	 */
 	public class MegaHistory
 	{
-		public static readonly string version = "f998a4d529c1cb415b0efaeb072dd3cda173d3e1";
-		public static uint FindChangesetBranchesCalls = 0;
 		public delegate bool ChangeTypeToConsiderDelegate(Change cng);
 
 		/** what ChangeType(s) do we want to consider when we query for decomposition.
@@ -80,7 +78,48 @@ namespace megahistory
 			_vcs=vcs;
 			_visitor = visitor;
 		}
-	
+		
+		public virtual bool visit(string srcPath, VersionSpec srcVersion, int maxChanges)
+		{
+			bool result = true;
+			System.Collections.IEnumerable foo =
+				_vcs.QueryHistory(srcPath, srcVersion, 0, RecursionType.Full,
+													null, null, null, /* user, from ver, to ver */
+													maxChanges, 
+													true, false, false); 
+			
+			/* inc changes, slot mode, inc download info. */
+			foreach (object o in foo)
+				{
+					Changeset cs = o as Changeset;
+					bool isMerge = false;
+					megahistory.Visitor.PatchInfo commit = null;
+					
+					result &= true;
+					isMerge = Utils.IsMergeChangeset(cs);
+					
+					if (isMerge)
+						{
+							ChangesetVersionSpec ver = new ChangesetVersionSpec(cs.ChangesetId);
+							
+							visit(0, srcPath, ver, ver, ver);
+						}
+					else
+						{
+							_visitor.visit(0, cs);
+						}
+					
+					_visitor.reset();
+				}
+			
+			/* dump some stats out to the log file. */
+			logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
+			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
+												 Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
+			
+			return result;
+		}
+		
 		/** so, what this does is this:
 		 *  uses VersionControlServer.QueryMerges to get a list of target and source changeset.
 		 *  a private method trees that list into:
@@ -107,7 +146,7 @@ namespace megahistory
 			/* dump some stats out to the log file. */
 			logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
 			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
-												 MegaHistory.FindChangesetBranchesCalls, _visitor.visitedCount());
+												 Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
 		
 			return result;
 		}
@@ -125,7 +164,7 @@ namespace megahistory
 			/* dump some stats out to the log file. */
 			logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
 			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
-												 MegaHistory.FindChangesetBranchesCalls, _visitor.visitedCount());
+												 Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
 			return result;
 		}
 	
@@ -160,7 +199,7 @@ namespace megahistory
 							 * it's parent is the one passed in.
 							 */
 							Changeset cs = _vcs.GetChangeset(csID);
-							string path_part = _get_path_part(target);
+							string path_part = Utils.GetPathPart(target);
 							ChangesetVersionSpec cstargetVer = targetVer as ChangesetVersionSpec;
 						
 							/* pass in the known set of branches in this changeset, or let it figure that out. */
@@ -195,7 +234,7 @@ namespace megahistory
 												 */
 												Visitor.PatchInfo p = _visitor[child.ChangesetId];
 												if (p != null) { branches = p.treeBranches; }
-												else { branches = FindChangesetBranches(child); }
+												else { branches = Utils.FindChangesetBranches(child); }
 											}
 										
 											/* - this is for the recursive query -
@@ -269,208 +308,7 @@ namespace megahistory
 		
 			return false == merges.empty();
 		}
-	
-		/** walk the changes in the changeset and find all unique 'EGS' trees.
-		 *  eg:
-		 *  $/IGT_0803/main/EGS/shared/project.inc
-		 *  $/IGT_0803/development/dev_advantage/EGS/advantage/advantage.sln
-		 *  $/IGT_0803/main/EGS/advantage/advantageapps.sln
-		 *
-		 *  would yield just 2:
-		 *  $/IGT_0803/main/EGS/
-		 *  $/IGT_0803/development/dev_advantage/EGS/
-		 *
-		 */
-		public static List<string> FindChangesetBranches(Changeset cs)
-		{
-			Timer timer = new Timer();
-			List<string> itemBranches = new List<string>();
 		
-			++MegaHistory.FindChangesetBranchesCalls;
-		
-			timer.start();
-			if (cs.Changes.Length > 1000)
-				{
-					itemBranches = _get_egs_branches_threaded(cs);
-				}
-			else
-				{
-					int changesLen = cs.Changes.Length;
-					for(int i=0; i < changesLen; ++i)
-						{
-						
-							if (IsChangeToConsider(cs.Changes[i])	)
-								{
-									string itemPath = cs.Changes[i].Item.ServerItem;
-									bool found = false;
-									int idx = 0;
-								
-									for(int j=0; j < itemBranches.Count; ++j)
-										{
-											/* the stupid branches are not case sensitive. */
-											idx = itemPath.IndexOf(itemBranches[j], StringComparison.InvariantCultureIgnoreCase);
-											if (idx == 0) { found = true; break; }
-										}
-								
-									if (!found)
-										{
-											/* yeah steve, '/EGS8.2' sucks now doesn't it... */
-											string str = "/EGS/";
-										
-											/* the stupid branches are not case sensitive. */
-											idx = itemPath.IndexOf(str, StringComparison.InvariantCultureIgnoreCase);
-										
-											if (idx > 0)
-												{
-													itemPath = itemPath.Substring(0,idx+str.Length);
-#if DEBUG
-													if (itemPath.IndexOf("$/IGT_0803/") == 0)
-														{
-#endif
-															itemBranches.Add(itemPath);
-#if DEBUG
-														}
-													else
-														{
-															Console.Error.WriteLine("'{0}' turned into '{1}'!", 
-																											cs.Changes[i].Item.ServerItem,
-																											itemPath);
-														}
-#endif
-												}
-										}
-								}
-						}
-				}
-			timer.stop();
-			logger.DebugFormat("branches for {0} took: {1}", cs.ChangesetId, timer.Delta);
-		
-			return itemBranches;
-		}
-	
-		class _args
-		{
-			internal int changesLen;
-			internal Change[] changes;
-			internal int ptr;
-			internal System.Threading.ReaderWriterLock rwlock;
-			internal List<string> itemBranches;
-		}
-	
-		private static List<string> _get_egs_branches_threaded(Changeset cs)
-		{
-			System.Threading.Thread[] threads = new System.Threading.Thread[8];
-			_args args = new _args();
-		
-			args.itemBranches = new List<string>();
-			args.rwlock = new System.Threading.ReaderWriterLock();
-			args.changesLen = cs.Changes.Length;
-			args.changes = cs.Changes;
-		
-			for(int i=0; i < threads.Length; ++i)
-				{
-					threads[i] = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart(_egsbranches_worker));
-					threads[i].Priority = System.Threading.ThreadPriority.Lowest;
-					threads[i].Start(args);
-				}
-		
-			for(int i=0; i < threads.Length; ++i) { threads[i].Join(); }
-		
-			return args.itemBranches;
-		}
-	
-		private static void _egsbranches_worker(object o)
-		{
-			_args args = o as _args;
-			bool done = false;
-
-			int res = System.Threading.Interlocked.Increment(ref args.ptr);
-		
-			done = res >= args.changesLen;
-		
-			while(!done)
-				{
-					string itemPath = args.changes[res].Item.ServerItem;
-					bool found = false;
-					int idx = 0;
-					int itemCount = 0;
-				
-					/* skip all non-merge changesets. */
-					if (IsChangeToConsider(args.changes[res]))
-						{
-							try {
-								try {
-									args.rwlock.AcquireReaderLock(10 * 1000); /* 10 second timeout. */
-									itemCount = args.itemBranches.Count;
-									for(int j=0; j < args.itemBranches.Count; ++j)
-										{
-											/* the stupid branches are not case sensitive. */
-											idx = itemPath.IndexOf(args.itemBranches[j], 
-																						 StringComparison.InvariantCultureIgnoreCase);
-											if (idx == 0) { found = true; break; }
-										}
-								}
-								finally
-									{
-										args.rwlock.ReleaseReaderLock();
-									}
-							} catch(ApplicationException) { /* we lost the lock. */ }
-						}
-				
-					if (!found)
-						{
-							/* yeah steve, '/EGS8.2' sucks now doesn't it... */
-							string str = "/EGS/";
-						
-							/* the stupid branches are not case sensitive. */
-							idx = itemPath.IndexOf(str, StringComparison.InvariantCultureIgnoreCase);
-						
-							if (idx > 0)
-								{
-									itemPath = itemPath.Substring(0,idx+str.Length);
-#if DEBUG
-									if (itemPath.IndexOf("$/IGT_0803/") == 0)
-										{
-#endif
-											try {
-												try {
-													bool reallyFound = false;
-													args.rwlock.AcquireWriterLock(60 * 1000); /* 1 minute timeout. */
-												
-													if (itemCount != args.itemBranches.Count)
-														{
-															/* look again. */
-															for(int j=0; j < args.itemBranches.Count; ++j)
-																{
-																	idx = itemPath.IndexOf(args.itemBranches[j], 
-																												 StringComparison.InvariantCultureIgnoreCase);
-																	if (idx == 0) { reallyFound = true; break; }
-																}
-														}
-												
-													if (! reallyFound) { args.itemBranches.Add(itemPath); }
-												}
-												finally { args.rwlock.ReleaseWriterLock(); }
-											} catch(ApplicationException) { /* we lost the lock. */ }
-#if DEBUG
-										}
-									else
-										{
-											Console.Error.WriteLine("'{0}' turned into '{1}'!", 
-																							args.changes[res].Item.ServerItem,
-																							itemPath);
-										}
-#endif
-								}
-						}
-				
-					/* setup for the next loop. */
-					res = System.Threading.Interlocked.Increment(ref args.ptr);
-					done = res >= args.changesLen;
-				}
-		}
-	
-
 		private RBDictTree<int,SortedDictionary<int,ChangesetMerge>> 
 			query_merges(VersionControlServer vcs,
 									 string srcPath, VersionSpec srcVer,
@@ -521,17 +359,5 @@ namespace megahistory
 			return merges;
 		}
 	
-		private static string _get_path_part(string path)
-		{
-			string path_part = string.Empty;
-			int idx = path.IndexOf("/EGS/", StringComparison.InvariantCultureIgnoreCase);
-		
-			if (idx >=0)
-				{
-					path_part = path.Substring(idx+5);
-				}
-		
-			return path_part;
-		}
 	}
 }

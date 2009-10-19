@@ -3,8 +3,29 @@ using	Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace megahistory
 {
-	public static class Utils
+	public static partial class Utils
 	{
+		/** get a tfs server. */
+		public static VersionControlServer GetTFSServer(string serverName)
+		{
+			Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
+			
+			if (serverName != null && serverName != string.Empty)
+				{
+					srvr = Microsoft.TeamFoundation.Client.TeamFoundationServerFactory.GetServer(serverName);
+				}
+			else
+				{
+					/* hmm, they didn't specify one, so get the first in the list. */
+					Microsoft.TeamFoundation.Client.TeamFoundationServer[] servers =
+						Microsoft.TeamFoundation.Client.RegisteredServers.GetServers();
+					
+					srvr = servers[0];
+				}
+			
+			return (srvr.GetService(typeof(VersionControlServer)) as VersionControlServer);
+		}
+		
 		/** difference a specific set o' stuffs
 		 */
 		public static void VisualDiff(Visitor.PatchInfo p1, Visitor.PatchInfo p2, pair<int,int> items)
@@ -21,28 +42,51 @@ namespace megahistory
 			Difference.VisualDiffItems(vcs, left, right);
 		}
 		
-		/** try to diff what's on the harddrive, then fall back to the latest version of the server items.
+		/** try to diff what's on the harddrive, 
+		 *  then fall back to the latest version of the server items.
 		 */
 		public static void VisualDiff(string left, string right, VersionControlServer vcs)
 		{
-			Workspace[] workspaces = vcs.QueryWorkspaces(null, 
-																									 System.Environment.UserName, 
-																									 System.Environment.MachineName);
-			
-			if (workspaces != null)
-				{
-					WorkingFolder f = null;
-					
-					foreach(Workspace w in workspaces)
-						{
-							f = w.TryGetWorkingFolderForServerItem(left);
-						}
-				}
-			
 			Difference.VisualDiffFiles(vcs, left, null, right, null);
 		}
-
 		
-		private static string 
+		private static System.Text.RegularExpressions.Regex _egsRE = 
+			new System.Text.RegularExpressions.Regex("(.+)/EGS/",
+																 System.Text.RegularExpressions.RegexOptions.IgnoreCase |
+																							 System.Text.RegularExpressions.RegexOptions.Compiled);
+		
+		/** retrieve the base tfs path of the branch.
+		 */
+		public static string GetPathPart(string path)
+		{
+			string path_part = string.Empty;
+			System.Text.RegularExpressions.Match match = _egsRE.Match(path);
+			
+			if (match != null)
+				{
+					path_part = match.Groups[1].Value;
+				}
+			
+			return path_part;
+		}
+		
+		public static bool IsMergeChangeset(Changeset cs)
+		{
+			bool isMerge = false;
+			int changesCount = cs.Changes.Length;
+			
+			for(int i=0; i < changesCount; ++i)
+				{
+					Change cng = cs.Changes[i];
+					
+					isMerge =
+						((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch
+						 ||
+						 (cng.ChangeType & ChangeType.Merge) == ChangeType.Merge);
+					if (isMerge) { break; }
+				}
+			
+			return isMerge;
+		}
 	}
 }

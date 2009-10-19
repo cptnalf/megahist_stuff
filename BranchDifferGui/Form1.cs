@@ -11,26 +11,6 @@ namespace BranchDifferGui
 {
 	public partial class Form1 : Form
 	{
-		static Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer _get_tfs_server(string serverName)
-		{
-			Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
-
-			if (serverName != null && serverName != string.Empty)
-			{
-				srvr = Microsoft.TeamFoundation.Client.TeamFoundationServerFactory.GetServer(serverName);
-			}
-			else
-			{
-				/* hmm, they didn't specify one, so get the first in the list. */
-				Microsoft.TeamFoundation.Client.TeamFoundationServer[] servers =
-					Microsoft.TeamFoundation.Client.RegisteredServers.GetServers();
-
-				srvr = servers[0];
-			}
-
-			return (srvr.GetService(typeof(Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer)) as Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer);
-		}
-		
 		public Form1()
 		{
 			InitializeComponent();
@@ -41,7 +21,7 @@ namespace BranchDifferGui
 		private void _pathSel_Click(object sender, EventArgs e)
 		{
 			tfs_fullhistory.PathSelector sel = new tfs_fullhistory.PathSelector();
-			sel.setVCS(_get_tfs_server("rnoengtfs"));
+			sel.setVCS(megahistory.Utils.GetTFSServer("rnoengtfs"));
 			if (sel.ShowDialog() == DialogResult.OK)
 			{
 				textBox1.Text = sel.getSelection();
@@ -55,7 +35,7 @@ namespace BranchDifferGui
 			branch_order.Options options;
 			options.src_path = textBox1.Text;
 			options.src_id = 0;
-			options.server = _get_tfs_server("rnoengtfs");
+			options.server = megahistory.Utils.GetTFSServer("rnoengtfs");
 			
 			root = bo.get_branches(options);
 			
@@ -71,7 +51,7 @@ namespace BranchDifferGui
 					branch_order.TreeItem t1 = treeListView1.GetModelObject(treeListView1.SelectedIndices[0]) as branch_order.TreeItem;
 					branch_order.TreeItem t2 = treeListView1.GetModelObject(treeListView1.SelectedIndices[1]) as branch_order.TreeItem;
 										
-					Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = _get_tfs_server("rnoengtfs");
+					Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = megahistory.Utils.GetTFSServer("rnoengtfs");
 					
 					megahistory.Utils.VisualDiff(t1.FullPath, t2.FullPath, vcs);
 				}
@@ -81,7 +61,7 @@ namespace BranchDifferGui
 		{
 			if (treeListView1.SelectedIndices.Count > 0)
 			{
-				Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = _get_tfs_server("rnoengtfs");
+				Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = megahistory.Utils.GetTFSServer("rnoengtfs");
 				
 				foreach(int idx in treeListView1.SelectedIndices)
 				{
