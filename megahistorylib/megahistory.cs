@@ -34,7 +34,7 @@ namespace megahistory
 				 );
 		}
 
-		static internal readonly log4net.ILog logger = log4net.LogManager.GetLogger("megahistory_logger");
+		static internal log4net.ILog logger = log4net.LogManager.GetLogger("megahistory_logger");
 	
 		public class Options
 		{
@@ -77,6 +77,24 @@ namespace megahistory
 			_options = options;
 			_vcs=vcs;
 			_visitor = visitor;
+			
+			if (! logger.Logger.Repository.Configured)
+			{
+				System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
+				System.IO.FileStream fs;
+				
+				try{
+					fs = new System.IO.FileStream(asm.Location+".config", System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+					log4net.Config.XmlConfigurator.Configure(fs);
+				} catch(Exception e)
+				{
+					int q = 1;
+					q -= 12;
+				}
+				
+				int j =0;
+				j -= 45;
+			}
 		}
 		
 		public virtual bool visit(string srcPath, VersionSpec srcVersion, int maxChanges)
@@ -298,10 +316,20 @@ namespace megahistory
 														}
 												}
 										}
-									catch(Exception e) { _visitor.visit(cs.ChangesetId, csm.SourceVersion, e); }
+									catch(Exception e)
+									{
+										string f = string.Format("{0}=>{1}", cs.ChangesetId, csm.SourceVersion);
+										logger.Fatal(f, e);
+										_visitor.visit(cs.ChangesetId, csm.SourceVersion, e);
+									}
 								}
 						}
-					catch(Exception e) { _visitor.visit(parentID, csID, e); }
+					catch(Exception e)
+					{
+						string f = string.Format("{0}=>{1}", parentID, csID);
+						logger.Fatal(f, e);						
+						_visitor.visit(parentID, csID, e);
+					}
 				}
 		
 			logger.DebugFormat("}}_visit:{0}", parentID);
@@ -351,8 +379,10 @@ namespace megahistory
 				}
 			catch(Exception e)
 				{
-					Console.Error.WriteLine("Error querying: {0},{1}", targetPath, targetVer);
-					Console.Error.WriteLine(e.ToString());
+					logger.Fatal("querying failed", e);						
+					
+					//Console.Error.WriteLine("Error querying: {0},{1}", targetPath, targetVer);
+					//Console.Error.WriteLine(e.ToString());
 				}
 			_queryTimer.stop();
 		

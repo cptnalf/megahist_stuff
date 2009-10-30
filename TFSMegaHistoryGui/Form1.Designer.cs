@@ -38,6 +38,9 @@
 			this.treeListView1 = new BrightIdeasSoftware.TreeListView();
 			this._csID = new BrightIdeasSoftware.OLVColumn();
 			this._branch = new BrightIdeasSoftware.OLVColumn();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.changesetCtrl1 = new tfs_fullhistory.ChangesetCtrl();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -48,21 +51,21 @@
 			this._branchesToo = new System.Windows.Forms.CheckBox();
 			this._maxChanges = new System.Windows.Forms.NumericUpDown();
 			this._time = new System.Windows.Forms.TextBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this._changeCntNUD = new System.Windows.Forms.NumericUpDown();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.changesetCtrl1 = new tfs_fullhistory.ChangesetCtrl();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
+			this.contextMenuStrip1.SuspendLayout();
 			this.flowLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._maxChanges)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._changeCntNUD)).BeginInit();
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
-			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// progressBar1
@@ -113,7 +116,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.changesetCtrl1);
-			this.splitContainer1.Size = new System.Drawing.Size(604, 386);
+			this.splitContainer1.Size = new System.Drawing.Size(604, 355);
 			this.splitContainer1.SplitterDistance = 206;
 			this.splitContainer1.TabIndex = 6;
 			// 
@@ -136,7 +139,7 @@
 			this.treeListView1.OwnerDraw = true;
 			this.treeListView1.SelectedColumnTint = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(255)))), ((int)(((byte)(250)))), ((int)(((byte)(205)))));
 			this.treeListView1.ShowGroups = false;
-			this.treeListView1.Size = new System.Drawing.Size(206, 386);
+			this.treeListView1.Size = new System.Drawing.Size(206, 355);
 			this.treeListView1.TabIndex = 0;
 			this.treeListView1.TintSortColumn = true;
 			this.treeListView1.UseAlternatingBackColors = true;
@@ -159,6 +162,30 @@
 			// 
 			this._branch.IsEditable = false;
 			this._branch.Text = "Branch";
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.ShowImageMargin = false;
+			this.contextMenuStrip1.Size = new System.Drawing.Size(116, 26);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+			this.toolStripMenuItem1.Text = "Compare...";
+			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+			// 
+			// changesetCtrl1
+			// 
+			this.changesetCtrl1.AutoSize = true;
+			this.changesetCtrl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.changesetCtrl1.Location = new System.Drawing.Point(0, 0);
+			this.changesetCtrl1.Name = "changesetCtrl1";
+			this.changesetCtrl1.Size = new System.Drawing.Size(394, 355);
+			this.changesetCtrl1.TabIndex = 0;
 			// 
 			// label1
 			// 
@@ -195,10 +222,12 @@
 			this.flowLayoutPanel1.Controls.Add(this.progressBar1);
 			this.flowLayoutPanel1.Controls.Add(this._maxChanges);
 			this.flowLayoutPanel1.Controls.Add(this._time);
+			this.flowLayoutPanel1.Controls.Add(this.label3);
+			this.flowLayoutPanel1.Controls.Add(this._changeCntNUD);
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-			this.flowLayoutPanel1.Size = new System.Drawing.Size(604, 108);
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(604, 139);
 			this.flowLayoutPanel1.TabIndex = 9;
 			// 
 			// button2
@@ -277,11 +306,36 @@
 			// 
 			// _time
 			// 
+			this.flowLayoutPanel1.SetFlowBreak(this._time, true);
 			this._time.Location = new System.Drawing.Point(431, 78);
 			this._time.Name = "_time";
 			this._time.ReadOnly = true;
 			this._time.Size = new System.Drawing.Size(125, 20);
 			this._time.TabIndex = 11;
+			// 
+			// label3
+			// 
+			this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(3, 110);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(100, 13);
+			this.label3.TabIndex = 17;
+			this.label3.Text = "max changes count";
+			// 
+			// _changeCntNUD
+			// 
+			this._changeCntNUD.Location = new System.Drawing.Point(109, 107);
+			this._changeCntNUD.Maximum = new decimal(new int[] {
+            500000,
+            0,
+            0,
+            0});
+			this._changeCntNUD.Name = "_changeCntNUD";
+			this._changeCntNUD.Size = new System.Drawing.Size(75, 20);
+			this._changeCntNUD.TabIndex = 16;
+			this.toolTip1.SetToolTip(this._changeCntNUD, "Maximum number of changes to show in the \'changes\' tab\r\n(too many will result in " +
+					"alot of memory usage, and slowdowns)\r\n");
 			// 
 			// splitContainer2
 			// 
@@ -299,32 +353,8 @@
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.splitContainer1);
 			this.splitContainer2.Size = new System.Drawing.Size(604, 498);
-			this.splitContainer2.SplitterDistance = 108;
+			this.splitContainer2.SplitterDistance = 139;
 			this.splitContainer2.TabIndex = 10;
-			// 
-			// contextMenuStrip1
-			// 
-			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.ShowImageMargin = false;
-			this.contextMenuStrip1.Size = new System.Drawing.Size(116, 26);
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
-			this.toolStripMenuItem1.Text = "Compare...";
-			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
-			// 
-			// changesetCtrl1
-			// 
-			this.changesetCtrl1.AutoSize = true;
-			this.changesetCtrl1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.changesetCtrl1.Location = new System.Drawing.Point(0, 0);
-			this.changesetCtrl1.Name = "changesetCtrl1";
-			this.changesetCtrl1.Size = new System.Drawing.Size(394, 386);
-			this.changesetCtrl1.TabIndex = 0;
 			// 
 			// Form1
 			// 
@@ -339,13 +369,14 @@
 			this.splitContainer1.Panel2.PerformLayout();
 			this.splitContainer1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.treeListView1)).EndInit();
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flowLayoutPanel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this._maxChanges)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._changeCntNUD)).EndInit();
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			this.splitContainer2.ResumeLayout(false);
-			this.contextMenuStrip1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 			}
@@ -375,6 +406,8 @@
 		private BrightIdeasSoftware.OLVColumn _branch;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.NumericUpDown _changeCntNUD;
 		}
 	}
 

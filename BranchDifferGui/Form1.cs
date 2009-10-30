@@ -11,11 +11,23 @@ namespace BranchDifferGui
 {
 	public partial class Form1 : Form
 	{
+		private Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer _vcs;
+		private megahistory.TFSWorkspaces _workspaces;
+		
 		public Form1()
 		{
 			InitializeComponent();
 			treeListView1.CanExpandGetter = branch_order.TreeItem.HasChildren;
 			treeListView1.ChildrenGetter = branch_order.TreeItem.ChildrenGetter;
+			
+			_vcs = megahistory.Utils.GetTFSServer("rnoengtfs");
+			_workspaces = new megahistory.TFSWorkspaces(_vcs);
+			
+			List<string> workspace_names = new List<string>();
+			foreach(Microsoft.TeamFoundation.VersionControl.Client.Workspace w in _workspaces.Workspaces)
+			{ workspace_names.Add(w.DisplayName); }
+			
+			_workspacesCB.DataSource = workspace_names;
 		}
 
 		private void _pathSel_Click(object sender, EventArgs e)
@@ -50,10 +62,20 @@ namespace BranchDifferGui
 				{
 					branch_order.TreeItem t1 = treeListView1.GetModelObject(treeListView1.SelectedIndices[0]) as branch_order.TreeItem;
 					branch_order.TreeItem t2 = treeListView1.GetModelObject(treeListView1.SelectedIndices[1]) as branch_order.TreeItem;
-										
-					Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = megahistory.Utils.GetTFSServer("rnoengtfs");
 					
-					megahistory.Utils.VisualDiff(t1.FullPath, t2.FullPath, vcs);
+					/* @todo i need to fix the redundant nature of 'treeitem' and patchinfo ... */
+					string left, right;
+					
+					left = t1.FullPath;
+					right = t2.FullPath;
+					
+					if (_useLocals.Checked)
+					{
+						left = _workspaces.getLocalPath((string)_workspacesCB.SelectedItem, t1.FullPath);
+						right = _workspaces.getLocalPath((string)_workspacesCB.SelectedItem, t2.FullPath);
+					}
+					
+					megahistory.Utils.VisualDiff(left, right, _vcs);
 				}
 		}
 

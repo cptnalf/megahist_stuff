@@ -51,7 +51,7 @@ namespace megahistory
 		}
 		
 		private static System.Text.RegularExpressions.Regex _egsRE = 
-			new System.Text.RegularExpressions.Regex("(.+)/EGS/",
+			new System.Text.RegularExpressions.Regex("(.+)/EGS/(.*)",
 																 System.Text.RegularExpressions.RegexOptions.IgnoreCase |
 																							 System.Text.RegularExpressions.RegexOptions.Compiled);
 		
@@ -64,7 +64,15 @@ namespace megahistory
 			
 			if (match != null)
 				{
-					path_part = match.Groups[1].Value;
+					path_part = match.Groups[2].Value;
+				}
+			else
+				{
+					int idx = path.LastIndexOf("/EGS");
+					if (idx >=0)
+						{
+							path_part = path.Substring(idx + 4);
+						}
 				}
 			
 			return path_part;

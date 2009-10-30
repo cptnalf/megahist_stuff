@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
-using	Microsoft.TeamFoundation.VersionControl.Client;
+using Microsoft.TeamFoundation.VersionControl.Client;
+using System.Linq;
 
 namespace megahistory
 {
@@ -16,6 +17,25 @@ namespace megahistory
 		{
 			_vcs = vcs;
 			_workspaces = vcs.QueryWorkspaces(null, userName, machineName);
+		}
+		
+		public IEnumerable<Workspace> Workspaces { get { return _workspaces; } }
+		
+		public string getLocalPath(string workspaceName, string tfsPath)
+		{
+			string localPath = null;
+			Workspace w = null;
+			var foo =
+				from ws in _workspaces
+				where ws.DisplayName == workspaceName
+				select ws;
+			
+			foreach(Workspace i in foo) { w = i; }
+			
+			localPath = w.TryGetLocalItemForServerItem(tfsPath);
+			if (localPath == null ) { localPath = tfsPath; }
+			
+			return localPath;
 		}
 		
 		public List<string> getLocalPaths(string tfsPath)

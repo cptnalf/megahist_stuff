@@ -31,6 +31,8 @@
 			this.components = new System.ComponentModel.Container();
 			this.treeListView1 = new BrightIdeasSoftware.TreeListView();
 			this._tfsPath = new BrightIdeasSoftware.OLVColumn();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.historyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.button1 = new System.Windows.Forms.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this._pathSel = new System.Windows.Forms.Button();
@@ -41,15 +43,15 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+			this._useLocals = new System.Windows.Forms.CheckBox();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.historyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this._workspacesCB = new System.Windows.Forms.ComboBox();
 			((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
+			this.contextMenuStrip1.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.flowLayoutPanel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.flowLayoutPanel1.SuspendLayout();
-			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// treeListView1
@@ -61,11 +63,11 @@
 			this.treeListView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeListView1.FullRowSelect = true;
 			this.treeListView1.HasCollapsibleGroups = false;
-			this.treeListView1.Location = new System.Drawing.Point(3, 93);
+			this.treeListView1.Location = new System.Drawing.Point(3, 120);
 			this.treeListView1.Name = "treeListView1";
 			this.treeListView1.OwnerDraw = true;
 			this.treeListView1.ShowGroups = false;
-			this.treeListView1.Size = new System.Drawing.Size(440, 251);
+			this.treeListView1.Size = new System.Drawing.Size(440, 224);
 			this.treeListView1.TabIndex = 0;
 			this.treeListView1.UseCompatibleStateImageBehavior = false;
 			this.treeListView1.UseHotItem = true;
@@ -79,6 +81,20 @@
 			this._tfsPath.IsEditable = false;
 			this._tfsPath.Text = "TFS Path";
 			this._tfsPath.Width = 239;
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.historyToolStripMenuItem});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.Size = new System.Drawing.Size(132, 26);
+			// 
+			// historyToolStripMenuItem
+			// 
+			this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
+			this.historyToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+			this.historyToolStripMenuItem.Text = "History...";
+			this.historyToolStripMenuItem.Click += new System.EventHandler(this.historyToolStripMenuItem_Click);
 			// 
 			// button1
 			// 
@@ -173,14 +189,17 @@
 			this.flowLayoutPanel2.Controls.Add(this.textBox2);
 			this.flowLayoutPanel2.Controls.Add(this.button2);
 			this.flowLayoutPanel2.Controls.Add(this.numericUpDown1);
+			this.flowLayoutPanel2.Controls.Add(this._useLocals);
+			this.flowLayoutPanel2.Controls.Add(this._workspacesCB);
 			this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 3);
 			this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-			this.flowLayoutPanel2.Size = new System.Drawing.Size(440, 84);
+			this.flowLayoutPanel2.Size = new System.Drawing.Size(440, 111);
 			this.flowLayoutPanel2.TabIndex = 9;
 			// 
 			// numericUpDown1
 			// 
+			this.flowLayoutPanel2.SetFlowBreak(this.numericUpDown1, true);
 			this.numericUpDown1.Location = new System.Drawing.Point(95, 58);
 			this.numericUpDown1.Name = "numericUpDown1";
 			this.numericUpDown1.Size = new System.Drawing.Size(65, 20);
@@ -190,6 +209,16 @@
             0,
             0,
             0});
+			// 
+			// _useLocals
+			// 
+			this._useLocals.AutoSize = true;
+			this._useLocals.Location = new System.Drawing.Point(3, 87);
+			this._useLocals.Name = "_useLocals";
+			this._useLocals.Size = new System.Drawing.Size(96, 17);
+			this._useLocals.TabIndex = 9;
+			this._useLocals.Text = "Use local copy";
+			this._useLocals.UseVisualStyleBackColor = true;
 			// 
 			// flowLayoutPanel1
 			// 
@@ -201,19 +230,13 @@
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(440, 29);
 			this.flowLayoutPanel1.TabIndex = 9;
 			// 
-			// contextMenuStrip1
+			// _workspacesCB
 			// 
-			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.historyToolStripMenuItem});
-			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(132, 26);
-			// 
-			// historyToolStripMenuItem
-			// 
-			this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
-			this.historyToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
-			this.historyToolStripMenuItem.Text = "History...";
-			this.historyToolStripMenuItem.Click += new System.EventHandler(this.historyToolStripMenuItem_Click);
+			this._workspacesCB.FormattingEnabled = true;
+			this._workspacesCB.Location = new System.Drawing.Point(105, 87);
+			this._workspacesCB.Name = "_workspacesCB";
+			this._workspacesCB.Size = new System.Drawing.Size(148, 21);
+			this._workspacesCB.TabIndex = 10;
 			// 
 			// Form1
 			// 
@@ -224,13 +247,13 @@
 			this.Name = "Form1";
 			this.Text = "Form1";
 			((System.ComponentModel.ISupportInitialize)(this.treeListView1)).EndInit();
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.flowLayoutPanel2.ResumeLayout(false);
 			this.flowLayoutPanel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
 			this.flowLayoutPanel1.ResumeLayout(false);
-			this.contextMenuStrip1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 			}
@@ -252,6 +275,8 @@
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem historyToolStripMenuItem;
+		private System.Windows.Forms.CheckBox _useLocals;
+		private System.Windows.Forms.ComboBox _workspacesCB;
 		}
 	}
 

@@ -191,6 +191,7 @@ namespace tfs_fullhistory
 			object[] args = e.Argument as object[];
 			megahistory.MegaHistory.Options options = new megahistory.MegaHistory.Options();
 			HistoryCollector visitor = new HistoryCollector();
+			visitor.Worker = _worker;
 			
 			tfspath = args[0] as string;
 			changeset =args[1] as string;
@@ -390,7 +391,7 @@ namespace tfs_fullhistory
 					changesetCtrl1.Comment = p.cs.Comment;
 					changesetCtrl1.CreationDate = p.cs.CreationDate;
 					
-					if (p.cs.Changes.Length < 100)
+					if (p.cs.Changes.Length < _changeCntNUD.Value)
 						{
 							/* do the whole thing here. */
 							tables.Changes cngs = new tfs_fullhistory.tables.Changes();
