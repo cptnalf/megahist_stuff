@@ -13,6 +13,7 @@ namespace megahistory
 	 */
 	public class MegaHistory
 	{
+		public static readonly string version = "f998a4d529c1cb415b0efaeb072dd3cda173d3e1";
 		public delegate bool ChangeTypeToConsiderDelegate(Change cng);
 
 		/** what ChangeType(s) do we want to consider when we query for decomposition.
@@ -200,17 +201,17 @@ namespace megahistory
 			/* so, here we might have a few top-level merge changesets. 
 			 * the red-black binary tree sorts the changesets in decending order
 			 */
-			RBDictTree<int,SortedDictionary<int,ChangesetMerge>> merges = 
+			treelib.TreapDict<int,SortedDictionary<int,ChangesetMerge>> merges = 
 				query_merges(_vcs, srcPath, srcVer, target, targetVer, fromVer, toVer, recursionType);
 		
-			RBDictTree<int,SortedDictionary<int,ChangesetMerge>>.iterator it = merges.begin();
+			treelib.TreapDict<int,SortedDictionary<int,ChangesetMerge>>.iterator it = merges.begin();
 		
 			/* walk through the merge changesets
 			 * - this should return only one merge changeset for the recursive calls.
 			 */
 			for(; it != merges.end(); ++it)
 				{
-					int csID = it.value().first;
+					int csID = it.item();
 					try
 						{
 							/* visit the 'target' merge changeset here. 
@@ -235,7 +236,7 @@ namespace megahistory
 									{ continue; }
 							}
 						
-							foreach(KeyValuePair<int,ChangesetMerge> cng in it.value().second)
+							foreach(KeyValuePair<int,ChangesetMerge> cng in it.value())
 								{
 									ChangesetMerge csm = cng.Value;
 									/* now visit each of the children.
@@ -306,13 +307,13 @@ namespace megahistory
 																	/* we got no results from our query, so display the changeset
 																	 * (it won't be displayed otherwise)
 																	 */
-																	_visitor.visit(cs.ChangesetId, child, branches); //, branches);
+																	_visitor.visit(cs.ChangesetId, child, branches);
 																}
 														}
 													else
 														{
 															/* do we want to see it again? */
-															_visitor.visit(cs.ChangesetId, child, branches);//, branches);
+															_visitor.visit(cs.ChangesetId, child, branches);
 														}
 												}
 										}
@@ -337,15 +338,15 @@ namespace megahistory
 			return false == merges.empty();
 		}
 		
-		private RBDictTree<int,SortedDictionary<int,ChangesetMerge>> 
+		private treelib.TreapDict<int,SortedDictionary<int,ChangesetMerge>> 
 			query_merges(VersionControlServer vcs,
 									 string srcPath, VersionSpec srcVer,
 									 string targetPath, VersionSpec targetVer,
 									 VersionSpec fromVer, VersionSpec toVer,
 									 RecursionType recurType)
 		{
-			RBDictTree<int,SortedDictionary<int,ChangesetMerge>> merges = 
-				new RBDictTree<int,SortedDictionary<int,ChangesetMerge>>();
+			treelib.TreapDict<int,SortedDictionary<int,ChangesetMerge>> merges = 
+				new treelib.TreapDict<int,SortedDictionary<int,ChangesetMerge>>();
 
 			++_queries;
 			logger.DebugFormat("query_merges {0}, {1}, {2}, {3}, {4}, {5}",
@@ -363,7 +364,7 @@ namespace megahistory
 					/* group by merged changesets. */
 					for(int i=0; i < mergesrc.Length; ++i)
 						{
-							RBDictTree<int,SortedDictionary<int,ChangesetMerge>>.iterator it = 
+							treelib.TreapDict<int,SortedDictionary<int,ChangesetMerge>>.iterator it = 
 								merges.find(mergesrc[i].TargetVersion);
 						
 							if (merges.end() == it)
@@ -374,7 +375,7 @@ namespace megahistory
 									merges.insert(mergesrc[i].TargetVersion, group);
 								}
 							else
-								{ it.value().second.Add(mergesrc[i].SourceVersion, mergesrc[i]); }
+								{ it.value().Add(mergesrc[i].SourceVersion, mergesrc[i]); }
 						}
 				}
 			catch(Exception e)

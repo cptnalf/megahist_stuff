@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BranchDifferGui")]
+[assembly: AssemblyTitle("itembranchhistory")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("IGT")]
-[assembly: AssemblyProduct("BranchDifferGui")]
-[assembly: AssemblyCopyright("Copyright © IGT 2009")]
+[assembly: AssemblyCompany("Klingon")]
+[assembly: AssemblyProduct("itembranchhistory")]
+[assembly: AssemblyCopyright("Copyright © Klingon 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7c224ae4-e186-41e3-833c-80651308ab4f")]
+[assembly: Guid("e80051f5-2d9a-430e-bce4-ca88201dcad3")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-//[assembly: AssemblyVersion("1.0.0.0")]
-//[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

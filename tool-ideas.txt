@@ -11,3 +11,18 @@ some stuff to think about tool-izing
    but necessary parts:
    work-item list
    comment-pasting from the original changeset.
+
+
+4) tool to help move release-branch fixes to dev
+  - would list your work items (maybe select a query)
+	  then look at the changesets attached to the work items
+		then offer to merge the changes checked in to a workspace on a dev branch (list workspaces?)
+		would then checkout files 
+		  (Warn if they are already checked out, perhaps forbid if they are?)
+		list o' files changed, then walk through a merge of the changed files into the branch
+		
+
+poc's:
+	work item links (find changesets)
+	tfs difference configs
+
