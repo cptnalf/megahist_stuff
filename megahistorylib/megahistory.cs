@@ -35,8 +35,36 @@ namespace megahistory
 				 );
 		}
 
-		static internal log4net.ILog logger = log4net.LogManager.GetLogger("megahistory_logger");
-	
+		internal static log4net.ILog logger = log4net.LogManager.GetLogger("megahistory_logger");
+		
+		internal static void LoadLogger()
+		{
+			if (! logger.Logger.Repository.Configured)
+			{
+				System.Reflection.Assembly asm = 
+					System.Reflection.Assembly.GetExecutingAssembly();
+				System.IO.FileStream fs;
+				
+				try{
+					fs = new System.IO.FileStream(asm.Location+".config", 
+																				System.IO.FileMode.Open, 
+																				System.IO.FileAccess.Read, 
+																				System.IO.FileShare.ReadWrite);
+					log4net.Config.XmlConfigurator.Configure(fs);
+				}
+#if DEBUG
+				catch(Exception e)
+				{
+					int q = 1;
+					q -= 12;
+					if (e.HelpLink == null ) { q +=12; }
+				}
+#else
+				catch(Exception) { }
+#endif
+			}
+		}
+		
 		public class Options
 		{
 			private bool _noRecurse = false;          /**< do we want recursion? */
@@ -69,7 +97,7 @@ namespace megahistory
 
 		public TimeSpan QueryTime { get { return _queryTimer.Total; } }
 		public uint Queries { get { return _queries; } }
-	
+
 		public MegaHistory(VersionControlServer vcs, Visitor visitor)
 		: this(new Options(), vcs, visitor) { }
 	
@@ -79,23 +107,7 @@ namespace megahistory
 			_vcs=vcs;
 			_visitor = visitor;
 			
-			if (! logger.Logger.Repository.Configured)
-			{
-				System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
-				System.IO.FileStream fs;
-				
-				try{
-					fs = new System.IO.FileStream(asm.Location+".config", System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
-					log4net.Config.XmlConfigurator.Configure(fs);
-				} catch(Exception e)
-				{
-					int q = 1;
-					q -= 12;
-				}
-				
-				int j =0;
-				j -= 45;
-			}
+			LoadLogger();
 		}
 		
 		public virtual bool visit(string srcPath, VersionSpec srcVersion, int maxChanges)
@@ -112,7 +124,6 @@ namespace megahistory
 				{
 					Changeset cs = o as Changeset;
 					bool isMerge = false;
-					megahistory.Visitor.PatchInfo commit = null;
 					
 					result &= true;
 					isMerge = Utils.IsMergeChangeset(cs);

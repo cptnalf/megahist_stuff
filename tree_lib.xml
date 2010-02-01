@@ -1,0 +1,1771 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>tree_lib</name>
+    </assembly>
+    <members>
+        <member name="T:treelib.support.iterator`2">
+            <summary>
+            base iterator class
+            <seealso cref="T:treelib.support.iterator_base`1"/>
+            </summary>
+            <typeparam name="Value_T"></typeparam>
+            <typeparam name="Node_T"></typeparam>
+        </member>
+        <member name="F:treelib.support.iterator`2._root">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:treelib.support.iterator`2._nodes">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.support.iterator`2.#ctor">
+            <summary>
+            construct a null iterator
+            calling any function other than 'init' will most likely result in an exception
+            </summary>
+        </member>
+        <member name="M:treelib.support.iterator`2.#ctor(`1)">
+            <summary>
+            an iterator that belongs to a tree
+            THIS IS AN INVALID ITERATOR!
+            call init() to point to the first element.
+            </summary>
+            <param name="t"></param>
+        </member>
+        <member name="M:treelib.support.iterator`2.#ctor(`1,System.Collections.Generic.Stack{`1})">
+            <summary>
+            construct an iterator pointing to a particular node
+            (the top of the stack is the current element)
+            </summary>
+            <param name="t"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.support.iterator`2.node">
+            <summary>the current node.</summary>
+        </member>
+        <member name="M:treelib.support.iterator`2.init">
+            <summary>
+            initializes the iterator to point to the in-order-traversal of the tree.
+            </summary>
+        </member>
+        <member name="M:treelib.support.iterator`2.inc">
+            <summary>
+            since operator++ isn't a definable constraint, we need a stupid function.
+            </summary>
+        </member>
+        <member name="M:treelib.support.iterator`2.op_Increment(treelib.support.iterator{`0,`1})">
+            <summary>
+            increment.
+            </summary>
+            <param name="it"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.iterator`2.Equals(System.Object)">
+            true if they are the equivilant object.
+            false if the object isn't an 'iterator' or if the object isn't the same iterator.
+        </member>
+        <member name="M:treelib.support.iterator`2.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.iterator`2.op_Equality(treelib.support.iterator{`0,`1},treelib.support.iterator{`0,`1})">
+            <summary>
+            default equality comparer
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.iterator`2.op_Inequality(treelib.support.iterator{`0,`1},treelib.support.iterator{`0,`1})">
+            <summary>
+            not-equals comparer
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.support.ITreeNode`1">
+            <summary>
+            interface for a tree node
+            (need to redesign this)
+            </summary>
+            <typeparam name="T">node type.</typeparam>
+        </member>
+        <member name="P:treelib.support.ITreeNode`1.left">
+            <summary>
+            the left side of the tree
+            </summary>
+        </member>
+        <member name="P:treelib.support.ITreeNode`1.right">
+            <summary>
+            the right side of the tree.
+            </summary>
+        </member>
+        <member name="T:treelib.support.Node`1">
+            <summary>
+            a node class for trees
+            </summary>
+        </member>
+        <member name="M:treelib.support.Node`1.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.support.Node`1.#ctor(`0)">
+            <summary>
+            
+            </summary>
+            <param name="i"></param>
+        </member>
+        <member name="M:treelib.support.Node`1.setItem(`0)">
+            <summary>
+            
+            </summary>
+            <param name="i"></param>
+        </member>
+        <member name="M:treelib.support.Node`1.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:treelib.support.Node`1.item">
+            <summary>the item stored here.</summary>
+        </member>
+        <member name="P:treelib.support.Node`1.left">
+            <summary>left side!</summary>
+        </member>
+        <member name="P:treelib.support.Node`1.right">
+            <summary>right side!</summary>
+        </member>
+        <member name="T:treelib.AVLTree`1">
+            <summary>
+            an AVLTree.
+            <seealso cref="T:_avltree.AVLTreeBase`3"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:_avltree.AVLTreeBase`3">
+            <summary>
+            (from wikipedia)
+            
+            In computer science, an AVL tree is a self-balancing binary search tree, 
+            and it is the first such data structure to be invented.[1] In an AVL tree, 
+            the heights of the two child subtrees of any node differ by at most one; therefore, 
+            it is also said to be height-balanced. Lookup, insertion, and deletion all take O(log n) 
+            time in both the average and worst cases, 
+            where n is the number of nodes in the tree prior to the operation. 
+            Insertions and deletions may require the tree to be rebalanced by one or more tree rotation.
+            
+            The AVL tree is named after its two inventors, G.M. Adelson-Velskii and E.M. Landis, 
+            who published it in their 1962 paper "An algorithm for the organization of information."
+            </summary>
+            <typeparam name="Value_T"></typeparam>
+            <typeparam name="Node_T"></typeparam>
+            <typeparam name="Iterator_T"></typeparam>
+        </member>
+        <member name="F:_avltree.AVLTreeBase`3._root">
+            <summary>
+            root of the tree
+            </summary>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3.#ctor">
+            <summary>
+            constructor
+            </summary>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            construct an avl tree with a custom item comparer
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3.empty">
+            <summary>
+            is the tree empty
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3.size">
+            <summary>
+            how many items are in the tree?
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3.clear">
+            <summary>
+            delete contents.
+            </summary>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._clear(`1)">
+            <summary>
+            
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._delta(`1)">
+            <summary>
+            how big is this node?
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._rotl(`1)">
+            <summary>
+            rotate left
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._rotr(`1)">
+            <summary>
+            rotate right
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._balance(`1)">
+            <summary>
+            balance the tree
+            </summary>
+            <param name="self"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._moveRight(`1,`1)">
+            <summary>
+            
+            </summary>
+            <param name="self"></param>
+            <param name="rhs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._insert(`1,`1)">
+            <summary>
+            insert the value into the tree.
+            </summary>
+            <param name="self"></param>
+            <param name="elm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._remove(`1,`0)">
+            <summary>
+            remove the value from the tree.
+            </summary>
+            <param name="self"></param>
+            <param name="elm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_avltree.AVLTreeBase`3._find(`0,System.Collections.Generic.Stack{`1}@)">
+            <summary>
+            stack-based binary search.
+            </summary>
+            <param name="item"></param>
+            <param name="stack"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.support.TreeCollection`1">
+            <summary>
+            a base for a tree-structure collection
+            </summary>
+            <typeparam name="T">type of item being stored</typeparam>
+        </member>
+        <member name="T:treelib.support.Collection`1">
+            <summary>
+            interface for collection classes.
+            </summary>
+            <typeparam name="T">type of item being stored</typeparam>
+        </member>
+        <member name="M:treelib.support.Collection`1.size">
+            <summary>
+            how many items are in the collection?
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.Collection`1.empty">
+            <summary>
+            is the collection empty?
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.Collection`1.clear">
+            <summary>
+            empties the container.
+            'empty()' == true after this call.
+            </summary>
+        </member>
+        <member name="M:treelib.support.Collection`1.begin">
+            <summary>
+            the begining of the collection (walking in order)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.Collection`1.end">
+            <summary>
+            one past the end of the collection
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.TreeCollection`1.insert(`0)">
+            <summary>
+            insert an item into the tree.
+            </summary>
+            <param name="item">value to insert</param>
+        </member>
+        <member name="M:treelib.support.TreeCollection`1.remove(`0)">
+            <summary>
+            remove an item from the tree
+            </summary>
+            <param name="item">value to remove</param>
+        </member>
+        <member name="M:treelib.support.TreeCollection`1.find(`0)">
+            <summary>
+            find the item in the tree
+            </summary>
+            <param name="item">item to find</param>
+            <returns>
+            end iterator, or an iterator pointing to the item in the list.
+            </returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.AVLTree`1.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:treelib.AVLTree`1.begin">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.end">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.insert(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.AVLTree`1.remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.AVLTree`1.find(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.AVLTree`1.iterator">
+            <summary>
+            iterator for an AVLTree.
+            </summary>
+        </member>
+        <member name="T:treelib.support.iterator_base`1">
+            <summary>
+            base for all iterators.
+            </summary>
+            <typeparam name="Value_T"></typeparam>
+        </member>
+        <member name="M:treelib.support.iterator_base`1.item">
+            <summary>
+            the item this iterator points to
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.iterator_base`1.inc">
+            <summary>
+            screw-you c#. wtf is wrong with operators?
+            this is to support generics.
+            to use generics, you need to define constraints.
+            operators cannot be contraints currently.
+            :P
+            </summary>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.#ctor">
+            <summary>
+            end() iterator
+            </summary>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.#ctor(_avltree.Node{`0})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.#ctor(_avltree.Node{`0},System.Collections.Generic.Stack{_avltree.Node{`0}})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.item">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.op_Increment(treelib.AVLTree{`0}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.op_Equality(treelib.AVLTree{`0}.iterator,treelib.AVLTree{`0}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.iterator.op_Inequality(treelib.AVLTree{`0}.iterator,treelib.AVLTree{`0}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.AVLDict`2">
+            <summary>
+            an AVLTree.
+            <seealso cref="T:_avltree.AVLTreeBase`3"/>
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+        </member>
+        <member name="T:treelib.support.TreeDictCollection`2">
+            <summary>
+            dictionary tree collection.
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+        </member>
+        <member name="M:treelib.support.TreeDictCollection`2.begin">
+            <summary>
+            beginning of the dictionary.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.TreeDictCollection`2.end">
+            <summary>
+            end of the dictionary.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.support.TreeDictCollection`2.insert(`0,`1)">
+            <summary>
+            insert an item into the dictionary.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:treelib.support.TreeDictCollection`2.remove(`0)">
+            <summary>
+            remove an item from the dictionary.
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:treelib.support.TreeDictCollection`2.find(`0)">
+            <summary>
+            find an item in the dictionary.
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.AVLDict`2.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:treelib.AVLDict`2.begin">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.end">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.insert(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:treelib.AVLDict`2.remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.AVLDict`2.treelib#support#TreeDictCollection{K@V}#find(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.find(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.AVLDict`2.iterator">
+            <summary>
+            iterator for an AVLTree.
+            </summary>
+        </member>
+        <member name="T:treelib.support.iterator_dict`2">
+            <summary>
+            dictionary iterator.
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+        </member>
+        <member name="M:treelib.support.iterator_dict`2.value">
+            <summary>
+            the value part of the key-value pair
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.#ctor">
+            <summary>
+            end() iterator
+            </summary>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.#ctor(_avltree.DictNode{`0,`1})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.#ctor(_avltree.DictNode{`0,`1},System.Collections.Generic.Stack{_avltree.DictNode{`0,`1}})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.item">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.value">
+            <summary>
+            value part of the key-value pair
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.op_Increment(treelib.AVLDict{`0,`1}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.op_Equality(treelib.AVLDict{`0,`1}.iterator,treelib.AVLDict{`0,`1}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.iterator.op_Inequality(treelib.AVLDict{`0,`1}.iterator,treelib.AVLDict{`0,`1}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:_avltree.Node`1">
+            <summary>
+            base node for an avl tree
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:_avltree.Node`1._left">
+            <summary>
+            left node storage
+            </summary>
+        </member>
+        <member name="F:_avltree.Node`1._right">
+            <summary>
+            right node storage.
+            </summary>
+        </member>
+        <member name="M:_avltree.Node`1.setItem(`0)">
+            <summary>
+            set the value
+            </summary>
+            <param name="i"></param>
+        </member>
+        <member name="M:_avltree.Node`1.#ctor">
+            <summary>
+            constructor
+            </summary>
+        </member>
+        <member name="M:_avltree.Node`1.#ctor(`0)">
+            <summary>
+            construct a node with a value
+            </summary>
+            <param name="i"></param>
+        </member>
+        <member name="M:_avltree.Node`1.GetHashCode">
+            <summary>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:_avltree.Node`1.height">
+            <summary>
+            the height of this node.
+            </summary>
+        </member>
+        <member name="P:_avltree.Node`1.left">
+            <summary>
+            left side of the tree
+            </summary>
+        </member>
+        <member name="P:_avltree.Node`1.right">
+            <summary>
+            right side of the tree
+            </summary>
+        </member>
+        <member name="P:_avltree.Node`1.item">
+            <summary>
+            the value
+            </summary>
+        </member>
+        <member name="T:_avltree.DictNode`2">
+            <summary>
+            dictionary node.
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+        </member>
+        <member name="M:_avltree.DictNode`2.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_avltree.DictNode`2.#ctor(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="k"></param>
+            <param name="v"></param>
+        </member>
+        <member name="P:_avltree.DictNode`2.value">
+            <summary>
+            value part
+            </summary>
+        </member>
+        <member name="P:_avltree.DictNode`2.left">
+            <summary>
+            the left side of the tree.
+            </summary>
+        </member>
+        <member name="P:_avltree.DictNode`2.right">
+            <summary>
+            the right side of the tree.
+            </summary>
+        </member>
+        <member name="T:treelib.Treap`1">
+            <summary>
+            <seealso cref="T:_treap.TreapBase`3"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:_treap.TreapBase`3">
+            <summary>
+               An implementation of a treap data structure.
+            
+               A treap is based upon a randomized binary Tree whose nodes have keys and
+               which also have priorities associated with them in a heap - hence the
+               name (tre)e h(eap).
+            
+               A Tree is a `heap' if each node has a priority such that the priority of
+               each child is greater than the priority of its parent (trees that are heaps
+               can also called "priority queues", and are the basis of a heap sort).
+            
+               The priorities are a means to randomize the Tree. Randomized trees are better
+               balanced (essentially meaning less depth) so that seach time is minimized.
+            
+               Treaps were first introduced by Seidel and Aragon in <blockquote>
+               R. Seidel and C. R. Aragon. Randomized Binary Search Trees.
+               <em>Algorithmica</em>, 16(4/5):464-497, 1996. </blockquote>
+            
+               Most methods run in O(log n) randomized time, where n is the number of keys in
+               the treap. The exceptions are clone() and toString() that run in time
+               proportional to the intCount of their output.
+            
+               This code was was ultimately based upon the Java treap implementation by Stefan Nilsson
+               published in Dr. Dobb's Journal, pp. 40-44, Vol. 267, July 1997
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._RotateLeft(`1)">
+            <summary>
+             RotateLeft
+             Rebalance the tree by rotating the nodes to the left
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._RotateRight(`1)">
+            <summary>
+             RotateRight
+             Rebalance the tree by rotating the nodes to the right
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._DeleteRoot(`1)">
+            <summary>
+             DeleteRoot
+             If one of the children is an empty subtree, remove the root and put the other
+             child in its place. If both children are nonempty, rotate the treapTree at
+             the root so that the child with the smallest priority number comes to the
+             top, then delete the root from the other subtee.
+            
+             NOTE: This method is recursive
+            </summary>
+        </member>
+        <member name="F:_treap.TreapBase`3._comparer">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:_treap.TreapBase`3.#ctor(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="seed"></param>
+        </member>
+        <member name="M:_treap.TreapBase`3.#ctor(System.Collections.Generic.IComparer{`0},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+            <param name="seed"></param>
+        </member>
+        <member name="M:_treap.TreapBase`3.#ctor(System.String)">
+            <summary>
+            construct a treap with the given hashcode.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:_treap.TreapBase`3.#ctor(System.Collections.Generic.IComparer{`0},System.Int32,System.String)">
+            <summary>
+            construct a treap with the given hashcode and seed (for system.random)
+            </summary>
+            <param name="cmp"></param>
+            <param name="seed"></param>
+            <param name="id"></param>
+        </member>
+        <member name="M:_treap.TreapBase`3.empty">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:_treap.TreapBase`3.clear">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.size">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:_treap.TreapBase`3.minNode">
+            <summary>
+             GetMinKey
+             Returns the minimum key value
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.maxNode">
+            <summary>
+             GetMaxKey
+             Returns the maximum key value
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.Equals(System.Object)">
+            <summary>
+             Equals
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.GetHashCode">
+            <summary> HashCode </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3.ToString">
+            <summary> ToString </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._insert(`1)">
+            <summary>
+             Add
+             args: ByVal key As IComparable, ByVal data As Object
+             key is object that implements IComparable interface
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._insertNode(`1,`1)">
+            <summary>
+             InsertNode
+             inserts a node into the tree - note recursive method
+             this method rebalances the tree using the priorities
+            
+             Note: The lower the number, the higher the priority
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._remove(`1)">
+            <summary>
+             Remove
+             removes the key and Object
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._delete(`1,`1)">
+            <summary>
+             Delete
+             deletes a node - note recursive function
+             Deletes works by "bubbling down" the node until it is a leaf, and then
+             pruning it off the tree
+            </summary>
+        </member>
+        <member name="M:_treap.TreapBase`3._find(`1,System.Collections.Generic.Stack{`1}@)">
+            <summary>
+            
+            </summary>
+            <param name="node"></param>
+            <param name="stack"></param>
+            <returns></returns>
+        </member>
+        <member name="P:_treap.TreapBase`3.tree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.Treap`1.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.Treap`1.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:treelib.Treap`1.begin">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.end">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.insert(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.Treap`1.remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.Treap`1.find(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.Treap`1.iterator">
+            <summary>
+            iterator for a treap.
+            <seealso cref="T:treelib.support.iterator`2"/>
+            </summary>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.#ctor(_treap.Node{`0})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.#ctor(_treap.Node{`0},System.Collections.Generic.Stack{_treap.Node{`0}})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.item">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.op_Increment(treelib.Treap{`0}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.op_Equality(treelib.Treap{`0}.iterator,treelib.Treap{`0}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.iterator.op_Inequality(treelib.Treap{`0}.iterator,treelib.Treap{`0}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.TreapDict`2">
+            <summary>
+            dictionary implemented as a treap.
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+        </member>
+        <member name="M:treelib.TreapDict`2.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.TreapDict`2.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:treelib.TreapDict`2.begin">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.end">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.insert(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:treelib.TreapDict`2.remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:treelib.TreapDict`2.find(`0)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.TreapDict`2.iterator">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.#ctor(_treap.DictNode{`0,`1})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.#ctor(_treap.DictNode{`0,`1},System.Collections.Generic.Stack{_treap.DictNode{`0,`1}})">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.item">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.value">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.op_Increment(treelib.TreapDict{`0,`1}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.op_Equality(treelib.TreapDict{`0,`1}.iterator,treelib.TreapDict{`0,`1}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.iterator.op_Inequality(treelib.TreapDict{`0,`1}.iterator,treelib.TreapDict{`0,`1}.iterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:_treap.Node`1">
+            <summary>
+            a treap node.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:_treap.Node`1._left">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:_treap.Node`1._right">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_treap.Node`1.#ctor">
+            <summary>
+            make a null node
+            </summary>
+        </member>
+        <member name="M:_treap.Node`1.#ctor(`0,System.Int32)">
+            <summary>
+            construct a node with an item value and a priority
+            </summary>
+            <param name="i"></param>
+            <param name="p"></param>
+        </member>
+        <member name="M:_treap.Node`1.#ctor(`0)">
+            <summary>
+            construct a node with an item value
+            </summary>
+            <param name="i"></param>
+        </member>
+        <member name="M:_treap.Node`1.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:_treap.Node`1.priority">
+            <summary>
+            the priority of this node
+            </summary>
+        </member>
+        <member name="P:_treap.Node`1.item">
+            <summary>
+            the item stored.
+            </summary>
+        </member>
+        <member name="P:_treap.Node`1.left">
+            <summary>
+            the left side of this tree
+            </summary>
+        </member>
+        <member name="P:_treap.Node`1.right">
+            <summary>
+            the right side of this tree
+            </summary>
+        </member>
+        <member name="T:_treap.DictNode`2">
+            <summary>
+            dictionary node for a treap
+            <seealso cref="T:_treap.Node`1"/>
+            </summary>
+            <typeparam name="K"></typeparam>
+            <typeparam name="V"></typeparam>
+        </member>
+        <member name="M:_treap.DictNode`2.#ctor(`0,`1,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <param name="p"></param>
+        </member>
+        <member name="M:_treap.DictNode`2.#ctor(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="P:_treap.DictNode`2.value">
+            <summary>
+            the value part of the key-value pair
+            </summary>
+        </member>
+        <member name="P:_treap.DictNode`2.left">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:_treap.DictNode`2.right">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:_splaytree.SplayTreeBase`3">
+             <summary>
+            								An implementation of top-down splaying
+            							  D. Sleator &gt;sleator@cs.cmu.edu&lt;
+            												 March 1992
+            
+            	"Splay trees", or "self-adjusting search trees" are a simple and
+            	efficient data structure for storing an ordered set.  The data
+            	structure consists of a binary tree, without parent pointers, and no
+            	additional fields.  It allows searching, insertion, deletion,
+            	deletemin, deletemax, splitting, joining, and many other operations,
+            	all with amortized logarithmic performance.  Since the trees adapt to
+            	the sequence of requests, their performance on real access patterns is
+            	typically even better.  Splay trees are described in a number of texts
+            	and papers [1,2,3,4,5].
+            
+            	The code here is adapted from simple top-down splay, at the bottom of
+            	page 669 of [3].  It can be obtained via anonymous ftp from
+            	spade.pc.cs.cmu.edu in directory /usr/sleator/public.
+            
+            	The chief modification here is that the splay operation works even if the
+            	item being splayed is not in the tree, and even if the tree root of the
+            	tree is NULL.  So the line:
+            
+            															t = splay(i, t);
+            
+            	causes it to search for item with key i in the tree rooted at t.  If it's
+            	there, it is splayed to the root.  If it isn't there, then the node put
+            	at the root is the last one before NULL that would have been reached in a
+            	normal binary search for i.  (It's a neighbor of i in the tree.)  This
+            	allows many other operations to be easily implemented, as shown below.
+            
+            	[1] "Fundamentals of data structures in C", Horowitz, Sahni,
+            			 and Anderson-Freed, Computer Science Press, pp 542-547.
+            	[2] "Data Structures and Their Algorithms", Lewis and Denenberg,
+            			 Harper Collins, 1991, pp 243-251.
+            	[3] "Self-adjusting Binary Search Trees" Sleator and Tarjan,
+            			 JACM Volume 32, No 3, July 1985, pp 652-686.
+            	[4] "Data Structure and Algorithm Analysis", Mark Weiss,
+            			 Benjamin Cummins, 1992, pp 119-130.
+            	[5] "Data Structures, Algorithms, and Performance", Derick Wood,
+            			 Addison-Wesley, 1993, pp 367-375.
+            
+             </summary>
+             <typeparam name="Value_T"></typeparam>
+             <typeparam name="Node_T"></typeparam>
+             <typeparam name="IteratorT"></typeparam>
+        </member>
+        <member name="F:_splaytree.SplayTreeBase`3._comparer">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3.size">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3.empty">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3.clear">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3._splay(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="i"></param>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3._insert(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="i"></param>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:_splaytree.SplayTreeBase`3._delete(`0,`1)">
+            <summary>
+            
+            </summary>
+            <param name="i"></param>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="P:_splaytree.SplayTreeBase`3.tree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:treelib.SplayTree`1">
+            <summary>
+            a splay tree.
+            
+            (from wikipedia)
+            A splay tree is a self-balancing binary search tree with the additional property that 
+            recently accessed elements are quick to access again. It performs basic operations such as insertion, 
+            look-up and removal in O(log(n)) amortized time. For many non-uniform sequences of operations, 
+            splay trees perform better than other search trees, even when the specific pattern of the sequence is unknown. 
+            The splay tree was invented by Daniel Sleator and Robert Tarjan.
+            
+            All normal operations on a binary search tree are combined with one basic operation, called splaying. 
+            Splaying the tree for a certain element rearranges the tree so that the element is placed 
+            at the root of the tree. One way to do this is to first perform a standard binary tree search 
+            for the element in question, and then use tree rotations in a specific fashion to bring the element 
+            to the top. Alternatively, a top-down algorithm can combine the search and the tree reorganization into a single phase.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:treelib.SplayTree`1.#ctor">
+            <summary>
+            create a splaytree
+            </summary>
+        </member>
+        <member name="M:treelib.SplayTree`1.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            construct a splaytree with a custom comparer
+            </summary>
+            <param name="cmp"></param>
+        </member>
+        <member name="M:treelib.SplayTree`1.begin">
+            <summary>
+            the beginning of the tree (an in-order traversal)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.end">
+            <summary>
+            the end of the tree
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.insert(`0)">
+            <summary>
+            insert the item (if it doesn't already exist in the tree)
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.SplayTree`1.remove(`0)">
+            <summary>
+            remove the item (if found)
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:treelib.SplayTree`1.find(`0)">
+            <summary>
+            does the element exist in the tree?
+            </summary>
+            <param name="item"></param>
+            <returns>
+            iterator pointing to the item, or end() if item wasn't found
+            </returns>
+        </member>
+        <member name="T:treelib.SplayTree`1.iterator">
+            <summary>
+            iterator for a splay tree.
+            <seealso cref="T:treelib.support.iterator`2"/>
+            </summary>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.#ctor">
+            <summary>
+            constructor (end iterator)
+            </summary>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.#ctor(treelib.support.Node{`0})">
+            <summary>
+            construct an iterator for the beginning of the tree (in-order traversal)
+            </summary>
+            <param name="r"></param>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.#ctor(treelib.support.Node{`0},System.Collections.Generic.Stack{treelib.support.Node{`0}})">
+            <summary>
+            construct an iterator pointing to a specific node
+            </summary>
+            <param name="r"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.item">
+            <summary>
+            the item we're pointing too
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.op_Increment(treelib.SplayTree{`0}.iterator)">
+            <summary>
+            next
+            </summary>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.op_Equality(treelib.SplayTree{`0}.iterator,treelib.SplayTree{`0}.iterator)">
+            <summary>
+            iterator equality tester
+            <seealso cref="T:treelib.support.iterator`2"/>
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.iterator.op_Inequality(treelib.SplayTree{`0}.iterator,treelib.SplayTree{`0}.iterator)">
+            <summary>
+            are the iterators not equal?
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.path_tst.Node">
+            <summary>
+            a path-based ternary search tree node.
+            </summary>
+        </member>
+        <member name="P:treelib.path_tst.Node.item">
+            <summary>
+            the item stored here.
+            </summary>
+        </member>
+        <member name="P:treelib.path_tst.Node.left">
+            <summary>
+            stuff less than  'item'
+            </summary>
+        </member>
+        <member name="P:treelib.path_tst.Node.right">
+            <summary>
+            stuff greater than item.
+            </summary>
+        </member>
+        <member name="P:treelib.path_tst.Node.eq">
+            <summary>
+            stuff that continues along my path.
+            </summary>
+        </member>
+        <member name="T:treelib.path_tst.Iterator">
+            <summary>
+            an iterator for splitting a path up.
+            </summary>
+        </member>
+        <member name="F:treelib.path_tst.Iterator.End">
+            <summary>
+            the end of any iterator baesd on this one.
+            </summary>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.#ctor(System.String)">
+            <summary>
+            construct a standard path splitting iterator.
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.#ctor(System.String,System.Char)">
+            <summary>
+            construct a custom splitting iterator.
+            </summary>
+            <param name="text"></param>
+            <param name="s"></param>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.#ctor">
+            <summary>
+            constructor for an end iterator.
+            </summary>
+        </member>
+        <member name="M:treelib.path_tst.Iterator._inc">
+            <summary>
+            increment the iterator
+            </summary>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.GetHashCode">
+            <summary>
+            get a (hopefully) custom hash code for this item.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.op_Increment(treelib.path_tst.Iterator)">
+            <summary>
+            go to the next item.
+            </summary>
+            <param name="it"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.op_Equality(treelib.path_tst.Iterator,treelib.path_tst.Iterator)">
+            <summary>
+            equality.
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.op_Inequality(treelib.path_tst.Iterator,treelib.path_tst.Iterator)">
+            <summary>
+            inequality.
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.Iterator.op_Implicit(treelib.path_tst.Iterator)~System.String">
+            <summary>
+            convert this item to a string.
+            </summary>
+            <param name="it"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.path_tst.PathTSTBase`1">
+            <summary>
+            a path ternary search tree.
+            </summary>
+            <typeparam name="IteratorT"></typeparam>
+        </member>
+        <member name="F:treelib.path_tst.PathTSTBase`1._tree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:treelib.path_tst.PathTSTBase`1._search(treelib.path_tst.Node,`0,`0)">
+            <summary>
+            
+            </summary>
+            <param name="root"></param>
+            <param name="ptr"></param>
+            <param name="end"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.PathTSTBase`1._search(`0,`0,System.Collections.Generic.Stack{treelib.path_tst.Node}@)">
+            <summary>
+            
+            </summary>
+            <param name="ptr"></param>
+            <param name="end"></param>
+            <param name="nodes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.path_tst.PathTSTBase`1._insert(treelib.path_tst.Node,`0,`0)">
+            <summary>
+            
+            </summary>
+            <param name="p"></param>
+            <param name="ptr"></param>
+            <param name="end"></param>
+            <returns></returns>
+        </member>
+        <member name="P:treelib.ResLookup.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:ternarysearchtree.Node">
+            <summary>
+            a ternary search tree node.
+            </summary>
+        </member>
+        <member name="P:ternarysearchtree.Node.item">
+            <summary>
+            char here
+            </summary>
+        </member>
+        <member name="P:ternarysearchtree.Node.lokid">
+            <summary>
+            left/less than.
+            </summary>
+        </member>
+        <member name="P:ternarysearchtree.Node.eqkid">
+            <summary>
+            along this node eg 'c' 'a' 't'
+            </summary>
+        </member>
+        <member name="P:ternarysearchtree.Node.hikid">
+            <summary>
+            right greater than.
+            </summary>
+        </member>
+        <member name="T:ternarysearchtree.StrIterator">
+            <summary>
+            an iterator which traverses a string.
+            </summary>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.#ctor">
+            <summary>
+            end iterator.
+            </summary>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.#ctor(System.String)">
+            <summary>
+            iterator for a particular string.
+            </summary>
+            <param name="str"></param>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.Equals(System.Object)">
+            <summary>
+            equality...
+            </summary>
+            <param name="o"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.op_Equality(ternarysearchtree.StrIterator,ternarysearchtree.StrIterator)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.op_Inequality(ternarysearchtree.StrIterator,ternarysearchtree.StrIterator)">
+            <summary>
+            in-equality operator.
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.op_Implicit(ternarysearchtree.StrIterator)~System.Char">
+            <summary>
+            convert ot a char
+            </summary>
+            <param name="it"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.StrIterator.op_Increment(ternarysearchtree.StrIterator)">
+            <summary>
+            move to the next item ...
+            </summary>
+            <param name="it"></param>
+            <returns></returns>
+        </member>
+        <member name="F:ternarysearchtree.StrIterator.End">
+            <summary>
+            static object for end iterators.
+            </summary>
+        </member>
+        <member name="T:ternarysearchtree.ternarysearchtreebase`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="NodeT"></typeparam>
+        </member>
+        <member name="F:ternarysearchtree.ternarysearchtreebase`1._tree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ternarysearchtree.ternarysearchtreebase`1._search(ternarysearchtree.Node,ternarysearchtree.StrIterator)">
+            <summary>
+            
+            </summary>
+            <param name="root"></param>
+            <param name="ptr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.ternarysearchtreebase`1._search(ternarysearchtree.StrIterator,System.Collections.Generic.Stack{`0}@)">
+            <summary>
+            
+            </summary>
+            <param name="ptr"></param>
+            <param name="nodes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ternarysearchtree.ternarysearchtreebase`1._insert(ternarysearchtree.Node,ternarysearchtree.StrIterator)">
+            <summary>
+            
+            </summary>
+            <param name="p"></param>
+            <param name="ptr"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ternarysearchtree.ternarysearchtree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ternarysearchtree.ternarysearchtree.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ternarysearchtree.ternarysearchtree.insert(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+        </member>
+    </members>
+</doc>

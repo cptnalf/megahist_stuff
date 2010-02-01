@@ -51,8 +51,6 @@ public class branch_order
 	public TreeItem get_branches(Options options)
 	{
 		TreeItem root = null;
-		Changeset cs;
-		VersionSpec bhVer;
 		VersionControlServer vcs = options.server;
 		
 		/* i want to collect all of the branches which came from main. */

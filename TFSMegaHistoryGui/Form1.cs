@@ -229,9 +229,21 @@ namespace tfs_fullhistory
 					ver = new ChangesetVersionSpec(changeset);
 				}
 			
-			megahistory.MegaHistory mh = new megahistory.MegaHistory(options, vcs, visitor);
+			Item item = vcs.GetItem(tfspath, ver);
 			
-			mh.visit(tfspath, ver, maxchanges);
+			if (item.ItemType == ItemType.File)
+				{
+					megahistorylib.ItemHistory ih = 
+						new megahistorylib.ItemHistory(vcs, visitor);
+					
+					ih.visit(tfspath, ver, maxchanges);
+				}
+			else
+				{
+					megahistory.MegaHistory mh = new megahistory.MegaHistory(options, vcs, visitor);
+			
+					mh.visit(tfspath, ver, maxchanges);
+				}
 			
 			{
 				long end_ticks = DateTime.Now.Ticks;
