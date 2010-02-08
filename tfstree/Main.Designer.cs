@@ -44,6 +44,7 @@ namespace TFSTree
 				this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 				this.toolStripZoomIn = new System.Windows.Forms.ToolStripButton();
 				this.toolStripZoomOut = new System.Windows.Forms.ToolStripButton();
+				this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 				this.viewer = new Microsoft.Glee.GraphViewerGdi.GViewer();
 				this.contextMenuStripViewer = new System.Windows.Forms.ContextMenuStrip(this.components);
 				this.ctxMenuItemCopyRevisionID = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,7 @@ namespace TFSTree
 				this.statusStripMain = new System.Windows.Forms.StatusStrip();
 				this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
 				this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-				this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+				this.xmldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 				this.menuStripMain.SuspendLayout();
 				this.toolStripMain.SuspendLayout();
 				this.contextMenuStripViewer.SuspendLayout();
@@ -78,7 +79,8 @@ namespace TFSTree
             this.menuItemOpen,
             this.menuItemSave,
             this.toolStripSeparator1,
-            this.menuItemExit});
+            this.menuItemExit,
+            this.xmldirToolStripMenuItem});
 				this.menuItemFile.Name = "menuItemFile";
 				this.menuItemFile.Size = new System.Drawing.Size(35, 20);
 				this.menuItemFile.Text = "&File";
@@ -259,6 +261,16 @@ namespace TFSTree
 				this.toolStripZoomOut.Text = "Zoom Out";
 				this.toolStripZoomOut.Click += new System.EventHandler(this.ToolbarClick);
 				// 
+				// toolStripButton1
+				// 
+				this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+				this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+				this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+				this.toolStripButton1.Name = "toolStripButton1";
+				this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+				this.toolStripButton1.Text = "toolStripButton1";
+				this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+				// 
 				// viewer
 				// 
 				this.viewer.AsyncLayout = false;
@@ -320,15 +332,12 @@ namespace TFSTree
 				this.toolStripProgressBar.Step = 1;
 				this.toolStripProgressBar.Visible = false;
 				// 
-				// toolStripButton1
+				// xmldirToolStripMenuItem
 				// 
-				this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-				this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-				this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-				this.toolStripButton1.Name = "toolStripButton1";
-				this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-				this.toolStripButton1.Text = "toolStripButton1";
-				this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+				this.xmldirToolStripMenuItem.Name = "xmldirToolStripMenuItem";
+				this.xmldirToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+				this.xmldirToolStripMenuItem.Text = "xmldir";
+				this.xmldirToolStripMenuItem.Click += new System.EventHandler(this.xmldirToolStripMenuItem_Click);
 				// 
 				// Main
 				// 
@@ -388,5 +397,6 @@ namespace TFSTree
         private System.Windows.Forms.ContextMenuStrip contextMenuStripViewer;
         private System.Windows.Forms.ToolStripMenuItem ctxMenuItemCopyRevisionID;
 				private System.Windows.Forms.ToolStripButton toolStripButton1;
+				private System.Windows.Forms.ToolStripMenuItem xmldirToolStripMenuItem;
     }
 }

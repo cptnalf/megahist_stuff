@@ -7,7 +7,7 @@ using System.Text;
 namespace TFSTree
 {
 	/// <summary>Database connection to monotone's database.</summary>
-	class Database
+	class Database : IRevisionRepo
 	{
 		/// <summary>Filename of the database.</summary>
 		string filename;
@@ -180,31 +180,34 @@ namespace TFSTree
 
 		/// <summary>Gets branch names.</summary>
 		/// <returns>Branch names.</returns>
-		public List<string> GetBranchNames()
+		public IEnumerable<string> BranchNames
 		{
-			List<string> branches = new List<string>();
-			branches.AddRange(_branches.Keys);
-			
-			return branches;
+			get
+				{
+					List<string> branches = new List<string>();
+					branches.AddRange(_branches.Keys);
+					
+					return branches;
+				}
 		}
 
 		/// <summary>Gets the latest revisions for a branch.</summary>
 		/// <param name="branch">Branch to get revisions from.</param>
 		/// <param name="limit">Maximum number of revisions to get.</param>
 		/// <returns>Revisions.</returns>
-		public Dictionary<string, Revision> GetLatestRevisionIDs(string branch, int limit)
+		public Dictionary<string, Revision> revs(string branch, ulong limit)
 		{
 			Dictionary<string,Revision> revisions = new Dictionary<string,Revision>();
 			
 			if (_branches.ContainsKey(branch))
 				{
 					SortedList<string,Revision> revs = _branches[branch];
-					limit = (limit > revs.Count ? revs.Count : limit);
-					int max = revs.Values.Count-1;
+					limit = (limit > (ulong)revs.Count ? (ulong)revs.Count : limit);
+					ulong max = (ulong)revs.Values.Count-1;
 					
-					for(int i=0; i < limit; ++i)
+					for(ulong i=0; i < limit; ++i)
 						{
-							Revision r = revs.Values[max -i];
+							Revision r = revs.Values[(int)(max -i)];
 							revisions.Add(r.ID, r);
 						}
 				}
@@ -214,7 +217,7 @@ namespace TFSTree
 		/// <summary>Gets a revision.</summary>
 		/// <param name="id">Unique identifier.</param>
 		/// <returns>Revision or null if the unique identifier is invalid.</returns>
-		public Revision GetRevision(string id)
+		public Revision rev(string id)
 		{
 			Revision rev;
 			_revisions.TryGetValue(id, out rev);

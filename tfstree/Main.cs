@@ -15,7 +15,7 @@ namespace TFSTree
 	public partial class Main : Form
 	{
 		/// <summary>Database connection.</summary>
-		Database database;
+		IRevisionRepo database;
 		
 		/// <summary>Active revisions.</summary>
 		Dictionary<string, Revision> revs;
@@ -45,7 +45,7 @@ namespace TFSTree
 						toolStripProgressBar.PerformStep();
 					};
 				
-				_grapher.GetRevisionFx = (revID) => database.GetRevision(revID);
+				_grapher.GetRevisionFx = (revID) => database.rev(revID);
 			}
 		
         /// <summary>Event handler for mouse wheel events.</summary>
@@ -85,18 +85,21 @@ namespace TFSTree
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     Text = "TFSTree - " + Regex.Replace(openFileDialog.FileName, @"^.*\\", "");
-                    database = new Database(openFileDialog.FileName);
-                    List<string> names = database.GetBranchNames();
-                    toolStripBranches.Items.Clear();
-                    if (names.Count > 0)
-                    {
-                        foreach (string name in names)
-                            toolStripBranches.Items.Add(name);
-                        toolStripBranches.SelectedIndex = 0;
-                        InitGUI();
-                        toolStripRefresh.PerformClick();
-                    }
+                    if (database == null )
+											{ database = new Repository(); }
 										
+                    database.load(openFileDialog.FileName);
+                    toolStripBranches.Items.Clear();
+                    
+                    foreach (string name in database.BranchNames)
+											{ toolStripBranches.Items.Add(name); }
+                    
+                    if (toolStripBranches.Items.Count > 0)
+											{
+												toolStripBranches.SelectedIndex = 0;
+												InitGUI();
+												toolStripRefresh.PerformClick();
+											}
 										_grapher.Name = database.FileName;
                 }
             }
@@ -140,9 +143,9 @@ namespace TFSTree
                     {
                         Thread thread = new Thread(delegate()
                         {
-                            File.Copy(database.FileName, saveFileDialog.FileName);
-                            Database db = new Database(saveFileDialog.FileName);
-                            db.Compress();
+														//File.Copy(database.FileName, saveFileDialog.FileName);
+														//IRevisionRepo db = new Repository();
+														//db.Compress();
                         });
                         thread.Start();
                     }
@@ -175,8 +178,8 @@ namespace TFSTree
             {
 							string branch = toolStripBranches.SelectedItem.ToString();
 							
-                revs = database.GetLatestRevisionIDs(branch,
-																										 Int32.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
+                revs = database.revs(branch,
+																		 UInt64.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
 																																																									toolStripLimit.SelectedItem.ToString().IndexOf(' '))));
                 if (revs.Count < 2)
                 {
@@ -207,7 +210,7 @@ namespace TFSTree
 					toolStripProgressBar.Value = 0;
 					toolStripProgressBar.Maximum = revs.Count;
 					
-					Graph g = _grapher.CreateWSG(revisions);//Create(revisions);
+					Graph g = _grapher.Create(revisions);//Create(revisions);
 					toolStripProgressBar.Value = toolStripProgressBar.Maximum;
 					
 					return g;
@@ -225,7 +228,13 @@ namespace TFSTree
             else if (selected is Node)
             {
                 Revision rev = (Revision)((Node)selected).UserData;
-                viewer.SetToolTip(toolTip, rev.Log);
+                string text = rev.Log;
+                
+                if (rev.Parents.Count > 1)
+									{
+										text = string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", rev.ID, rev.Author, rev.Date, rev.Log);
+									}
+                viewer.SetToolTip(toolTip, text);
             }
         }
 
@@ -252,6 +261,33 @@ namespace TFSTree
 				private void toolStripButton1_Click(object sender, EventArgs e)
 				{
 					
+				}
+
+				private void xmldirToolStripMenuItem_Click(object sender, EventArgs e)
+				{
+					FolderBrowserDialog fbd = new FolderBrowserDialog();
+					fbd.Description = "directory where xml-changeset info files are at";
+					
+					if (fbd.ShowDialog() == DialogResult.OK)
+						{
+							Text = "TFSTree - " + Regex.Replace(openFileDialog.FileName, @"^.*\\", "");
+							if (database == null)
+								{ database = new Repository(); }
+							
+							database.loadfolder(fbd.SelectedPath);
+							toolStripBranches.Items.Clear();
+              
+							foreach (string name in database.BranchNames)
+								{ toolStripBranches.Items.Add(name); }
+							
+							if (toolStripBranches.Items.Count > 0)
+								{
+									toolStripBranches.SelectedIndex = 0;
+									InitGUI();
+									toolStripRefresh.PerformClick();
+								}
+							_grapher.Name = database.FileName;
+						}
 				}
     }
 }

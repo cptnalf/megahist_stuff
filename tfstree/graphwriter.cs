@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using Microsoft.Glee.Drawing;
 using Microsoft.Glee.GraphViewerGdi;
+using System.Linq;
 
 namespace TFSTree
 {
