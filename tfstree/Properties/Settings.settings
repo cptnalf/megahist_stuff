@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Monotree.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ProviderName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">System.Data.Odbc</Value>
+    </Setting>
+    <Setting Name="ConnectionString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Driver=SQLite3 ODBC Driver;Database=</Value>
+    </Setting>
+    <Setting Name="RevisionBgColors" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;ff4682b4&lt;/string&gt;
+  &lt;string&gt;ff8fbc8f&lt;/string&gt;
+  &lt;string&gt;ffdc143c&lt;/string&gt;
+  &lt;string&gt;ffb8860b&lt;/string&gt;
+  &lt;string&gt;ffee82ee&lt;/string&gt;
+  &lt;string&gt;ffbdb76b&lt;/string&gt;
+  &lt;string&gt;ffffa500&lt;/string&gt;
+  &lt;string&gt;ff87cefa&lt;/string&gt;
+  &lt;string&gt;ffadff2f&lt;/string&gt;
+  &lt;string&gt;ffcd853f&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="ToLocalTime" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
