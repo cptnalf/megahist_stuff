@@ -29,6 +29,7 @@ namespace TFSTree
 				this.menuItemSave = new System.Windows.Forms.ToolStripMenuItem();
 				this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 				this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
+				this.xmldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 				this.menuItemView = new System.Windows.Forms.ToolStripMenuItem();
 				this.menuItemStatusBar = new System.Windows.Forms.ToolStripMenuItem();
 				this.menuItemTools = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +54,8 @@ namespace TFSTree
 				this.statusStripMain = new System.Windows.Forms.StatusStrip();
 				this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
 				this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-				this.xmldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+				this.saveSnapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+				this.loadSnapshotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 				this.menuStripMain.SuspendLayout();
 				this.toolStripMain.SuspendLayout();
 				this.contextMenuStripViewer.SuspendLayout();
@@ -80,9 +82,11 @@ namespace TFSTree
             this.menuItemSave,
             this.toolStripSeparator1,
             this.menuItemExit,
-            this.xmldirToolStripMenuItem});
+            this.xmldirToolStripMenuItem,
+            this.saveSnapshotToolStripMenuItem,
+            this.loadSnapshotToolStripMenuItem});
 				this.menuItemFile.Name = "menuItemFile";
-				this.menuItemFile.Size = new System.Drawing.Size(35, 20);
+				this.menuItemFile.Size = new System.Drawing.Size(37, 20);
 				this.menuItemFile.Text = "&File";
 				// 
 				// menuItemOpen
@@ -91,7 +95,7 @@ namespace TFSTree
 				this.menuItemOpen.Name = "menuItemOpen";
 				this.menuItemOpen.ShortcutKeyDisplayString = "";
 				this.menuItemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-				this.menuItemOpen.Size = new System.Drawing.Size(177, 22);
+				this.menuItemOpen.Size = new System.Drawing.Size(166, 22);
 				this.menuItemOpen.Text = "&Open ...";
 				this.menuItemOpen.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -102,14 +106,14 @@ namespace TFSTree
 				this.menuItemSave.Name = "menuItemSave";
 				this.menuItemSave.ShortcutKeyDisplayString = "";
 				this.menuItemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-				this.menuItemSave.Size = new System.Drawing.Size(177, 22);
+				this.menuItemSave.Size = new System.Drawing.Size(166, 22);
 				this.menuItemSave.Text = "&Save As ...";
 				this.menuItemSave.Click += new System.EventHandler(this.MenuClick);
 				// 
 				// toolStripSeparator1
 				// 
 				this.toolStripSeparator1.Name = "toolStripSeparator1";
-				this.toolStripSeparator1.Size = new System.Drawing.Size(174, 6);
+				this.toolStripSeparator1.Size = new System.Drawing.Size(163, 6);
 				// 
 				// menuItemExit
 				// 
@@ -117,16 +121,23 @@ namespace TFSTree
 				this.menuItemExit.Name = "menuItemExit";
 				this.menuItemExit.ShortcutKeyDisplayString = "";
 				this.menuItemExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-				this.menuItemExit.Size = new System.Drawing.Size(177, 22);
+				this.menuItemExit.Size = new System.Drawing.Size(166, 22);
 				this.menuItemExit.Text = "E&xit";
 				this.menuItemExit.Click += new System.EventHandler(this.MenuClick);
+				// 
+				// xmldirToolStripMenuItem
+				// 
+				this.xmldirToolStripMenuItem.Name = "xmldirToolStripMenuItem";
+				this.xmldirToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+				this.xmldirToolStripMenuItem.Text = "xmldir";
+				this.xmldirToolStripMenuItem.Click += new System.EventHandler(this.xmldirToolStripMenuItem_Click);
 				// 
 				// menuItemView
 				// 
 				this.menuItemView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemStatusBar});
 				this.menuItemView.Name = "menuItemView";
-				this.menuItemView.Size = new System.Drawing.Size(41, 20);
+				this.menuItemView.Size = new System.Drawing.Size(44, 20);
 				this.menuItemView.Text = "&View";
 				// 
 				// menuItemStatusBar
@@ -135,7 +146,7 @@ namespace TFSTree
 				this.menuItemStatusBar.CheckOnClick = true;
 				this.menuItemStatusBar.CheckState = System.Windows.Forms.CheckState.Checked;
 				this.menuItemStatusBar.Name = "menuItemStatusBar";
-				this.menuItemStatusBar.Size = new System.Drawing.Size(163, 22);
+				this.menuItemStatusBar.Size = new System.Drawing.Size(157, 22);
 				this.menuItemStatusBar.Text = "Show status bar";
 				this.menuItemStatusBar.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -146,7 +157,7 @@ namespace TFSTree
             this.toolStripSeparator2,
             this.menuItemOptions});
 				this.menuItemTools.Name = "menuItemTools";
-				this.menuItemTools.Size = new System.Drawing.Size(44, 20);
+				this.menuItemTools.Size = new System.Drawing.Size(48, 20);
 				this.menuItemTools.Text = "&Tools";
 				// 
 				// menuItemCompress
@@ -155,20 +166,20 @@ namespace TFSTree
 				this.menuItemCompress.Image = global::TFSTree.Properties.Resources.page_white_compressed;
 				this.menuItemCompress.Name = "menuItemCompress";
 				this.menuItemCompress.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-				this.menuItemCompress.Size = new System.Drawing.Size(186, 22);
+				this.menuItemCompress.Size = new System.Drawing.Size(181, 22);
 				this.menuItemCompress.Text = "Compress ...";
 				this.menuItemCompress.Click += new System.EventHandler(this.MenuClick);
 				// 
 				// toolStripSeparator2
 				// 
 				this.toolStripSeparator2.Name = "toolStripSeparator2";
-				this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
+				this.toolStripSeparator2.Size = new System.Drawing.Size(178, 6);
 				// 
 				// menuItemOptions
 				// 
 				this.menuItemOptions.Image = global::TFSTree.Properties.Resources.wrench;
 				this.menuItemOptions.Name = "menuItemOptions";
-				this.menuItemOptions.Size = new System.Drawing.Size(186, 22);
+				this.menuItemOptions.Size = new System.Drawing.Size(181, 22);
 				this.menuItemOptions.Text = "&Options";
 				this.menuItemOptions.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -177,14 +188,14 @@ namespace TFSTree
 				this.menuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemAbout});
 				this.menuItemHelp.Name = "menuItemHelp";
-				this.menuItemHelp.Size = new System.Drawing.Size(40, 20);
+				this.menuItemHelp.Size = new System.Drawing.Size(44, 20);
 				this.menuItemHelp.Text = "&Help";
 				// 
 				// menuItemAbout
 				// 
 				this.menuItemAbout.Image = global::TFSTree.Properties.Resources.user;
 				this.menuItemAbout.Name = "menuItemAbout";
-				this.menuItemAbout.Size = new System.Drawing.Size(114, 22);
+				this.menuItemAbout.Size = new System.Drawing.Size(107, 22);
 				this.menuItemAbout.Text = "&About";
 				this.menuItemAbout.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -301,13 +312,13 @@ namespace TFSTree
 				this.contextMenuStripViewer.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ctxMenuItemCopyRevisionID});
 				this.contextMenuStripViewer.Name = "contextMenuStripViewer";
-				this.contextMenuStripViewer.Size = new System.Drawing.Size(168, 26);
+				this.contextMenuStripViewer.Size = new System.Drawing.Size(164, 26);
 				this.contextMenuStripViewer.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripViewer_Opening);
 				// 
 				// ctxMenuItemCopyRevisionID
 				// 
 				this.ctxMenuItemCopyRevisionID.Name = "ctxMenuItemCopyRevisionID";
-				this.ctxMenuItemCopyRevisionID.Size = new System.Drawing.Size(167, 22);
+				this.ctxMenuItemCopyRevisionID.Size = new System.Drawing.Size(163, 22);
 				this.ctxMenuItemCopyRevisionID.Text = "&Copy Revision ID";
 				this.ctxMenuItemCopyRevisionID.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -332,12 +343,19 @@ namespace TFSTree
 				this.toolStripProgressBar.Step = 1;
 				this.toolStripProgressBar.Visible = false;
 				// 
-				// xmldirToolStripMenuItem
+				// saveSnapshotToolStripMenuItem
 				// 
-				this.xmldirToolStripMenuItem.Name = "xmldirToolStripMenuItem";
-				this.xmldirToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-				this.xmldirToolStripMenuItem.Text = "xmldir";
-				this.xmldirToolStripMenuItem.Click += new System.EventHandler(this.xmldirToolStripMenuItem_Click);
+				this.saveSnapshotToolStripMenuItem.Name = "saveSnapshotToolStripMenuItem";
+				this.saveSnapshotToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+				this.saveSnapshotToolStripMenuItem.Text = "save snapshot";
+				this.saveSnapshotToolStripMenuItem.Click += new System.EventHandler(this.saveSnapshotToolStripMenuItem_Click);
+				// 
+				// loadSnapshotToolStripMenuItem
+				// 
+				this.loadSnapshotToolStripMenuItem.Name = "loadSnapshotToolStripMenuItem";
+				this.loadSnapshotToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+				this.loadSnapshotToolStripMenuItem.Text = "load snapshot";
+				this.loadSnapshotToolStripMenuItem.Click += new System.EventHandler(this.loadSnapshotToolStripMenuItem_Click);
 				// 
 				// Main
 				// 
@@ -398,5 +416,7 @@ namespace TFSTree
         private System.Windows.Forms.ToolStripMenuItem ctxMenuItemCopyRevisionID;
 				private System.Windows.Forms.ToolStripButton toolStripButton1;
 				private System.Windows.Forms.ToolStripMenuItem xmldirToolStripMenuItem;
+				private System.Windows.Forms.ToolStripMenuItem saveSnapshotToolStripMenuItem;
+				private System.Windows.Forms.ToolStripMenuItem loadSnapshotToolStripMenuItem;
     }
 }

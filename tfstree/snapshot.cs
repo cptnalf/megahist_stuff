@@ -1,0 +1,204 @@
+
+namespace TFSTree
+{
+	using RevisionCont = treelib.AVLTree<Revision>;
+	using BranchContainer = treelib.AVLTree<string, StringSorterInsensitive>;
+	using ChangesetIdx = treelib.AVLDict<int,Revision,IntSorterDesc>;
+	using BranchChangesets = 
+		treelib.AVLDict<string,treelib.AVLDict<int,Revision,IntSorterDesc>,StringSorterInsensitive>;
+	
+	using FileStream = System.IO.FileStream;
+	using Stream = System.IO.Stream;
+	using FileMode = System.IO.FileMode;
+	using FileAccess = System.IO.FileAccess;
+	using MemoryStream = System.IO.MemoryStream;
+	
+	using XmlSerializer = System.Xml.Serialization.XmlSerializer;
+	
+	public class Snapshot : IRevisionRepo
+	{
+		private static readonly byte[] MAGIC_BYTES = new byte[] { 0,0};
+		
+		private ChangesetIdx _changesetIdx = new ChangesetIdx();
+		private BranchContainer _branches = new BranchContainer();
+		private BranchChangesets _branchChangesets = new BranchChangesets();
+		private string _filename;
+		
+		public Snapshot() { }
+		
+		public Revision rev(string id)
+		{
+			Revision r = null;
+			int csid = System.Int32.Parse(id);
+			ChangesetIdx.iterator it = _changesetIdx.find(csid);
+			if (it != _changesetIdx.end()) { r = it.value(); }
+			return r;
+		}
+		
+		public string FileName { get { return _filename; } }
+		
+		public System.Collections.Generic.IEnumerable<string> BranchNames
+		{ get { return _branches; } }
+		
+		public System.Collections.Generic.Dictionary<string,Revision> revs(string branch, 
+																																			 ulong limit)
+		{
+			System.Collections.Generic.Dictionary<string,Revision> revisions = 
+				new System.Collections.Generic.Dictionary<string,Revision>();
+			
+			BranchChangesets.iterator it = _branchChangesets.find(branch);
+			if (it != _branchChangesets.end())
+				{
+					ulong count = (it.value().size() > limit) ? limit : it.value().size();
+					ChangesetIdx.iterator csit = it.value().begin();
+					
+					for(ulong i=0; i < count; ++i, ++csit)
+						{
+							if (csit == it.value().end()) { break; }
+							revisions.Add(csit.value().ID, csit.value());
+						}
+				}
+			
+			return revisions;
+		}
+			
+		public void save(string filename, string branch, Microsoft.Glee.Drawing.Graph graph)
+		{
+			/* create the snapshot */
+			
+			Stream w = new FileStream(filename, FileMode.Create, FileAccess.Write);
+			byte[] bytes = System.Text.Encoding.UTF8.GetBytes(branch);
+			
+			w.Write(bytes, 0, bytes.Length);
+			w.Write(MAGIC_BYTES, 0, MAGIC_BYTES.Length);
+			
+			RevisionCont revisions = _getRevisions(graph);
+			XmlSerializer s = new XmlSerializer(typeof(Revision));
+			
+			RevisionCont.iterator it = revisions.begin();
+			for(; it != revisions.end(); ++it)
+				{
+					s.Serialize(w, it.item());
+					w.Write(MAGIC_BYTES, 0, MAGIC_BYTES.Length);
+				}
+			
+			w.Flush();
+			w.Close();
+		}
+		
+		public void loadfolder(string filename) { throw new System.NotImplementedException(); }
+		
+		public void load(string filename)
+		{
+			_filename = filename;
+			
+			using (Stream r = new FileStream(filename, FileMode.Open, FileAccess.Read))
+				{
+					XmlSerializer s = new XmlSerializer(typeof(Revision));
+					Revision rev = null;
+					string branch = null;
+					MemoryStream strm;
+					
+					strm = _readBytes(r);
+					if (strm != null)
+						{
+							branch = System.Text.Encoding.UTF8.GetString(strm.ToArray());
+							strm = null;
+						}
+					else { throw new System.Exception("branch name not found!"); }
+					
+					_branches.insert(branch);
+					
+					do {
+						strm = _readBytes(r);
+						if (strm != null)
+							{
+								rev = s.Deserialize(strm) as Revision;
+					 
+								if (rev != null)
+									{
+										int csid = System.Int32.Parse(rev.ID);
+										ChangesetIdx.iterator csit = _changesetIdx.find(csid);
+										
+										if (csit == _changesetIdx.end())
+											{
+												BranchChangesets.iterator bit = _branchChangesets.find(rev.Branch);
+												
+												/* insert the changeset into the changeset index. */
+												_changesetIdx.insert(csid, rev);
+												
+												/* now plop it into the branch-changesets index. */
+												if (bit != _branchChangesets.end())
+													{
+														bit.value().insert(csid, rev);
+													}
+												else
+													{
+														ChangesetIdx csidx = new ChangesetIdx();
+														csidx.insert(csid, rev);
+														_branchChangesets.insert(rev.Branch, csidx);
+													}
+											}
+									}
+							}
+					}	while( strm != null);
+					
+					r.Close();
+				}
+		}
+		
+		private MemoryStream _readBytes(Stream r)
+		{
+			/* i would need to chunk this up. */
+			MemoryStream strm = new MemoryStream();
+			byte[] b = new byte[1];
+			bool seen = false;
+			byte[] zero = new byte[] {0};
+			
+			while(0 < r.Read(b, 0, 1))
+				{
+					if (seen)
+						{
+							if (b[0] == 0) { break; }
+							else
+								{
+									/* write the zero byte we found back out to the stream
+									 * before we process the byte we just got.
+									 */
+									strm.Write(zero, 0, zero.Length);
+								}
+						}
+					
+					if (b[0] == 0) {	seen = true; }
+					else           { strm.Write(b, 0, 1); }
+				}
+			
+			strm.Flush();
+			
+			if (strm.Length > 0) { strm.Seek(0, System.IO.SeekOrigin.Begin); }
+			else
+				{
+					/* destroy the stream, return null. */
+					strm.Close(); 
+					strm = null;
+				}
+			
+			return strm;
+		}
+		
+		private RevisionCont _getRevisions(Microsoft.Glee.Drawing.Graph graph)
+		{
+			RevisionCont revisions = new RevisionCont();
+			foreach(object val in graph.NodeMap.Values)
+				{
+					Microsoft.Glee.Drawing.DrawingObject obj = val as Microsoft.Glee.Drawing.DrawingObject;
+					if (obj != null)
+						{
+							Revision r = obj.UserData as Revision;
+							if (r != null) { revisions.insert(r); }
+						}
+				}
+			return revisions;
+		}
+	}
+}

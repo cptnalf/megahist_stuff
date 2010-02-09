@@ -47,6 +47,23 @@ namespace TFSTree
 				
 				_grapher.GetRevisionFx = (revID) => database.rev(revID);
 			}
+
+		private void _init(IRevisionRepo repo)
+		{
+			database = repo;
+			toolStripBranches.Items.Clear();
+
+			foreach (string name in database.BranchNames)
+				{ toolStripBranches.Items.Add(name); }
+
+			if (toolStripBranches.Items.Count > 0)
+				{
+					toolStripBranches.SelectedIndex = 0;
+					InitGUI();
+					toolStripRefresh.PerformClick();
+				}
+			_grapher.Name = database.FileName;
+		}
 		
         /// <summary>Event handler for mouse wheel events.</summary>
         void viewer_MouseWheel(object sender, MouseEventArgs e)
@@ -89,18 +106,7 @@ namespace TFSTree
 											{ database = new Repository(); }
 										
                     database.load(openFileDialog.FileName);
-                    toolStripBranches.Items.Clear();
-                    
-                    foreach (string name in database.BranchNames)
-											{ toolStripBranches.Items.Add(name); }
-                    
-                    if (toolStripBranches.Items.Count > 0)
-											{
-												toolStripBranches.SelectedIndex = 0;
-												InitGUI();
-												toolStripRefresh.PerformClick();
-											}
-										_grapher.Name = database.FileName;
+                    _init(database);
                 }
             }
             else if (sender == menuItemSave)
@@ -287,6 +293,37 @@ namespace TFSTree
 									toolStripRefresh.PerformClick();
 								}
 							_grapher.Name = database.FileName;
+						}
+				}
+
+				private void saveSnapshotToolStripMenuItem_Click(object sender, EventArgs e)
+				{
+					if (viewer.Graph != null)
+						{
+							saveFileDialog.DefaultExt = ".tfsnapshot";
+							saveFileDialog.Filter = "TFSTree Snapshots|*.tfsnapshot";
+							saveFileDialog.OverwritePrompt = true;
+							saveFileDialog.SupportMultiDottedExtensions = true;
+							saveFileDialog.Title = "Save TFSTree Snapshot";
+							if (saveFileDialog.ShowDialog() == DialogResult.OK)
+								{
+									Snapshot snapshot = new Snapshot();
+									snapshot.save(saveFileDialog.FileName, 
+									              (string)toolStripBranches.SelectedItem, viewer.Graph);
+									snapshot = null;
+								}
+						}
+				}
+
+				private void loadSnapshotToolStripMenuItem_Click(object sender, EventArgs e)
+				{
+					openFileDialog.Title = "Open TFSTree Snapshot";
+					if (openFileDialog.ShowDialog() == DialogResult.OK)
+						{
+							Snapshot snapshot = new Snapshot();
+							snapshot.load(openFileDialog.FileName);
+							
+							_init(snapshot);
 						}
 				}
     }

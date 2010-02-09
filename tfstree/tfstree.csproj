@@ -75,9 +75,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
-    <Reference Include="tree_lib, Version=1.0.526.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="tree_lib, Version=1.0.536.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\source\tree_lib\Release\tree_lib.dll</HintPath>
+      <HintPath>..\tree_lib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +164,7 @@
       <DependentUpon>PropertyPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Revision.cs" />
+    <Compile Include="snapshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\folder_page.png" />
