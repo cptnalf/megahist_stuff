@@ -6,26 +6,6 @@ using System.Xml.Serialization;
 
 namespace TFSTree
 {
-	public class IntSorterDesc : IComparer<int>
-	{
-		public int Compare(int one, int two)
-		{
-			return two.CompareTo(one);
-		}
-		
-		public int Compare(object one, object two)
-		{ return this.Compare((int)one, (int)two); }
-	}
-	
-	public class StringSorterInsensitive : IComparer<string>
-	{
-		public int Compare(string one, string two)
-		{ return string.Compare(one, two, StringComparison.InvariantCultureIgnoreCase); }
-		
-		public int Compare(object one, object two)
-		{ return this.Compare(one as string, two as string); }
-	}
-	
 	/// <summary>A revision in monotone.</summary>
 	[XmlRoot("revision")]
 	public class Revision : IComparable<Revision>

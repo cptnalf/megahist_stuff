@@ -3330,5 +3330,47 @@
             the right side of the tree.
             </summary>
         </member>
+        <member name="T:treelib.IntSorterDesc">
+            <summary>
+            descending int sorter.
+            </summary>
+        </member>
+        <member name="M:treelib.IntSorterDesc.Compare(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.IntSorterDesc.Compare(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.StringSorterInsensitive">
+            <summary>
+            case insenstive string sorter.
+            </summary>
+        </member>
+        <member name="M:treelib.StringSorterInsensitive.Compare(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.StringSorterInsensitive.Compare(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

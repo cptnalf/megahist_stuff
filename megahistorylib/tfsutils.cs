@@ -55,6 +55,24 @@ namespace megahistory
 																 System.Text.RegularExpressions.RegexOptions.IgnoreCase |
 																							 System.Text.RegularExpressions.RegexOptions.Compiled);
 		
+		public static string GetEGSBranch(string fullPath)
+		{
+			string path = string.Empty;
+			System.Text.RegularExpressions.Match match = _egsRE.Match(fullPath);
+			
+			if (match != null)
+				{
+					if (! string.IsNullOrEmpty(match.Groups[1].Value))
+						{ path = match.Groups[1].Value; }
+					else
+						{
+							
+						}
+				}
+			
+			return path;
+		}
+		
 		/** retrieve the base tfs path of the branch.
 		 */
 		public static string GetPathPart(string path)

@@ -69,6 +69,7 @@
     <Compile Include="itemhist.cs" />
     <Compile Include="megahistory.cs" />
     <Compile Include="mergegraph.cs" />
+    <Compile Include="mergehist.cs" />
     <Compile Include="merge_2.cs" />
     <Compile Include="pair.cs" />
     <Compile Include="visitor.cs" />

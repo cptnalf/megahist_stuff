@@ -1,11 +1,11 @@
 
-namespace TFSTree
+namespace TFSTree.Databases
 {
 	using RevisionCont = treelib.AVLTree<Revision>;
-	using BranchContainer = treelib.AVLTree<string, StringSorterInsensitive>;
-	using ChangesetIdx = treelib.AVLDict<int,Revision,IntSorterDesc>;
+	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using ChangesetIdx = treelib.AVLDict<int,Revision,treelib.IntSorterDesc>;
 	using BranchChangesets = 
-		treelib.AVLDict<string,treelib.AVLDict<int,Revision,IntSorterDesc>,StringSorterInsensitive>;
+		treelib.AVLDict<string,treelib.AVLDict<int,Revision,treelib.IntSorterDesc>,treelib.StringSorterInsensitive>;
 	
 	using FileStream = System.IO.FileStream;
 	using Stream = System.IO.Stream;

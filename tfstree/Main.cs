@@ -103,7 +103,7 @@ namespace TFSTree
                 {
                     Text = "TFSTree - " + Regex.Replace(openFileDialog.FileName, @"^.*\\", "");
                     if (database == null )
-											{ database = new Repository(); }
+											{ database = new Databases.FakeTFS(); }
 										
                     database.load(openFileDialog.FileName);
                     _init(database);
@@ -278,7 +278,7 @@ namespace TFSTree
 						{
 							Text = "TFSTree - " + Regex.Replace(openFileDialog.FileName, @"^.*\\", "");
 							if (database == null)
-								{ database = new Repository(); }
+								{ database = new Databases.FakeTFS(); }
 							
 							database.loadfolder(fbd.SelectedPath);
 							toolStripBranches.Items.Clear();
@@ -307,7 +307,7 @@ namespace TFSTree
 							saveFileDialog.Title = "Save TFSTree Snapshot";
 							if (saveFileDialog.ShowDialog() == DialogResult.OK)
 								{
-									Snapshot snapshot = new Snapshot();
+									Databases.Snapshot snapshot = new Databases.Snapshot();
 									snapshot.save(saveFileDialog.FileName, 
 									              (string)toolStripBranches.SelectedItem, viewer.Graph);
 									snapshot = null;
@@ -320,7 +320,7 @@ namespace TFSTree
 					openFileDialog.Title = "Open TFSTree Snapshot";
 					if (openFileDialog.ShowDialog() == DialogResult.OK)
 						{
-							Snapshot snapshot = new Snapshot();
+							Databases.Snapshot snapshot = new Databases.Snapshot();
 							snapshot.load(openFileDialog.FileName);
 							
 							_init(snapshot);

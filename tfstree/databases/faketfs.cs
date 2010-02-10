@@ -1,5 +1,5 @@
 
-namespace TFSTree
+namespace TFSTree.Databases
 {
 	/*
 	 * 
@@ -7,10 +7,10 @@ namespace TFSTree
 6) 
 	 */
 	using RevisionCont = treelib.AVLTree<Revision>;
-	using BranchContainer = treelib.AVLTree<string, StringSorterInsensitive>;
-	using ChangesetIdx = treelib.AVLDict<int,Revision,IntSorterDesc>;
+	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using ChangesetIdx = treelib.AVLDict<int,Revision,treelib.IntSorterDesc>;
 	using BranchChangesets = 
-		treelib.AVLDict<string,treelib.AVLDict<int,Revision,IntSorterDesc>,StringSorterInsensitive>;
+		treelib.AVLDict<string,treelib.AVLDict<int,Revision,treelib.IntSorterDesc>,treelib.StringSorterInsensitive>;
 	using ChangesetCont = treelib.AVLTree<ChangesetLoader.Changeset>;
 	
 	using FileStream = System.IO.FileStream;
@@ -21,18 +21,18 @@ namespace TFSTree
 	
 	using XmlSerializer = System.Xml.Serialization.XmlSerializer;
 	
-	public class Repository : IRevisionRepo
+	public class FakeTFS : IRevisionRepo
 	{
-		private treelib.AVLDict<string,string, StringSorterInsensitive> _branchMap;
+		private treelib.AVLDict<string,string, treelib.StringSorterInsensitive> _branchMap;
 		
 		private ChangesetIdx _changesetIdx = new ChangesetIdx();
 		private BranchContainer _branches = new BranchContainer();
 		private BranchChangesets _branchChangesets = new BranchChangesets();
 		private string _filename;
 		
-		public Repository()
+		public FakeTFS()
 		{
-			_branchMap = new treelib.AVLDict<string,string, StringSorterInsensitive>();
+			_branchMap = new treelib.AVLDict<string,string, treelib.StringSorterInsensitive>();
 			
 			_branchMap.insert("$/IGT_0803/development/dev_advantage/EGS/", "devadv");
 			_branchMap.insert("$/IGT_0803/release/EGS8.1/SP2/RTM/EGS/", "81sp2rtm");
@@ -256,7 +256,7 @@ namespace TFSTree
 					foreach(string b1 in it.item().Branches)
 						{
 							string branch = b1;
-							treelib.AVLDict<string,string, StringSorterInsensitive>.iterator bmit =
+							treelib.AVLDict<string,string, treelib.StringSorterInsensitive>.iterator bmit =
 								_branchMap.find(branch);
 							
 							if (bmit != _branchMap.end()) { branch = bmit.value(); }
