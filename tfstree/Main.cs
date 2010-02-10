@@ -60,7 +60,7 @@ namespace TFSTree
 				{
 					toolStripBranches.SelectedIndex = 0;
 					InitGUI();
-					toolStripRefresh.PerformClick();
+					//toolStripRefresh.PerformClick();
 				}
 			_grapher.Name = database.FileName;
 		}
@@ -325,6 +325,14 @@ namespace TFSTree
 							
 							_init(snapshot);
 						}
+				}
+
+				private void newBtn_Click(object sender, EventArgs e)
+				{
+					database = new Databases.TFSDB();
+					database.load(_serverNameTB.Text);
+					
+					_init(database);
 				}
     }
 }

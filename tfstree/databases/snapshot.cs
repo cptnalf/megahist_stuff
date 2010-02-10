@@ -2,11 +2,9 @@
 namespace TFSTree.Databases
 {
 	using RevisionCont = treelib.AVLTree<Revision>;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
-	using ChangesetIdx = treelib.AVLDict<int,Revision,treelib.IntSorterDesc>;
-	using BranchChangesets = 
-		treelib.AVLDict<string,treelib.AVLDict<int,Revision,treelib.IntSorterDesc>,treelib.StringSorterInsensitive>;
-	
+	using BranchChangesets =
+		treelib.AVLDict<string, treelib.AVLDict<int, Revision, treelib.IntSorterDesc>, treelib.StringSorterInsensitive>;
+
 	using FileStream = System.IO.FileStream;
 	using Stream = System.IO.Stream;
 	using FileMode = System.IO.FileMode;
@@ -15,49 +13,20 @@ namespace TFSTree.Databases
 	
 	using XmlSerializer = System.Xml.Serialization.XmlSerializer;
 	
-	public class Snapshot : IRevisionRepo
+	public class Snapshot : RevisionRepoBase, IRevisionRepo
 	{
 		private static readonly byte[] MAGIC_BYTES = new byte[] { 0,0};
 		
-		private ChangesetIdx _changesetIdx = new ChangesetIdx();
-		private BranchContainer _branches = new BranchContainer();
-		private BranchChangesets _branchChangesets = new BranchChangesets();
 		private string _filename;
 		
 		public Snapshot() { }
 		
-		public Revision rev(string id)
-		{
-			Revision r = null;
-			int csid = System.Int32.Parse(id);
-			ChangesetIdx.iterator it = _changesetIdx.find(csid);
-			if (it != _changesetIdx.end()) { r = it.value(); }
-			return r;
-		}
-		
 		public string FileName { get { return _filename; } }
-		
-		public System.Collections.Generic.IEnumerable<string> BranchNames
-		{ get { return _branches; } }
 		
 		public System.Collections.Generic.Dictionary<string,Revision> revs(string branch, 
 																																			 ulong limit)
 		{
-			System.Collections.Generic.Dictionary<string,Revision> revisions = 
-				new System.Collections.Generic.Dictionary<string,Revision>();
-			
-			BranchChangesets.iterator it = _branchChangesets.find(branch);
-			if (it != _branchChangesets.end())
-				{
-					ulong count = (it.value().size() > limit) ? limit : it.value().size();
-					ChangesetIdx.iterator csit = it.value().begin();
-					
-					for(ulong i=0; i < count; ++i, ++csit)
-						{
-							if (csit == it.value().end()) { break; }
-							revisions.Add(csit.value().ID, csit.value());
-						}
-				}
+			System.Collections.Generic.Dictionary<string,Revision> revisions = _getRevisions(branch, limit);
 			
 			return revisions;
 		}
@@ -118,27 +87,8 @@ namespace TFSTree.Databases
 								if (rev != null)
 									{
 										int csid = System.Int32.Parse(rev.ID);
-										ChangesetIdx.iterator csit = _changesetIdx.find(csid);
 										
-										if (csit == _changesetIdx.end())
-											{
-												BranchChangesets.iterator bit = _branchChangesets.find(rev.Branch);
-												
-												/* insert the changeset into the changeset index. */
-												_changesetIdx.insert(csid, rev);
-												
-												/* now plop it into the branch-changesets index. */
-												if (bit != _branchChangesets.end())
-													{
-														bit.value().insert(csid, rev);
-													}
-												else
-													{
-														ChangesetIdx csidx = new ChangesetIdx();
-														csidx.insert(csid, rev);
-														_branchChangesets.insert(rev.Branch, csidx);
-													}
-											}
+										_addRevision(rev.Branch, csid, rev);
 									}
 							}
 					}	while( strm != null);
