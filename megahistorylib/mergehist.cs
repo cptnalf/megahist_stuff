@@ -20,6 +20,23 @@ namespace megahistory
 		private IVisitor<T> _visitor;
 		private VersionControlServer _vcs;
 		
+		private ulong _qc = 0;
+		private Timer _qt = new Timer();
+		
+		private ulong _gic = 0;
+		private Timer _git = new Timer();
+
+		private ulong _gcc = 0;
+		private Timer _gct = new Timer();
+				
+		public ulong QueryCount { get { return _qc; } }
+		public ulong GetItemCount { get { return _gic; } }
+		public ulong GetChangesetCount { get { return _gcc; } }
+		
+		public System.TimeSpan QueryTime { get { return _qt.Total; } }
+		public System.TimeSpan GetItemTime { get { return _git.Total; } }
+		public System.TimeSpan GetChangesetTime { get { return _gct.Total; } }
+		
 		public MergeHist(VersionControlServer vcs, IVisitor<T> visitor)
 		{
 			_vcs = vcs;
@@ -33,14 +50,25 @@ namespace megahistory
 		/// </summary>
 		public void queryMerge(Changeset cs, string targetPath, int distance)
 		{
+			Timer t = new Timer();
+			t.start();
 			VersionSpec targetVer = new ChangesetVersionSpec(cs.ChangesetId);
 
 			/* pull down the item type. 
 			 * i need this to determine params for the querymergedetails call.
 			 */
+			_git.start();
 			Item itm = _vcs.GetItem(targetPath, targetVer, 0, false);
+			_git.stop();
+			++_gic;
 			
 			queryMerge(cs, itm, distance);
+			
+			t.stop();
+			MegaHistory.logger.DebugFormat("qm[{0} queries took {1}]", this.QueryCount, this.QueryTime);
+			MegaHistory.logger.DebugFormat("qm[{0} get items took {1}]", this.GetItemCount, this.GetItemTime);
+			MegaHistory.logger.DebugFormat("qm[{0} get changesets took {1}]", this.GetChangesetCount, this.GetChangesetTime);
+			MegaHistory.logger.DebugFormat("qm[total time {1}]", t.Total);
 		}
 		
 		public void queryMerge(Changeset cs, Item targetItem, int distance)
@@ -66,11 +94,14 @@ namespace megahistory
 			if (targetItem.ItemType != ItemType.File) 
 				{ recurType = RecursionType.Full; }
 			
+			_qt.start();
 			mergedetails = 
 				_vcs.QueryMergesWithDetails(srcPath, srcVer, srcDelID,
 																	 targetItem.ServerItem, targetVer, 
 																	 targetItem.DeletionId, 
 																	 fromVer, toVer, recurType);
+			_qt.stop();
+			++_qc;
 			
 			
 			visitedItems = _processDetails(cs.ChangesetId, mergedetails);
@@ -113,7 +144,10 @@ namespace megahistory
 										{
 											MegaHistory.logger.DebugFormat("iqm[{0},{1}]", thisBranch+"/EGS/"+pathPart, it.item());
 											
+											_git.start();
 											itm = _vcs.GetItem(thisBranch + "/EGS/" + pathPart, mergedSrcVer, 0, false);
+											_git.stop();
+											++_gic;
 										}
 									else
 										{
@@ -139,6 +173,7 @@ namespace megahistory
 												itm = _vcs.GetItem(pathsIt.item());
 											}catch(System.Exception) { itm = null; }
 										}
+									++_gic;
 								}
 					
 							/* queue it. */
@@ -152,7 +187,11 @@ namespace megahistory
 					{
 						if (!_visitor.visited(itm.Value.ServerItem, itm.Key))
 							{
+								_gct.start();
 								Changeset newcs = _vcs.GetChangeset(itm.Key);
+								_gct.stop();
+								++_gcc;
+								
 								System.Console.WriteLine("[q={0}, {1}, {2}]", 
 																				 itm.Value.ServerItem, 
 																				 itm.Key, itm.Value.DeletionId);

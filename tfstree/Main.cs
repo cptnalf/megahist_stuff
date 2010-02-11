@@ -34,6 +34,8 @@ namespace TFSTree
 			{
 				InitializeComponent();
 				
+				openFileDialog.Filter = "tfs tree files|*.tfstree;*.tfsnapshot;*.xml|All files|*.*";
+				
 				viewer.RemoveToolbar();
 				viewer.OutsideAreaBrush = System.Drawing.Brushes.White;
 				viewer.MouseWheel += new MouseEventHandler(viewer_MouseWheel);
@@ -184,6 +186,17 @@ namespace TFSTree
             {
 							string branch = toolStripBranches.SelectedItem.ToString();
 							
+							if (database is Databases.Snapshot)
+								{
+									Databases.Snapshot snapshot = database as Databases.Snapshot;
+									Graph graph = _grapher.Create(branch, snapshot.BranchChangesets, snapshot.Revisions);
+									viewer.Graph = graph;
+									
+									viewer.ZoomF = Math.Max(graph.Width / viewer.Width, graph.Height/viewer.Height);
+									viewer.Focus();
+								}
+							else
+								{
                 revs = database.revs(branch,
 																		 UInt64.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
 																																																									toolStripLimit.SelectedItem.ToString().IndexOf(' '))));
@@ -199,6 +212,7 @@ namespace TFSTree
                     toolStripProgressBar.Visible = false;
                     viewer.Focus();
                 }
+              }
             }
             else if (sender == toolStripZoomIn)
             {
@@ -216,7 +230,7 @@ namespace TFSTree
 					toolStripProgressBar.Value = 0;
 					toolStripProgressBar.Maximum = revs.Count;
 					
-					Graph g = _grapher.Create(revisions);//Create(revisions);
+					Graph g = _grapher.CreateWSG(revisions);//Create(revisions);
 					toolStripProgressBar.Value = toolStripProgressBar.Maximum;
 					
 					return g;
@@ -333,6 +347,12 @@ namespace TFSTree
 					database.load(_serverNameTB.Text);
 					
 					_init(database);
+				}
+
+				private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+				{
+					viewer.Graph = null;
+					
 				}
     }
 }

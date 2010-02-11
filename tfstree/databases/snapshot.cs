@@ -4,6 +4,7 @@ namespace TFSTree.Databases
 	using RevisionCont = treelib.AVLTree<Revision>;
 	using BranchChangesets =
 		treelib.AVLDict<string, treelib.AVLDict<int, Revision, treelib.IntSorterDesc>, treelib.StringSorterInsensitive>;
+	using RevisionIdx = treelib.AVLDict<int, Revision, treelib.IntSorterDesc>;
 
 	using FileStream = System.IO.FileStream;
 	using Stream = System.IO.Stream;
@@ -18,6 +19,9 @@ namespace TFSTree.Databases
 		private static readonly byte[] MAGIC_BYTES = new byte[] { 0,0};
 		
 		private string _filename;
+		
+		public RevisionIdx Revisions { get { return this._changesetIdx; } }
+		public BranchChangesets BranchChangesets { get { return this._branchChangesets; } }
 		
 		public Snapshot() { }
 		

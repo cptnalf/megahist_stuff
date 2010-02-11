@@ -7,6 +7,10 @@ using Microsoft.Glee.GraphViewerGdi;
 namespace TFSTree
 {
 	using DrwColor = System.Drawing.Color;
+	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using RevisionIdx = treelib.AVLDict<int, Revision, treelib.IntSorterDesc>;
+	using BranchChangesets =
+		treelib.AVLDict<string, treelib.AVLDict<int, Revision, treelib.IntSorterDesc>, treelib.StringSorterInsensitive>;
 
 	internal class Grapher
 	{
@@ -23,6 +27,85 @@ namespace TFSTree
 		{ get { return _colors; } set { _colors = value; } }
 		
 		internal Grapher() { }
+		
+		internal Graph Create(string masterBranch, BranchChangesets branchChangesets, RevisionIdx revisions)
+		{
+			Graph graph = _buildGraph(masterBranch);
+						
+			for(BranchChangesets.iterator it = branchChangesets.begin();
+			    it != branchChangesets.end();
+					++it)
+				{
+					if (it.item() != masterBranch)
+						{
+							//Graph subgraph = _buildGraph(it.item());
+							//graph.AddSubgraph(subgraph);
+							
+							for(RevisionIdx.iterator rit = it.value().begin();
+							    rit != it.value().end();
+							    ++rit)
+								{
+									foreach(string parent in rit.value().Parents)
+										{
+											int revID = int.Parse(parent);
+											RevisionIdx.iterator parRevIt = revisions.find(revID);
+											
+											if (parRevIt != revisions.end())
+												{
+													if (parRevIt.value().Branch == rit.value().Branch)
+														{
+															/* only draw parents which are in this branch. */
+															_drawRev(graph, rit.value(), parRevIt.value());
+														}
+												}
+										}
+								}
+						}
+				}
+			
+			{
+				BranchChangesets.iterator targetIt = branchChangesets.find(masterBranch);
+				
+				if (targetIt != branchChangesets.end())
+					{
+						for(RevisionIdx.iterator rit = targetIt.value().begin();
+						    rit != targetIt.value().end();
+						    ++rit)
+							{
+								/* draw each revision in the target branch. */
+								foreach(string parentID in rit.value().Parents)
+									{
+										int parID = int.Parse(parentID);
+										RevisionIdx.iterator parRevIt = revisions.find(parID);
+										
+										if (parRevIt != revisions.end())
+											{
+												if (parRevIt.value().Branch == rit.value().Branch)
+													{
+														_drawRev(graph, parRevIt.value(), rit.value());
+													}
+												else
+													{
+														Edge edge = graph.AddEdge(parentID, rit.value().ID);
+														edge.Attr.Color = Microsoft.Glee.Drawing.Color.Black;
+														edge.Attr.AddStyle(Style.Dashed);
+														
+														Node node = graph.FindNode(parentID);
+														node.UserData = parRevIt.value();
+														if (node.UserData != null) { FormatNodeFromDifferentBranch(node, parRevIt.value()); }
+														
+														node = graph.FindNode(rit.value().ID);
+														node.UserData = rit.value();
+														FormatNode(node, rit.value());
+													}
+											}
+									}
+							}
+					}
+			}
+			
+			return graph;
+		}
 		
 		/// <summary>Creates the graph for the current branch.</summary>
 		/// <param name="revs">Revisions to create graph for.</param>

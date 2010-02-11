@@ -172,7 +172,7 @@ namespace TFSTree.Databases
 																	cs.Comment);
 			
 			logger.DebugFormat("{0}=>{1}", branch, cs.ChangesetId);
-			
+						
 			ChangesetIdx.iterator csit = _changesetIdx.find(cs.ChangesetId);
 			if (csit == _changesetIdx.end())
 				{
