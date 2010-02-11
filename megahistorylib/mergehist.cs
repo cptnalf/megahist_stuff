@@ -12,6 +12,7 @@ namespace megahistory
 	{
 		T visit(string branch, Changeset cs);
 		void addParent(T data, int parentID);
+		bool visited(string branch, int csID);
 	}
 	
 	public class MergeHist<T>
@@ -23,6 +24,8 @@ namespace megahistory
 		{
 			_vcs = vcs;
 			_visitor = visitor;
+			
+			MegaHistory.LoadLogger();
 		}
 		
 		/// <summary>
@@ -71,8 +74,14 @@ namespace megahistory
 			
 			
 			visitedItems = _processDetails(cs.ChangesetId, mergedetails);
-						
-			data = _visitor.visit(targetItem.ServerItem, cs);
+			
+			{
+				string itemPath = targetItem.ServerItem;
+				if (targetItem.ItemType != ItemType.File) { itemPath += '/'; }
+				
+				MegaHistory.logger.DebugFormat("v[{0}{1}]", itemPath, cs.ChangesetId);
+				data = _visitor.visit(itemPath, cs);
+			}
 			
 			/* now walk the list of compiled changesetid + itempath and 
 			 * construct a versioned item for each that we can actually go and query.
@@ -89,45 +98,67 @@ namespace megahistory
 					//Console.WriteLine("parent: {0}", pair.Key);
 					_visitor.addParent(data, it.item());
 					
-					if (it.value().size() > 1)
+					if ((distance -1) > 0)
 						{
-							/* so, find out what this branch is and use the changeset id. */
-							string thisBranch = Utils.GetEGSBranch(pathsIt.item());
-							string pathPart = Utils.GetPathPart(targetItem.ServerItem);
-						
-							//Console.WriteLine("---- {0} => {1} + {2}", pair.Value.Values[0], thisBranch, pathPart);
-							if (! string.IsNullOrEmpty(thisBranch))
+							/* only query the item info if we're going to do a query on it. */
+							
+							if (it.value().size() > 1)
 								{
-									itm = _vcs.GetItem(thisBranch + "/EGS/" + pathPart, mergedSrcVer, 0, false);
+									/* so, find out what this branch is and use the changeset id. */
+									string thisBranch = Utils.GetEGSBranch(pathsIt.item());
+									string pathPart = Utils.GetPathPart(targetItem.ServerItem);
+									
+									//Console.WriteLine("---- {0} => {1} + {2}", pair.Value.Values[0], thisBranch, pathPart);
+									if (! string.IsNullOrEmpty(thisBranch))
+										{
+											MegaHistory.logger.DebugFormat("iqm[{0},{1}]", thisBranch+"/EGS/"+pathPart, it.item());
+											
+											itm = _vcs.GetItem(thisBranch + "/EGS/" + pathPart, mergedSrcVer, 0, false);
+										}
+									else
+										{
+											System.Console.WriteLine("---[e] {0}", pathsIt.item());
+										}
 								}
 							else
 								{
-									System.Console.WriteLine("---[e] {0}", pathsIt.item());
-								}
-						}
-					else
-						{
-							/* so, this is the only file we noticed for this changeset,
-							 * spawn a new query for just this file (folder?)
-							 */
+									/* so, this is the only file we noticed for this changeset,
+									 * spawn a new query for just this file (folder?)
+									 */
+									
+									MegaHistory.logger.DebugFormat("iq1[{0},{1}]", pathsIt.item(), it.item());
 							
-							itm = _vcs.GetItem(pathsIt.item(), mergedSrcVer, 0, false);
-						}
+									try {
+										itm = _vcs.GetItem(pathsIt.item(), mergedSrcVer, 0, false);
+									} catch(System.Exception ex)
+										{
+											MegaHistory.logger.Fatal("fatal item query:", ex);
+									
+											try{
+												/* try just the path, i doubt this will work either, but *shrug* */
+												itm = _vcs.GetItem(pathsIt.item());
+											}catch(System.Exception) { itm = null; }
+										}
+								}
 					
-					/* queue it. */
-					if (itm != null) { items.Add(new KeyValuePair<int,Item>(it.item(), itm)); }
+							/* queue it. */
+							if (itm != null) { items.Add(new KeyValuePair<int,Item>(it.item(), itm)); }
+						}
 				}
 			
 			{
 				/* run the parent queries. */
 				foreach(KeyValuePair<int,Item> itm in items)
 					{
-						Changeset newcs = _vcs.GetChangeset(itm.Key);
-						System.Console.WriteLine("[q={0}, {1}, {2}]", 
-																		 itm.Value.ServerItem, 
-																		 itm.Key, itm.Value.DeletionId);
-						
-						queryMerge(newcs, itm.Value, (distance-1));
+						if (!_visitor.visited(itm.Value.ServerItem, itm.Key))
+							{
+								Changeset newcs = _vcs.GetChangeset(itm.Key);
+								System.Console.WriteLine("[q={0}, {1}, {2}]", 
+																				 itm.Value.ServerItem, 
+																				 itm.Key, itm.Value.DeletionId);
+								
+								queryMerge(newcs, itm.Value, (distance-1));
+							}
 					}
 			}
 		}

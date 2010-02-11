@@ -73,7 +73,10 @@ namespace TFSTree
 											
 											Node node = (Node)graph.FindNode(parent);
 											node.UserData = this.GetRevisionFx(parent);
-											FormatNodeFromDifferentBranch(node, (Revision)node.UserData);
+											if (node.UserData != null)
+												{
+													FormatNodeFromDifferentBranch(node, (Revision)node.UserData);
+												}
 											
 											node = (Node)graph.FindNode(rev.Key);
 											node.UserData = rev.Value;

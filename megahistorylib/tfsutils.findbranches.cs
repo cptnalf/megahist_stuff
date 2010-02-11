@@ -27,6 +27,8 @@ namespace megahistory
 			
 			++FindChangesetBranchesCalls;
 			
+			MegaHistory.LoadLogger();
+				
 			timer.start();
 			if (cs.Changes.Length > 1000)
 				{
@@ -79,6 +81,7 @@ namespace megahistory
 											if (itemPath.IndexOf("$/IGT_0803/") == 0)
 												{
 #endif
+													MegaHistory.logger.DebugFormat("branch={0}", itemPath);
 													itemBranches.Add(itemPath);
 #if DEBUG
 												}
@@ -200,7 +203,11 @@ namespace megahistory
 																}
 														}
 													
-													if (! reallyFound) { args.itemBranches.Add(itemPath); }
+													if (! reallyFound) 
+														{
+															MegaHistory.logger.DebugFormat("branch={0}", itemPath);
+															args.itemBranches.Add(itemPath); 
+														}
 												}
 												finally { args.rwlock.ReleaseWriterLock(); }
 											} catch(ApplicationException) { /* we lost the lock. */ }
