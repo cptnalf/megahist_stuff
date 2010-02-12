@@ -69,11 +69,19 @@ namespace TFSTree
 						    rit != targetIt.value().end();
 						    ++rit)
 							{
+								GetRevisionFx_T getrevision = 
+								  (parentID) => { 
+									       int parID = int.Parse(parentID);
+									       RevisionIdx.iterator parRevIt = revisions.find(parID);
+									       return (parRevIt != revisions.end() ? parRevIt.value() : null);
+									      };
+								
 								if (rit.value().Parents.Count > 4)
-									{ _printParentsPartial(graph, rit.value(), revisions); }
+									{
+										_printParentsPartial(graph, rit.value(), getrevision);
+									}
 								else 
-									{ _printParentsFull(graph, rit.value(), revisions); }
-
+									{ _printParentsFull(graph, rit.value(), getrevision); }
 							}
 					}
 			}
@@ -81,19 +89,20 @@ namespace TFSTree
 			return graph;
 		}
 		
-		private void _printParentsFull(Graph graph, Revision rev, RevisionIdx revisions)
+		delegate Revision GetRevisionFx_T(string parent);
+		
+		private void _printParentsFull(Graph graph, Revision rev, GetRevisionFx_T getRevisions)
 		{
 			/* draw each revision in the target branch. */
 			foreach(string parentID in rev.Parents)
 				{
-					int parID = int.Parse(parentID);
-					RevisionIdx.iterator parRevIt = revisions.find(parID);
+					Revision parRev = getRevisions(parentID);
 					
-					if (parRevIt != revisions.end())
+					if (parRev != null)
 						{
-							if (parRevIt.value().Branch == rev.Branch)
+							if (parRev.Branch == rev.Branch)
 								{
-									_drawRev(graph, rev, parRevIt.value());
+									_drawRev(graph, rev, parRev);
 								}
 							else
 								{
@@ -102,9 +111,9 @@ namespace TFSTree
 									edge.Attr.AddStyle(Style.Dashed);
 									
 									Node node = graph.FindNode(parentID);
-									node.UserData = parRevIt.value();
+									node.UserData = parRev;
 									if (node.UserData != null)
-										{ FormatNodeFromDifferentBranch(node, parRevIt.value()); }
+										{ FormatNodeFromDifferentBranch(node, parRev); }
 									
 									node = graph.FindNode(rev.ID);
 									node.UserData = rev;
@@ -114,24 +123,21 @@ namespace TFSTree
 				}
 		}
 		
-		private void _printParentsPartial(Graph graph, Revision rev, RevisionIdx revisions)
+		private void _printParentsPartial(Graph graph, Revision rev, GetRevisionFx_T getRevisions)
 		{
 			/* so, let's collapse some of the history. */
 			List<Revision> r = new List<Revision>();
 			
 			foreach(string parent in rev.Parents)
 				{
-					int parID = int.Parse(parent);
-					RevisionIdx.iterator parRevIt = revisions.find(parID);
+					Revision parRev = getRevisions(parent);
 					
-					if (parRevIt != revisions.end())
+					if (parRev != null)
 						{
-							if (parRevIt.value().Branch == rev.Branch)
-								{ _drawRev(graph, rev, parRevIt.value()); }
+							if (parRev.Branch == rev.Branch)
+								{ _drawRev(graph, rev, parRev); }
 							else
-								{
-									r.Add(parRevIt.value());
-								}
+								{ r.Add(parRev); }
 						}
 				}
 			
@@ -239,84 +245,14 @@ namespace TFSTree
 				{
 					if (rev.Value.Parents.Count < 4)
 						{
-							foreach (string parent in rev.Value.Parents)
-								{
-									if (revs.ContainsKey(parent))
-										{
-											_drawRev(graph, revs[parent], rev.Value);
-										}
-									else
-										{
-											Revision parentRev = this.GetRevisionFx(parent);
-											
-											if (parentRev != null && parentRev.Branch == rev.Value.Branch)
-												{
-													_drawRev(graph, parentRev, rev.Value);
-												}
-											else
-												{
-													Edge edge = (Edge)graph.AddEdge(parent, rev.Key);
-													edge.Attr.Color = Microsoft.Glee.Drawing.Color.Black;
-													edge.Attr.AddStyle(Style.Dashed);
-													
-													Node node = (Node)graph.FindNode(parent);
-													node.UserData = this.GetRevisionFx(parent);
-													FormatNodeFromDifferentBranch(node, (Revision)node.UserData);
-													
-													node = (Node)graph.FindNode(rev.Key);
-													node.UserData = rev.Value;
-													FormatNode(node, rev.Value);
-													
-													//_drawRev(graphs, parent);
-												}
-										}
-								}
+							_printParentsFull(graph, rev.Value, (parent) => { return this.GetRevisionFx(parent); } );
 						}
 					else
 						{
+							_printParentsPartial(graph, rev.Value, (parent) => { return this.GetRevisionFx(parent); } );
 							/* so, let's collapse some of the history. */
-							List<Revision> r = new List<Revision>();
-							
-							foreach(string parent in rev.Value.Parents)
-								{
-									Revision parRev = this.GetRevisionFx(parent);
-									
-									if (parRev != null && parRev.Branch == rev.Value.Branch)
-										{ _drawRev(graph, parRev, rev.Value); }
-									else
-										{
-											if (parRev != null) { r.Add(parRev); }
-										}
-								}
-							
-							if (r.Count > 0)
-								{
-									string nodeID = string.Format("others-{0}", rev.Key);
-									Edge edge = (Edge)graph.AddEdge(nodeID, rev.Key);
-									edge.Attr.Color = Microsoft.Glee.Drawing.Color.Black;
-									edge.Attr.AddStyle(Style.Dashed);
-									
-									Node node = (Node)graph.FindNode(nodeID);
-									node.UserData = r;
-									
-									node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.Black;
-									node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.LightGray;
-									node.Attr.LabelMargin = 5;
-									
-									System.Text.StringBuilder bldr = new System.Text.StringBuilder();
-									foreach(Revision rli in r)
-										{
-											bldr.AppendLine(rli.ID);
-										}
-									node.Attr.Label = bldr.ToString();
-									node.Attr.Shape = Shape.Box;
-									
-									node = (Node)graph.FindNode(rev.Key);
-									node.UserData = rev.Value;
-									FormatNode(node, rev.Value);
-								}
 						}
-					
+										
 					if (OnProgress != null) { OnProgress(this, new System.EventArgs()); }
 				}
 			
