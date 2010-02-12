@@ -23,6 +23,8 @@ namespace TFSTree.Databases
 		public RevisionIdx Revisions { get { return this._changesetIdx; } }
 		public BranchChangesets BranchChangesets { get { return this._branchChangesets; } }
 		
+		public event System.EventHandler<ProgressArgs> OnProgress;
+		
 		public Snapshot() { }
 		
 		public string FileName { get { return _filename; } }
@@ -101,6 +103,30 @@ namespace TFSTree.Databases
 				}
 		}
 		
+		
+		public void fixhistory(string branch)
+		{
+			/* find the branch, then add parents for the revision history.
+			 * 
+			 * this just assumes you have the complete history for the branch.
+			 * you may not have the complete history, in which case this might look weird.
+			 */
+			
+			BranchChangesets.iterator bit = _branchChangesets.find(branch);
+			if (bit != _branchChangesets.end())
+				{
+					string prev = null;
+					
+					for(RevisionIdx.iterator it = bit.value().begin();
+							it != bit.value().end();
+							++it)
+						{
+							if (prev != null) { it.value().addParent(prev); }
+							prev = it.value().ID;
+						}
+				}
+		}
+		
 		private MemoryStream _readBytes(Stream r)
 		{
 			/* i would need to chunk this up. */
@@ -154,5 +180,6 @@ namespace TFSTree.Databases
 				}
 			return revisions;
 		}
+		
 	}
 }

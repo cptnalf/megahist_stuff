@@ -1,6 +1,18 @@
 
 namespace TFSTree
 {
+	public class ProgressArgs : System.EventArgs
+	{
+		public int Delta { get; set; }
+		public object Data { get; set; }
+		
+		public ProgressArgs(int delta, object obj)
+		{
+			this.Delta = delta;
+			this.Data = obj;
+		}
+	}
+	
 	public interface IRevisionRepo
 	{
 		string FileName { get; }
@@ -12,5 +24,6 @@ namespace TFSTree
 		void load(string filename);
 		void loadfolder(string filename);
 		
+		event System.EventHandler<ProgressArgs> OnProgress;
 	}
 }

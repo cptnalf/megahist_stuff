@@ -48,6 +48,8 @@ namespace TFSTree.Databases
 		private string _tfsServerName;
 		private VersionControlServer _vcs;
 		
+		public event System.EventHandler<ProgressArgs> OnProgress;
+		
 		internal TFSDB()
 		{
 			if (! logger.Logger.Repository.Configured)
@@ -229,6 +231,7 @@ namespace TFSTree.Databases
 					history.insert(cs);
 				}
 			
+			int i = 0;
 			string prevID = null;
 			for(treelib.AVLTree<Changeset,ChangesetDescSorter>.iterator it = history.begin();
 					it != history.end();
@@ -265,9 +268,11 @@ namespace TFSTree.Databases
 												}
 										}
 								}
-							
-							prevID = cs.ChangesetId.ToString();
 						}
+					
+					if (OnProgress != null) { OnProgress.Invoke(this, new ProgressArgs(i, null)); }
+					prevID = cs.ChangesetId.ToString();
+					++i;
 				}
 		}
 	}

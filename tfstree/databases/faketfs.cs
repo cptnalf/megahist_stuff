@@ -30,6 +30,8 @@ namespace TFSTree.Databases
 		private BranchChangesets _branchChangesets = new BranchChangesets();
 		private string _filename;
 		
+		public event System.EventHandler<ProgressArgs> OnProgress;
+		
 		public FakeTFS()
 		{
 			_branchMap = new treelib.AVLDict<string,string, treelib.StringSorterInsensitive>();

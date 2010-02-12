@@ -247,15 +247,37 @@ namespace TFSTree
             }
             else if (selected is Node)
             {
-                Revision rev = (Revision)((Node)selected).UserData;
-                string text = rev.Log;
-                
-                if (rev.Parents.Count > 1)
+                Revision rev = ((Node)selected).UserData as Revision;
+                string text;
+								
+								if (rev != null)
 									{
-										text = string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", rev.ID, rev.Author, rev.Date, rev.Log);
+										text = rev.Log;
+										
+										if (rev.Parents.Count > 1)
+											{
+												text = string.Format("{0}\r\n{1}\r\n{2}\r\n{3}", 
+																						 rev.ID, rev.Author, rev.Date, rev.Log);
+											}
+										viewer.SetToolTip(toolTip, text);
 									}
-                viewer.SetToolTip(toolTip, text);
-            }
+								else
+									{
+										List<Revision> revisions = ((Node)selected).UserData as List<Revision>;
+										if (revisions != null)
+											{
+												System.Text.StringBuilder bldr = new System.Text.StringBuilder();
+												
+												foreach(Revision rli in revisions)
+													{
+														bldr.AppendLine(rli.ID);
+													}
+												
+												text = bldr.ToString();
+												viewer.SetToolTip(toolTip, text);
+											}
+									}
+						}
         }
 
         /// <summary>Event handlers for mouse clicks in the viewer.</summary>
