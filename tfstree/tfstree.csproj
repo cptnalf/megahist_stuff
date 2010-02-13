@@ -99,6 +99,7 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
+		<Compile Include="AsyncQueue.cs" />
     <Compile Include="Databases\faketfs.cs" />
     <Compile Include="cs_ser_xml\tfsutils.findbranches.cs" />
     <Compile Include="cs_ser_xml\xxxcng.cs" />

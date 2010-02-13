@@ -15,6 +15,13 @@ namespace megahistory
 		bool visited(string branch, int csID);
 	}
 	
+	public class MergeHistQueryRec
+	{
+		public int id { get;set;}
+		public Item item { get;set; }
+		public int distance { get;set; }
+	}
+	
 	public class MergeHist<T>
 	{
 		private IVisitor<T> _visitor;
@@ -28,7 +35,43 @@ namespace megahistory
 
 		private ulong _gcc = 0;
 		private Timer _gct = new Timer();
-				
+		
+		private Item _getItem(string targetPath, int csID, int deletionID, bool downloadInfo)
+		{
+			Timer t = new Timer();
+			VersionSpec targetVer = new ChangesetVersionSpec(csID);
+			
+			t.start();
+			Item itm = _vcs.GetItem(targetPath, targetVer, 0, false);
+			t.stop();
+			
+			lock(_git)
+				{
+					++_gic;
+					_git.TotalT += t.DeltaT;
+				}
+			
+			return itm;
+		}
+		
+		private Item _getItem(string targetPath) { return _vcs.GetItem(targetPath); }
+
+		public Changeset getCS(int csID)
+		{
+			Timer t = new Timer();
+			t.start();
+			Changeset cs = _vcs.GetChangeset(csID);
+			t.stop();
+			
+			lock(_gct)
+				{
+					++_gcc;
+					_gct.TotalT += t.DeltaT;
+				}
+			
+			return cs;
+		}
+		
 		public ulong QueryCount { get { return _qc; } }
 		public ulong GetItemCount { get { return _gic; } }
 		public ulong GetChangesetCount { get { return _gcc; } }
@@ -48,30 +91,28 @@ namespace megahistory
 		/// <summary>
 		/// this function acts as a proxy for the function below it.
 		/// </summary>
-		public void queryMerge(Changeset cs, string targetPath, int distance)
+		public List<MergeHistQueryRec> queryMerge(Changeset cs, string targetPath, int distance)
 		{
 			Timer t = new Timer();
 			t.start();
-			VersionSpec targetVer = new ChangesetVersionSpec(cs.ChangesetId);
-
+			
 			/* pull down the item type. 
 			 * i need this to determine params for the querymergedetails call.
 			 */
-			_git.start();
-			Item itm = _vcs.GetItem(targetPath, targetVer, 0, false);
-			_git.stop();
-			++_gic;
+			Item itm = _getItem(targetPath, cs.ChangesetId, 0, false);
 			
-			queryMerge(cs, itm, distance);
+			List<MergeHistQueryRec> queries = queryMerge(cs, itm, distance);
 			
 			t.stop();
 			MegaHistory.logger.DebugFormat("qm[{0} queries took {1}]", this.QueryCount, this.QueryTime);
 			MegaHistory.logger.DebugFormat("qm[{0} get items took {1}]", this.GetItemCount, this.GetItemTime);
 			MegaHistory.logger.DebugFormat("qm[{0} get changesets took {1}]", this.GetChangesetCount, this.GetChangesetTime);
 			MegaHistory.logger.DebugFormat("qm[total time {1}]", t.Total);
+			
+			return queries;
 		}
 		
-		public void queryMerge(Changeset cs, Item targetItem, int distance)
+		public List<MergeHistQueryRec> queryMerge(Changeset cs, Item targetItem, int distance)
 		{
 			string srcPath = null;
 			VersionSpec srcVer = null;
@@ -89,20 +130,26 @@ namespace megahistory
 			 */
 			
 			/* don't do queries when we've reached the distance limit. */
-			if (distance == 0) { return; }
+			if (distance == 0) { return new List<MergeHistQueryRec>(); }
 			
 			if (targetItem.ItemType != ItemType.File) 
 				{ recurType = RecursionType.Full; }
 			
-			_qt.start();
+			Timer t = new Timer();
+			t.start();
 			mergedetails = 
 				_vcs.QueryMergesWithDetails(srcPath, srcVer, srcDelID,
 																	 targetItem.ServerItem, targetVer, 
 																	 targetItem.DeletionId, 
 																	 fromVer, toVer, recurType);
-			_qt.stop();
-			++_qc;
+			t.stop();
 			
+			lock(_qt)
+				{
+					++_qc;
+					_qt.TotalT += t.DeltaT;
+				}
+			t = null;
 			
 			visitedItems = _processDetails(cs.ChangesetId, mergedetails);
 			
@@ -117,12 +164,11 @@ namespace megahistory
 			/* now walk the list of compiled changesetid + itempath and 
 			 * construct a versioned item for each that we can actually go and query.
 			 */
-			List<KeyValuePair<int,Item>> items = new List<KeyValuePair<int,Item>>();
+			List<MergeHistQueryRec> items = new List<MergeHistQueryRec>();
 			for(ChangesetDict_T.iterator it= visitedItems.begin();
 					it != visitedItems.end();
 					++it)
 				{
-					ChangesetVersionSpec mergedSrcVer = new ChangesetVersionSpec(it.item());
 					Item itm = null;
 					SortedPaths_T.iterator pathsIt = it.value().begin();
 					
@@ -144,10 +190,7 @@ namespace megahistory
 										{
 											MegaHistory.logger.DebugFormat("iqm[{0},{1}]", thisBranch+"/EGS/"+pathPart, it.item());
 											
-											_git.start();
-											itm = _vcs.GetItem(thisBranch + "/EGS/" + pathPart, mergedSrcVer, 0, false);
-											_git.stop();
-											++_gic;
+											itm = _getItem(thisBranch + "/EGS/" + pathPart, it.item(), 0, false);
 										}
 									else
 										{
@@ -163,43 +206,37 @@ namespace megahistory
 									MegaHistory.logger.DebugFormat("iq1[{0},{1}]", pathsIt.item(), it.item());
 							
 									try {
-										itm = _vcs.GetItem(pathsIt.item(), mergedSrcVer, 0, false);
+										itm = _getItem(pathsIt.item(), it.item(), 0, false);
 									} catch(System.Exception ex)
 										{
 											MegaHistory.logger.Fatal("fatal item query:", ex);
 									
 											try{
 												/* try just the path, i doubt this will work either, but *shrug* */
-												itm = _vcs.GetItem(pathsIt.item());
+												itm = _getItem(pathsIt.item());
 											}catch(System.Exception) { itm = null; }
 										}
-									++_gic;
 								}
 					
 							/* queue it. */
-							if (itm != null) { items.Add(new KeyValuePair<int,Item>(it.item(), itm)); }
+							if (itm != null) 
+								{
+									if (!_visitor.visited(itm.ServerItem, it.item()))
+										{
+											MergeHistQueryRec rec = new MergeHistQueryRec
+												{
+													id = it.item(),
+													item = itm,
+													distance = (distance -1),
+												};
+											
+											items.Add(rec);
+										}
+								}
 						}
 				}
 			
-			{
-				/* run the parent queries. */
-				foreach(KeyValuePair<int,Item> itm in items)
-					{
-						if (!_visitor.visited(itm.Value.ServerItem, itm.Key))
-							{
-								_gct.start();
-								Changeset newcs = _vcs.GetChangeset(itm.Key);
-								_gct.stop();
-								++_gcc;
-								
-								System.Console.WriteLine("[q={0}, {1}, {2}]", 
-																				 itm.Value.ServerItem, 
-																				 itm.Key, itm.Value.DeletionId);
-								
-								queryMerge(newcs, itm.Value, (distance-1));
-							}
-					}
-			}
+			return items;
 		}
 		
 		private ChangesetDict_T _processDetails(int csID, ChangesetMergeDetails mergedetails)
