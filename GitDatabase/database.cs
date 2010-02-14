@@ -50,7 +50,7 @@ namespace Git.Database
 		{
 			RevisionIdx revisions = new RevisionIdx();
 			
-			_runCmd.run(string.Format("log {0} -n {1}", _formatArg, limit));
+			_runCmd.run(string.Format("log {0} -{1} {2}", _formatArg, limit, branch));
 			System.IO.StreamReader rdr = _runCmd.rdr();
 			
 			Revision rev = null;

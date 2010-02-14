@@ -5,8 +5,15 @@ namespace Git.Database
 {
 	public class PluginInterface : TFSTree.Databases.IDBPlugin
 	{
+		private FolderBrowserDialog fbd = new FolderBrowserDialog();
+		
+		public PluginInterface()
+		{
+			fbd.Description = "Folder containing the git repository, or container for the repository";
+			fbd.ShowNewFolderButton = false;
+		}
 	#region IDBPlugin Members
-
+		
 		public string internalName { get { return this.GetType().FullName; } }
 		
 		public string Name { get { return "git"; } }
@@ -14,10 +21,6 @@ namespace Git.Database
 		public TFSTree.Databases.IRevisionRepo open()
 		{
 			Database db = null;
-			
-			FolderBrowserDialog fbd = new FolderBrowserDialog();
-			fbd.Description = "Folder containing the git repository, or container for the repository";
-			fbd.ShowNewFolderButton = false;
 			
 			DialogResult result = fbd.ShowDialog();
 			if (result == DialogResult.OK)
