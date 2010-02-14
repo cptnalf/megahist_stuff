@@ -5,21 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TFSTree")]
-[assembly: AssemblyDescription("TFSTree is a viewer for the distributed version control system monotone. As a viewer it loads and reads monotone's database to create reports. As it is a Windows application with a graphical user interface it can help to understand monotone's data easier and more quickly.")]
-
-#if DEBUG
-#if ANYCPU
-[assembly: AssemblyConfiguration("Debug|AnyCPU")]
-#else
-[assembly: AssemblyConfiguration("Debug|??")]
-#endif
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-[assembly: AssemblyCompany("modified (heavily) by SAA and Associates")]
-[assembly: AssemblyProduct("TFSTree")]
-[assembly: AssemblyCopyright("Copyright © 2007 Boris Schaeling")]
+[assembly: AssemblyTitle("TFSTree.DBInterface")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("TFSTree.DBInterface")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("83eb00d4-04e2-4d9c-981c-b00a8cedc83a")]
+[assembly: Guid("f67dc0b1-145e-4be2-a35c-74e9320f2f20")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -38,5 +29,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.4.0.0")]
-//[assembly: AssemblyFileVersion("0.3.0.0")]
+// You can specify all the values or you can default the Build and Revision Numbers 
+// by using the '*' as shown below:
+// [assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

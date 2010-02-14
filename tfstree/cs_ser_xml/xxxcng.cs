@@ -41,19 +41,19 @@ namespace ChangesetLoader
 		[XmlIgnore]
 		public string[] Branches { get; set; }
 		
-		public void buildBranches()
-		{
-			int cnt = this.Changes.Length;
-			StringList branches = TFSTree.Utils.FindChangesetBranches(this);
+		//public void buildBranches()
+		//{
+		//  int cnt = this.Changes.Length;
+		//  StringList branches = TFSTree.Utils.FindChangesetBranches(this);
 			
-			this.Branches = new string[branches.Count];
-			int i =0;
-			foreach(string str in branches)
-				{
-					this.Branches[i] = str;
-					++i;
-				}
-		}
+		//  this.Branches = new string[branches.Count];
+		//  int i =0;
+		//  foreach(string str in branches)
+		//    {
+		//      this.Branches[i] = str;
+		//      ++i;
+		//    }
+		//}
 		
 		public int CompareTo(Changeset c2)
 		{

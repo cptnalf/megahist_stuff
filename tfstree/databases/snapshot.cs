@@ -1,10 +1,11 @@
 
 namespace TFSTree.Databases
 {
-	using RevisionCont = treelib.AVLTree<Revision>;
+	using RevisionCont = treelib.AVLTree<Revision, RevisionSorterDesc>;
+	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using RevisionIdx = treelib.AVLDict<string, Revision>;
 	using BranchChangesets =
-		treelib.AVLDict<string, treelib.AVLDict<int, Revision, treelib.IntSorterDesc>, treelib.StringSorterInsensitive>;
-	using RevisionIdx = treelib.AVLDict<int, Revision, treelib.IntSorterDesc>;
+		treelib.AVLDict<string, treelib.AVLDict<string, Revision>, treelib.StringSorterInsensitive>;
 
 	using FileStream = System.IO.FileStream;
 	using Stream = System.IO.Stream;
@@ -27,16 +28,10 @@ namespace TFSTree.Databases
 		
 		public Snapshot() { }
 		
-		public string FileName { get { return _filename; } }
+		public string Name { get { return _filename; } }
 		
-		public System.Collections.Generic.Dictionary<string,Revision> revs(string branch, 
-																																			 ulong limit)
-		{
-			System.Collections.Generic.Dictionary<string,Revision> revisions = _getRevisions(branch, limit);
-			
-			return revisions;
-		}
-			
+		public void close() { }
+		
 		public void save(string filename, string branch, Microsoft.Glee.Drawing.Graph graph)
 		{
 			/* create the snapshot */
@@ -90,12 +85,7 @@ namespace TFSTree.Databases
 							{
 								rev = s.Deserialize(strm) as Revision;
 					 
-								if (rev != null)
-									{
-										int csid = System.Int32.Parse(rev.ID);
-										
-										_addRevision(rev.Branch, csid, rev);
-									}
+								if (rev != null) { _addRevision(rev); }
 							}
 					}	while( strm != null);
 					

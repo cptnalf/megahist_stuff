@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using System.Xml.Serialization;
 
-namespace TFSTree
+namespace TFSTree.Databases
 {
 	/// <summary>A revision in monotone.</summary>
 	[XmlRoot("revision")]
@@ -57,9 +57,9 @@ namespace TFSTree
 			this._log = log;
 		}
 		
-		public Revision(int id, string branch, string author, DateTime date, string log)
+		public Revision(string id, string branch, string author, DateTime date, string log)
 		{
-			_id = id.ToString();
+			_id = id;
 			_branch = branch;
 			_author = author;
 			_date = date;
@@ -103,6 +103,10 @@ namespace TFSTree
 			set { _log = value; }
 		}
 		
+		/// <summary>
+		/// add a parent, ensuring we're not adding a duplicate
+		/// </summary>
+		/// <param name="id"></param>
 		public void addParent(string id)
 		{
 			bool found = false;
@@ -117,7 +121,12 @@ namespace TFSTree
 		public List<string> Parents { get { return _parents; } }
 
 #region IComparable<Revision> Members
-
+		
+		/// <summary>
+		/// comparable interface implementation.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		public int CompareTo(Revision other)
 		{
 			int result = -1;

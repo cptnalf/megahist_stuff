@@ -108,6 +108,61 @@
             <param name="t"></param>
             <returns></returns>
         </member>
+        <member name="T:treelib.IntSorterDesc">
+            <summary>
+            descending int sorter.
+            </summary>
+        </member>
+        <member name="M:treelib.IntSorterDesc.Compare(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.IntSorterDesc.Compare(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.StringSorterInsensitive">
+            <summary>
+            case insenstive string sorter.
+            </summary>
+        </member>
+        <member name="M:treelib.StringSorterInsensitive.Compare(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.StringSorterInsensitive.Compare(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.StringSorterDesc">
+            <summary>
+            compares two strings, returning an ordering for a decending sort.
+            </summary>
+        </member>
+        <member name="M:treelib.StringSorterDesc.Compare(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
         <member name="T:treelib.support.iterator`2">
             <summary>
             base iterator class
@@ -3329,48 +3384,6 @@
             <summary>
             the right side of the tree.
             </summary>
-        </member>
-        <member name="T:treelib.IntSorterDesc">
-            <summary>
-            descending int sorter.
-            </summary>
-        </member>
-        <member name="M:treelib.IntSorterDesc.Compare(System.Int32,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="one"></param>
-            <param name="two"></param>
-            <returns></returns>
-        </member>
-        <member name="M:treelib.IntSorterDesc.Compare(System.Object,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="one"></param>
-            <param name="two"></param>
-            <returns></returns>
-        </member>
-        <member name="T:treelib.StringSorterInsensitive">
-            <summary>
-            case insenstive string sorter.
-            </summary>
-        </member>
-        <member name="M:treelib.StringSorterInsensitive.Compare(System.String,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="one"></param>
-            <param name="two"></param>
-            <returns></returns>
-        </member>
-        <member name="M:treelib.StringSorterInsensitive.Compare(System.Object,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="one"></param>
-            <param name="two"></param>
-            <returns></returns>
         </member>
     </members>
 </doc>
