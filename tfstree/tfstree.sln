@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFSTree.SQLiteCache", "data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MtnDatabase", "..\MtnDatabase\MtnDatabase.csproj", "{D724AEB6-44AB-4A1D-992F-D3708F6CBD2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitDatabase", "..\GitDatabase\GitDatabase.csproj", "{AA352BED-31DB-4454-8471-80280ECC0170}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,13 @@ Global
 		{D724AEB6-44AB-4A1D-992F-D3708F6CBD2B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D724AEB6-44AB-4A1D-992F-D3708F6CBD2B}.Release|x86.ActiveCfg = Release|x86
 		{D724AEB6-44AB-4A1D-992F-D3708F6CBD2B}.Release|x86.Build.0 = Release|x86
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Debug|x86.ActiveCfg = Debug|x86
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Debug|x86.Build.0 = Debug|x86
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA352BED-31DB-4454-8471-80280ECC0170}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
