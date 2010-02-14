@@ -60,7 +60,7 @@ namespace TFSTree.Databases.SQLiteCache
 		/// <param name="filename"></param>
 		public void load(string filename)
 		{
-			_connStr = string.Format("data source=\"{0}\"", filename);
+			_connStr = string.Format("data source={0}", filename);
 			_revTbl.ConnectionString = _connStr;
 			_parentsTbl.ConnectionString = _connStr;
 		}

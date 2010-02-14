@@ -69,9 +69,9 @@ namespace TFSTree
 				this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
 				this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 				this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
-				this._serverNameTB = new System.Windows.Forms.ToolStripTextBox();
-				this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
 				this._DBTypeBtn = new System.Windows.Forms.ToolStripDropDownButton();
+				this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+				this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 				this.menuStripMain.SuspendLayout();
 				this.toolStripMain.SuspendLayout();
 				this.contextMenuStripViewer.SuspendLayout();
@@ -120,7 +120,7 @@ namespace TFSTree
 				this.menuItemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
 				this.menuItemOpen.Size = new System.Drawing.Size(166, 22);
 				this.menuItemOpen.Text = "&Open ...";
-				this.menuItemOpen.Click += new System.EventHandler(this.MenuClick);
+				this.menuItemOpen.Click += new System.EventHandler(this._newBtn_Click);
 				// 
 				// menuItemSave
 				// 
@@ -131,7 +131,7 @@ namespace TFSTree
 				this.menuItemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
 				this.menuItemSave.Size = new System.Drawing.Size(166, 22);
 				this.menuItemSave.Text = "&Save As ...";
-				this.menuItemSave.Click += new System.EventHandler(this.MenuClick);
+				this.menuItemSave.Click += new System.EventHandler(this._saveImage_Click);
 				// 
 				// toolStripSeparator1
 				// 
@@ -392,6 +392,8 @@ namespace TFSTree
 				// 
 				this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
 				this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._DBTypeBtn,
+            this.toolStripSeparator7,
             this.newBtn,
             this.openToolStripButton,
             this.saveToolStripButton,
@@ -401,12 +403,10 @@ namespace TFSTree
             this.copyToolStripButton,
             this.pasteToolStripButton,
             this.toolStripSeparator4,
-            this.helpToolStripButton,
-            this._serverNameTB,
-            this._DBTypeBtn});
+            this.helpToolStripButton});
 				this.toolStrip1.Location = new System.Drawing.Point(3, 49);
 				this.toolStrip1.Name = "toolStrip1";
-				this.toolStrip1.Size = new System.Drawing.Size(370, 25);
+				this.toolStrip1.Size = new System.Drawing.Size(294, 25);
 				this.toolStrip1.TabIndex = 2;
 				this.toolStrip1.Text = "toolStrip1";
 				// 
@@ -418,7 +418,7 @@ namespace TFSTree
 				this.newBtn.Name = "newBtn";
 				this.newBtn.Size = new System.Drawing.Size(23, 22);
 				this.newBtn.Text = "&New";
-				this.newBtn.Click += new System.EventHandler(this.newBtn_Click);
+				this.newBtn.Click += new System.EventHandler(this._newBtn_Click);
 				// 
 				// openToolStripButton
 				// 
@@ -428,24 +428,29 @@ namespace TFSTree
 				this.openToolStripButton.Name = "openToolStripButton";
 				this.openToolStripButton.Size = new System.Drawing.Size(23, 22);
 				this.openToolStripButton.Text = "&Open";
+				this.openToolStripButton.Click += new System.EventHandler(this.loadSnapshotToolStripMenuItem_Click);
 				// 
 				// saveToolStripButton
 				// 
 				this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+				this.saveToolStripButton.Enabled = false;
 				this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
 				this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 				this.saveToolStripButton.Name = "saveToolStripButton";
 				this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
 				this.saveToolStripButton.Text = "&Save";
+				this.saveToolStripButton.Click += new System.EventHandler(this.saveSnapshotToolStripMenuItem_Click);
 				// 
 				// printToolStripButton
 				// 
 				this.printToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+				this.printToolStripButton.Enabled = false;
 				this.printToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("printToolStripButton.Image")));
 				this.printToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 				this.printToolStripButton.Name = "printToolStripButton";
 				this.printToolStripButton.Size = new System.Drawing.Size(23, 22);
 				this.printToolStripButton.Text = "&Print";
+				this.printToolStripButton.Click += new System.EventHandler(this._saveImage_Click);
 				// 
 				// toolStripSeparator
 				// 
@@ -493,11 +498,13 @@ namespace TFSTree
 				this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
 				this.helpToolStripButton.Text = "He&lp";
 				// 
-				// _serverNameTB
+				// _DBTypeBtn
 				// 
-				this._serverNameTB.Name = "_serverNameTB";
-				this._serverNameTB.Size = new System.Drawing.Size(100, 25);
-				this._serverNameTB.Text = "rnotfsat";
+				this._DBTypeBtn.Image = ((System.Drawing.Image)(resources.GetObject("_DBTypeBtn.Image")));
+				this._DBTypeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+				this._DBTypeBtn.Name = "_DBTypeBtn";
+				this._DBTypeBtn.Size = new System.Drawing.Size(80, 22);
+				this._DBTypeBtn.Text = "DB Type";
 				// 
 				// toolStripContainer1
 				// 
@@ -519,14 +526,10 @@ namespace TFSTree
 				this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStripMain);
 				this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
 				// 
-				// _DBTypeBtn
+				// toolStripSeparator7
 				// 
-				this._DBTypeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-				this._DBTypeBtn.Image = ((System.Drawing.Image)(resources.GetObject("_DBTypeBtn.Image")));
-				this._DBTypeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-				this._DBTypeBtn.Name = "_DBTypeBtn";
-				this._DBTypeBtn.Size = new System.Drawing.Size(29, 22);
-				this._DBTypeBtn.Text = "DB Type";
+				this.toolStripSeparator7.Name = "toolStripSeparator7";
+				this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
 				// 
 				// Main
 				// 
@@ -603,12 +606,12 @@ namespace TFSTree
 				private System.Windows.Forms.ToolStripButton pasteToolStripButton;
 				private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 				private System.Windows.Forms.ToolStripButton helpToolStripButton;
-				private System.Windows.Forms.ToolStripTextBox _serverNameTB;
 				private System.Windows.Forms.ToolStripContainer toolStripContainer1;
 				private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
 				private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 				private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 				private System.Windows.Forms.ToolStripMenuItem xmldirToolStripMenuItem;
 				private System.Windows.Forms.ToolStripDropDownButton _DBTypeBtn;
+				private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }

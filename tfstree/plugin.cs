@@ -1,24 +1,59 @@
 
+using System.Reflection;
+using System.Collections.Generic;
+using System.IO;
+
 namespace TFSTree
 {
-	internal class DBPlugin
+	using Type = System.Type;
+	
+	internal class Plugin
 	{
 		internal Assembly Assembly { get; set; }
 		internal Type DatabaseType { get; set; }
 		
+		internal Databases.IDBPlugin dbInterface { get; private set; }
+		
+		internal void load()
+		{
+			ConstructorInfo constructor = DatabaseType.GetConstructor(Type.EmptyTypes);
+			
+			if (constructor != null)
+				{
+					dbInterface = constructor.Invoke(null) as Databases.IDBPlugin;
+				}
+		}
 	}
 
 	internal class Plugins
 	{
-		load_plugins(string directory)
+		private List<Plugin> _plugins = new List<Plugin>();
+		
+		internal Plugins() { }
+		
+		internal List<Databases.IDBPlugin> getDBPlugins()
 		{
-			string[] files = Directory.GetFiles(directory, "*.dll");
+			List<Databases.IDBPlugin> dbs = new List<Databases.IDBPlugin>();
+			
+			foreach(Plugin p in _plugins)
+				{
+					Databases.IDBPlugin obj = p.dbInterface;
+					if (obj != null) { dbs.Add(obj); }
+				}
+			
+			return dbs;
+		}
+		
+		internal void load(string directory)
+		{
+			string fullpath = Path.GetFullPath(directory);
+			string[] files = Directory.GetFiles(fullpath, "*.dll");
 			
 			foreach(string file in files)
 				{
 					try
 						{
-							DBPlugin plugin;
+							Plugin plugin;
 							Assembly assy = Assembly.LoadFile(file);
 							Type dbType = null;
 					
@@ -40,16 +75,18 @@ namespace TFSTree
 					
 							if (dbType != null)
 								{
-									plugin = new DBPlugin
+									plugin = new Plugin
 										{
 											Assembly = assy,
-												DatabaseType = dbType,
-												};
-							
-									plugins.Add(plugin);
+											DatabaseType = dbType,
+										};
+									
+									plugin.load();
+									
+									_plugins.Add(plugin);
 								}
 						}
-					catch(Exception e)
+					catch(System.Exception e)
 						{
 							/* ?? */
 						}

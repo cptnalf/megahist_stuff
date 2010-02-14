@@ -16,6 +16,8 @@ namespace TFSTree
 	/// <summary>Main window of TFSTree.</summary>
 	public partial class Main : Form
 	{
+		Plugins _plugins = new Plugins();
+		
 		/// <summary>Database connection.</summary>
 		Databases.IRevisionRepo database;
 				
@@ -44,23 +46,36 @@ namespace TFSTree
 				{
 					toolStripProgressBar.PerformStep();
 				};
+						
+			_plugins = new Plugins();
+			_plugins.load("plugins");
+			
+			foreach(Databases.IDBPlugin dbplug in _plugins.getDBPlugins())
+			  {
+			    ToolStripItem itm = _DBTypeBtn.DropDownItems.Add(dbplug.Name);
+			    itm.Tag = dbplug;
+			    itm.Click += _DBTypeBtn_Click;
+			  }
 		}
 
 		private void _init(Databases.IRevisionRepo repo)
 		{
 			database = repo;
 			toolStripBranches.Items.Clear();
-			
-			foreach (string name in database.BranchNames)
-				{ toolStripBranches.Items.Add(name); }
-
-			if (toolStripBranches.Items.Count > 0)
+			if (database != null)
 				{
-					toolStripBranches.SelectedIndex = 0;
-					InitGUI();
-					//toolStripRefresh.PerformClick();
+					Text = "TFSTree - " + Regex.Replace(database.Name, @"^.*\\", "");
+					
+					foreach (string name in database.BranchNames)
+						{ toolStripBranches.Items.Add(name); }
+
+					if (toolStripBranches.Items.Count > 0)
+						{
+							toolStripBranches.SelectedIndex = 0;
+							InitGUI();
+						}
+					_grapher.Name = database.Name;
 				}
-			_grapher.Name = database.Name;
 		}
 		
 		/// <summary>Event handler for mouse wheel events.</summary>
@@ -90,40 +105,7 @@ namespace TFSTree
 		/// <summary>Event handler for clicks on menu buttons.</summary>
 		private void MenuClick(object sender, EventArgs e)
 		{
-			if (sender == menuItemOpen)
-				{
-					MessageBox.Show("not supported.");
-					//if (openFileDialog.ShowDialog() == DialogResult.OK)
-					//{
-					//    Text = "TFSTree - " + Regex.Replace(openFileDialog.FileName, @"^.*\\", "");
-					//    if (database == null )
-					//      { database = new Databases.FakeTFS(); }
-										
-					//    database.load(openFileDialog.FileName);
-					//    _init(database);
-					//}
-				}
-			else if (sender == menuItemSave)
-				{
-					saveFileDialog.Title = "Save As";
-					saveFileDialog.Filter = "PNG (*.png)|*.png";
-					saveFileDialog.DefaultExt = ".png";
-					saveFileDialog.FileName = Regex.Replace(database.Name, @"\.[^.]*$", ".png");
-					if (saveFileDialog.ShowDialog() == DialogResult.OK)
-						{
-							if (viewer.Graph != null)
-								{
-									GraphRenderer renderer = new GraphRenderer(viewer.Graph);
-									renderer.CalculateLayout();
-									System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap((int)viewer.GraphWidth, 
-									                                                         (int)viewer.GraphHeight);
-									renderer.Render(bitmap);
-									bitmap.Save(saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
-									toolStripProgressBar.Visible = false;
-								}
-						}
-				}
-			else if (sender == menuItemExit)
+			if (sender == menuItemExit)
 				{
 					Close();
 				}
@@ -199,6 +181,11 @@ namespace TFSTree
 							viewer.ZoomF = Math.Max(graph.Width / viewer.Width, graph.Height / viewer.Height);
 							toolStripProgressBar.Visible = false;
 							viewer.Focus();
+							
+							/* enable the save buttons! */
+							printToolStripButton.Enabled = true;
+							saveSnapshotToolStripMenuItem.Enabled = true;
+							saveToolStripButton.Enabled = true;
             }
 				}
 			else if (sender == toolStripZoomIn)
@@ -340,17 +327,55 @@ namespace TFSTree
 				}
 		}
 
-		private void newBtn_Click(object sender, EventArgs e)
+		private void _saveImage_Click(object sender, EventArgs e)
 		{
-			database = new Databases.TFSDB.TFSDB();
-			database.load(_serverNameTB.Text);
-			
-			_init(database);
+			saveFileDialog.Title = "Save As";
+			saveFileDialog.Filter = "PNG (*.png)|*.png";
+			saveFileDialog.DefaultExt = ".png";
+			saveFileDialog.FileName = Regex.Replace(database.Name, @"\.[^.]*$", ".png");
+			if (saveFileDialog.ShowDialog() == DialogResult.OK)
+				{
+					if (viewer.Graph != null)
+						{
+							GraphRenderer renderer = new GraphRenderer(viewer.Graph);
+							renderer.CalculateLayout();
+							System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap((int)viewer.GraphWidth,
+																																			 (int)viewer.GraphHeight);
+							renderer.Render(bitmap);
+							bitmap.Save(saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+							toolStripProgressBar.Visible = false;
+						}
+				}
 		}
 
 		private void clearToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			viewer.Graph = null;
+			printToolStripButton.Enabled = false;
+			saveSnapshotToolStripMenuItem.Enabled = false;
+			saveToolStripButton.Enabled = false;
+		}
+
+		private void _DBTypeBtn_Click(object sender, EventArgs e)
+		{
+			ToolStripItem itm = sender as ToolStripItem;
+			if (itm != null)
+				{
+					_DBTypeBtn.Text = itm.Text;
+					_DBTypeBtn.Tag = itm.Tag;
+				}
+		}
+
+		private void _newBtn_Click(object sender, EventArgs e)
+		{
+			Databases.IDBPlugin plugin = _DBTypeBtn.Tag as Databases.IDBPlugin;
+
+			if (plugin != null)
+				{
+					database = plugin.open();
+
+					_init(database);
+				}
 		}
 	}
 }

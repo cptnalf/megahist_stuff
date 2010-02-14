@@ -60,19 +60,6 @@ namespace TFSTree.Databases
 		RevisionCont getBranch(string branch, ulong limit);
 		
 		/// <summary>
-		/// perform a load.
-		/// this could load stuff from the name given, 
-		/// or it could just setup your database for revision retrivial
-		/// </summary>
-		/// <param name="filename"></param>
-		void load(string filename);
-		
-		/// <summary>
-		/// perform closing stuff.
-		/// </summary>
-		void close();
-		
-		/// <summary>
 		/// what to do to report some progress
 		/// when doing something which is taking a long time.
 		/// </summary>
