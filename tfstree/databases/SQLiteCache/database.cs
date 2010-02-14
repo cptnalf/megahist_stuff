@@ -43,12 +43,12 @@ namespace TFSTree.Databases.SQLiteCache
 		private SQLiteCommand _cmd;
 		private SQLiteDataReader _rdr;
 		private Revision _revision;
-		private RevisionTable _revTbl;
+		private RevisionsTable _revTbl;
 		private ParentsTable _parentTbl;
 		private string _branch;
 		private ulong _limit;
 		
-		public BranchRevisionResults(RevisionTable revTbl, ParentsTable parTbl, 
+		public BranchRevisionResults(RevisionsTable revTbl, ParentsTable parTbl, 
 																 string branch, ulong limit)
 		{
 			_revTbl = revTbl;
@@ -61,7 +61,7 @@ namespace TFSTree.Databases.SQLiteCache
 		{
 			_cmd = _getCmd(
 @"SELECT id 
-  FROM revision 
+  FROM revisions 
   WHERE branch = @branch 
   ORDER BY id DESC 
   LIMIT @limit");
@@ -113,8 +113,34 @@ namespace TFSTree.Databases.SQLiteCache
 		void IEnumerator.Reset() { throw new System.NotSupportedException(); }
 	}
 	
-	public class RevisionTable : TableBase
+	public class RevisionsTable : TableBase
 	{
+		public void create()
+		{
+			try{
+				using (SQLiteCommand cmd = _getCmd(
+@"CREATE TABLE IF NOT EXISTS revisions 
+  (id INTEGER, branch TEXT, author TEXT, created DATETIME, comment TEXT)"))
+					{
+						cmd.ExecuteNonQuery();
+					}
+				
+				using (SQLiteCommand cmd = _getCmd(
+@"CREATE INDEX IF NOT EXISTS revisions_id ON revisions (id)"))
+					{
+						cmd.ExecuteNonQuery();
+					}
+				using (SQLiteCommand cmd = _getCmd(
+@"CREATE INDEX IF NOT EXISTS revisions_branch ON revisions (branch)"))
+					{
+						cmd.ExecuteNonQuery();
+					}
+			}
+			catch(System.Exception e)
+				{
+				}
+		}
+		
 		public Revision getRev(int id)
 		{
 			Revision rev = null;
@@ -150,7 +176,7 @@ namespace TFSTree.Databases.SQLiteCache
 		{
 			using (SQLiteCommand cmd = 
 						 _getCmd(
-@"INSERT INTO revision (id, branch, author, created, comment)
+@"INSERT INTO revisions (id, branch, author, created, comment)
   VALUES (@id, @branch, @author, @created, @comment)"))
 				{
 					cmd.Parameters.Add("@id", DbType.Int32);
@@ -178,7 +204,7 @@ namespace TFSTree.Databases.SQLiteCache
 			
 			using (SQLiteCommand cmd = _getCmd(
 @"SELECT DISTINCT branch 
-  FROM revision 
+  FROM revisions
   ORDER BY branch"))
 				{
 					SQLiteDataReader rdr = cmd.ExecuteReader();
@@ -194,6 +220,30 @@ namespace TFSTree.Databases.SQLiteCache
 	/// </summary>
 	public class ParentsTable : TableBase
 	{
+		public void create()
+		{
+			string createTable = @"CREATE TABLE IF NOT EXISTS parents
+(child INTEGER, parent INTEGER)";
+			string createIdx = @"CREATE INDEX IF NOT EXISTS parents_child
+(child)";
+			SQLiteCommand cmd = null;
+			try
+				{
+					cmd = _getCmd(createTable);
+					cmd.ExecuteNonQuery();
+					cmd.Dispose();
+					cmd = null;
+					
+					cmd = _getCmd(createIdx);
+					cmd.ExecuteNonQuery();
+					cmd.Dispose();
+					cmd = null;
+				}
+			catch(System.Exception) { }
+			
+			if (cmd != null) { cmd.Dispose(); }
+		}
+		
 		public void load(ref Revision rev)
 		{
 			using (SQLiteCommand cmd =

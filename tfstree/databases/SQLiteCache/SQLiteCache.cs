@@ -7,7 +7,7 @@ namespace TFSTree.Databases.SQLiteCache
 	public class SQLiteCache : IRevisionRepo
 	{
 		private string _connStr;
-		private RevisionTable _revTbl = new RevisionTable();
+		private RevisionsTable _revsTbl = new RevisionsTable();
 		private ParentsTable _parentsTbl = new ParentsTable();
 		
 		public SQLiteCache() { }
@@ -20,7 +20,7 @@ namespace TFSTree.Databases.SQLiteCache
 		/// load the branches from the database.
 		/// </summary>
 		public System.Collections.Generic.IEnumerable<string> BranchNames
-		{ get { return _revTbl.getBranches(); } }
+		{ get { return _revsTbl.getBranches(); } }
 		
 		/// <summary>
 		/// load revisions directly from the database.
@@ -30,7 +30,7 @@ namespace TFSTree.Databases.SQLiteCache
 		public Revision rev(string id)
 		{
 			int revID = int.Parse(id);
-			Revision revision = _revTbl.getRev(revID);
+			Revision revision = _revsTbl.getRev(revID);
 			if (revision != null) { _parentsTbl.load(ref revision); }
 			
 			return revision;
@@ -39,7 +39,7 @@ namespace TFSTree.Databases.SQLiteCache
 		public RevisionCont getBranch(string branch, ulong limit)
 		{
 			RevisionCont revisions = new RevisionCont();
-			BranchRevisionResults query = new BranchRevisionResults(_revTbl, _parentsTbl,
+			BranchRevisionResults query = new BranchRevisionResults(_revsTbl, _parentsTbl,
 																															branch, limit);
 			query.ConnectionString = _connStr;
 			
@@ -61,8 +61,11 @@ namespace TFSTree.Databases.SQLiteCache
 		public void load(string filename)
 		{
 			_connStr = string.Format("data source={0}", filename);
-			_revTbl.ConnectionString = _connStr;
+			_revsTbl.ConnectionString = _connStr;
 			_parentsTbl.ConnectionString = _connStr;
+			
+			_revsTbl.create();
+			_parentsTbl.create();
 		}
 		
 		public void close() { }
@@ -73,7 +76,7 @@ namespace TFSTree.Databases.SQLiteCache
 		
 		public void save(Revision rev)
 		{
-			_revTbl.save(rev);
+			_revsTbl.save(rev);
 			_parentsTbl.save(rev);
 		}
 	}

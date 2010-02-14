@@ -20,7 +20,7 @@ namespace TFSTree.Databases.SQLiteCache
 			ofd.Title = "Open a sqlite revision database";
 			ofd.Filter = "SQLite DBs (*.db)|*.db|All files (*.*)|*.*";
 			ofd.Multiselect = false;
-			ofd.CheckFileExists = true;
+			ofd.CheckFileExists = false;
 			ofd.AutoUpgradeEnabled = true;
 			
 			DialogResult result = ofd.ShowDialog();
