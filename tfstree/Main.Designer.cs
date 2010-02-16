@@ -59,6 +59,8 @@ namespace TFSTree
 				this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
 				this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 				this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+				this._DBTypeBtn = new System.Windows.Forms.ToolStripDropDownButton();
+				this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 				this.newBtn = new System.Windows.Forms.ToolStripButton();
 				this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
 				this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -69,9 +71,7 @@ namespace TFSTree
 				this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
 				this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 				this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
-				this._DBTypeBtn = new System.Windows.Forms.ToolStripDropDownButton();
 				this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-				this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 				this.menuStripMain.SuspendLayout();
 				this.toolStripMain.SuspendLayout();
 				this.contextMenuStripViewer.SuspendLayout();
@@ -109,7 +109,7 @@ namespace TFSTree
             this.toolStripSeparator6,
             this.menuItemExit});
 				this.menuItemFile.Name = "menuItemFile";
-				this.menuItemFile.Size = new System.Drawing.Size(37, 20);
+				this.menuItemFile.Size = new System.Drawing.Size(35, 20);
 				this.menuItemFile.Text = "&File";
 				// 
 				// menuItemOpen
@@ -118,7 +118,7 @@ namespace TFSTree
 				this.menuItemOpen.Name = "menuItemOpen";
 				this.menuItemOpen.ShortcutKeyDisplayString = "";
 				this.menuItemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-				this.menuItemOpen.Size = new System.Drawing.Size(166, 22);
+				this.menuItemOpen.Size = new System.Drawing.Size(177, 22);
 				this.menuItemOpen.Text = "&Open ...";
 				this.menuItemOpen.Click += new System.EventHandler(this._newBtn_Click);
 				// 
@@ -129,45 +129,45 @@ namespace TFSTree
 				this.menuItemSave.Name = "menuItemSave";
 				this.menuItemSave.ShortcutKeyDisplayString = "";
 				this.menuItemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-				this.menuItemSave.Size = new System.Drawing.Size(166, 22);
+				this.menuItemSave.Size = new System.Drawing.Size(177, 22);
 				this.menuItemSave.Text = "&Save As ...";
 				this.menuItemSave.Click += new System.EventHandler(this._saveImage_Click);
 				// 
 				// toolStripSeparator1
 				// 
 				this.toolStripSeparator1.Name = "toolStripSeparator1";
-				this.toolStripSeparator1.Size = new System.Drawing.Size(163, 6);
+				this.toolStripSeparator1.Size = new System.Drawing.Size(174, 6);
 				// 
 				// saveSnapshotToolStripMenuItem
 				// 
 				this.saveSnapshotToolStripMenuItem.Name = "saveSnapshotToolStripMenuItem";
-				this.saveSnapshotToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+				this.saveSnapshotToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 				this.saveSnapshotToolStripMenuItem.Text = "save snapshot";
 				this.saveSnapshotToolStripMenuItem.Click += new System.EventHandler(this.saveSnapshotToolStripMenuItem_Click);
 				// 
 				// loadSnapshotToolStripMenuItem
 				// 
 				this.loadSnapshotToolStripMenuItem.Name = "loadSnapshotToolStripMenuItem";
-				this.loadSnapshotToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+				this.loadSnapshotToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 				this.loadSnapshotToolStripMenuItem.Text = "load snapshot";
 				this.loadSnapshotToolStripMenuItem.Click += new System.EventHandler(this.loadSnapshotToolStripMenuItem_Click);
 				// 
 				// toolStripSeparator5
 				// 
 				this.toolStripSeparator5.Name = "toolStripSeparator5";
-				this.toolStripSeparator5.Size = new System.Drawing.Size(163, 6);
+				this.toolStripSeparator5.Size = new System.Drawing.Size(174, 6);
 				// 
 				// clearToolStripMenuItem
 				// 
 				this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-				this.clearToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+				this.clearToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 				this.clearToolStripMenuItem.Text = "clear";
 				this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
 				// 
 				// toolStripSeparator6
 				// 
 				this.toolStripSeparator6.Name = "toolStripSeparator6";
-				this.toolStripSeparator6.Size = new System.Drawing.Size(163, 6);
+				this.toolStripSeparator6.Size = new System.Drawing.Size(174, 6);
 				// 
 				// menuItemExit
 				// 
@@ -175,7 +175,7 @@ namespace TFSTree
 				this.menuItemExit.Name = "menuItemExit";
 				this.menuItemExit.ShortcutKeyDisplayString = "";
 				this.menuItemExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-				this.menuItemExit.Size = new System.Drawing.Size(166, 22);
+				this.menuItemExit.Size = new System.Drawing.Size(177, 22);
 				this.menuItemExit.Text = "E&xit";
 				this.menuItemExit.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -184,7 +184,7 @@ namespace TFSTree
 				this.menuItemView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemStatusBar});
 				this.menuItemView.Name = "menuItemView";
-				this.menuItemView.Size = new System.Drawing.Size(44, 20);
+				this.menuItemView.Size = new System.Drawing.Size(41, 20);
 				this.menuItemView.Text = "&View";
 				// 
 				// menuItemStatusBar
@@ -193,7 +193,7 @@ namespace TFSTree
 				this.menuItemStatusBar.CheckOnClick = true;
 				this.menuItemStatusBar.CheckState = System.Windows.Forms.CheckState.Checked;
 				this.menuItemStatusBar.Name = "menuItemStatusBar";
-				this.menuItemStatusBar.Size = new System.Drawing.Size(157, 22);
+				this.menuItemStatusBar.Size = new System.Drawing.Size(163, 22);
 				this.menuItemStatusBar.Text = "Show status bar";
 				this.menuItemStatusBar.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -205,7 +205,7 @@ namespace TFSTree
             this.xmldirToolStripMenuItem,
             this.menuItemOptions});
 				this.menuItemTools.Name = "menuItemTools";
-				this.menuItemTools.Size = new System.Drawing.Size(48, 20);
+				this.menuItemTools.Size = new System.Drawing.Size(44, 20);
 				this.menuItemTools.Text = "&Tools";
 				// 
 				// menuItemCompress
@@ -214,19 +214,19 @@ namespace TFSTree
 				this.menuItemCompress.Image = global::TFSTree.Properties.Resources.page_white_compressed;
 				this.menuItemCompress.Name = "menuItemCompress";
 				this.menuItemCompress.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-				this.menuItemCompress.Size = new System.Drawing.Size(181, 22);
+				this.menuItemCompress.Size = new System.Drawing.Size(186, 22);
 				this.menuItemCompress.Text = "Compress ...";
 				this.menuItemCompress.Click += new System.EventHandler(this.MenuClick);
 				// 
 				// toolStripSeparator2
 				// 
 				this.toolStripSeparator2.Name = "toolStripSeparator2";
-				this.toolStripSeparator2.Size = new System.Drawing.Size(178, 6);
+				this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
 				// 
 				// xmldirToolStripMenuItem
 				// 
 				this.xmldirToolStripMenuItem.Name = "xmldirToolStripMenuItem";
-				this.xmldirToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+				this.xmldirToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
 				this.xmldirToolStripMenuItem.Text = "xmldir";
 				this.xmldirToolStripMenuItem.Click += new System.EventHandler(this.xmldirToolStripMenuItem_Click);
 				// 
@@ -234,7 +234,7 @@ namespace TFSTree
 				// 
 				this.menuItemOptions.Image = global::TFSTree.Properties.Resources.wrench;
 				this.menuItemOptions.Name = "menuItemOptions";
-				this.menuItemOptions.Size = new System.Drawing.Size(181, 22);
+				this.menuItemOptions.Size = new System.Drawing.Size(186, 22);
 				this.menuItemOptions.Text = "&Options";
 				this.menuItemOptions.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -243,14 +243,14 @@ namespace TFSTree
 				this.menuItemHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemAbout});
 				this.menuItemHelp.Name = "menuItemHelp";
-				this.menuItemHelp.Size = new System.Drawing.Size(44, 20);
+				this.menuItemHelp.Size = new System.Drawing.Size(40, 20);
 				this.menuItemHelp.Text = "&Help";
 				// 
 				// menuItemAbout
 				// 
 				this.menuItemAbout.Image = global::TFSTree.Properties.Resources.user;
 				this.menuItemAbout.Name = "menuItemAbout";
-				this.menuItemAbout.Size = new System.Drawing.Size(107, 22);
+				this.menuItemAbout.Size = new System.Drawing.Size(114, 22);
 				this.menuItemAbout.Text = "&About";
 				this.menuItemAbout.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -350,6 +350,7 @@ namespace TFSTree
 				this.viewer.ZoomFraction = 0.5;
 				this.viewer.ZoomWindowThreshold = 0.05;
 				this.viewer.SelectionChanged += new System.EventHandler(this.viewer_SelectionChanged);
+				this.viewer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this._viewerDblClick);
 				this.viewer.MouseClick += new System.Windows.Forms.MouseEventHandler(this.viewer_MouseClick);
 				// 
 				// contextMenuStripViewer
@@ -357,13 +358,13 @@ namespace TFSTree
 				this.contextMenuStripViewer.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ctxMenuItemCopyRevisionID});
 				this.contextMenuStripViewer.Name = "contextMenuStripViewer";
-				this.contextMenuStripViewer.Size = new System.Drawing.Size(164, 26);
+				this.contextMenuStripViewer.Size = new System.Drawing.Size(168, 26);
 				this.contextMenuStripViewer.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripViewer_Opening);
 				// 
 				// ctxMenuItemCopyRevisionID
 				// 
 				this.ctxMenuItemCopyRevisionID.Name = "ctxMenuItemCopyRevisionID";
-				this.ctxMenuItemCopyRevisionID.Size = new System.Drawing.Size(163, 22);
+				this.ctxMenuItemCopyRevisionID.Size = new System.Drawing.Size(167, 22);
 				this.ctxMenuItemCopyRevisionID.Text = "&Copy Revision ID";
 				this.ctxMenuItemCopyRevisionID.Click += new System.EventHandler(this.MenuClick);
 				// 
@@ -406,9 +407,22 @@ namespace TFSTree
             this.helpToolStripButton});
 				this.toolStrip1.Location = new System.Drawing.Point(3, 49);
 				this.toolStrip1.Name = "toolStrip1";
-				this.toolStrip1.Size = new System.Drawing.Size(294, 25);
+				this.toolStrip1.Size = new System.Drawing.Size(290, 25);
 				this.toolStrip1.TabIndex = 2;
 				this.toolStrip1.Text = "toolStrip1";
+				// 
+				// _DBTypeBtn
+				// 
+				this._DBTypeBtn.Image = ((System.Drawing.Image)(resources.GetObject("_DBTypeBtn.Image")));
+				this._DBTypeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+				this._DBTypeBtn.Name = "_DBTypeBtn";
+				this._DBTypeBtn.Size = new System.Drawing.Size(76, 22);
+				this._DBTypeBtn.Text = "DB Type";
+				// 
+				// toolStripSeparator7
+				// 
+				this.toolStripSeparator7.Name = "toolStripSeparator7";
+				this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
 				// 
 				// newBtn
 				// 
@@ -498,14 +512,6 @@ namespace TFSTree
 				this.helpToolStripButton.Size = new System.Drawing.Size(23, 22);
 				this.helpToolStripButton.Text = "He&lp";
 				// 
-				// _DBTypeBtn
-				// 
-				this._DBTypeBtn.Image = ((System.Drawing.Image)(resources.GetObject("_DBTypeBtn.Image")));
-				this._DBTypeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-				this._DBTypeBtn.Name = "_DBTypeBtn";
-				this._DBTypeBtn.Size = new System.Drawing.Size(80, 22);
-				this._DBTypeBtn.Text = "DB Type";
-				// 
 				// toolStripContainer1
 				// 
 				// 
@@ -525,11 +531,6 @@ namespace TFSTree
 				this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStripMain);
 				this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStripMain);
 				this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
-				// 
-				// toolStripSeparator7
-				// 
-				this.toolStripSeparator7.Name = "toolStripSeparator7";
-				this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
 				// 
 				// Main
 				// 

@@ -15,7 +15,7 @@ namespace TFSTree
 	
 	/// <summary>Main window of TFSTree.</summary>
 	public partial class Main : Form
-	{
+	{		
 		Plugins _plugins = new Plugins();
 		
 		/// <summary>Database connection.</summary>
@@ -28,6 +28,8 @@ namespace TFSTree
 		/// <summary>Last position where mouse wheel was moved.</summary>
 		System.Drawing.Point wheelPosition;
 		private Grapher _grapher = new Grapher();
+		
+		Databases.IDBPlugin _activePlugin = null;
 		
 		/// <summary>Creates and shows the main window.</summary>
 		public Main()
@@ -363,6 +365,9 @@ namespace TFSTree
 				{
 					_DBTypeBtn.Text = itm.Text;
 					_DBTypeBtn.Tag = itm.Tag;
+					
+					Databases.IDBPlugin plugin = itm.Tag as Databases.IDBPlugin;
+					_activePlugin = plugin;
 				}
 		}
 
@@ -375,6 +380,31 @@ namespace TFSTree
 					database = plugin.open();
 
 					_init(database);
+				}
+		}
+
+		private void _viewerDblClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+				{
+					Node clicked = viewer.GetObjectAt(e.X, e.Y) as Node;
+					if (clicked != null)
+						{
+							Databases.Revision revision = clicked.UserData as Databases.Revision;
+							RevisionViewer revVwr = new RevisionViewer();
+							
+							if (revision != null)
+								{
+									revVwr.setRevision(_activePlugin, revision);
+								}
+							else
+								{
+									List<Revision> revs = clicked.UserData as List<Revision>;
+									revVwr.setRevision(_activePlugin, revs);
+								}
+							
+							revVwr.Show();
+						}
 				}
 		}
 	}

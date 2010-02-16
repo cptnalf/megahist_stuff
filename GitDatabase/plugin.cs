@@ -17,6 +17,11 @@ namespace Git.Database
 		public string internalName { get { return this.GetType().FullName; } }
 		
 		public string Name { get { return "git"; } }
+		
+		public string IDName { get { return "commit"; } }
+		public string ParentName { get { return "parent"; } }
+		public string AuthorName { get { return "Author"; } }
+		public string LogName { get { return null; } }
 
 		public TFSTree.Databases.IRevisionRepo open()
 		{

@@ -10,7 +10,11 @@ namespace TFSTree.Databases.SQLiteCache
 		public string internalName { get { return this.GetType().FullName; } }
 
 		public string Name { get { return "SQLite DB"; } }
-
+		public string IDName { get { return "id"; } }
+		public string ParentName { get { return "parent"; } }
+		public string AuthorName { get { return "User"; } }
+		public string LogName    { get { return "Comment"; } }
+		
 		public IRevisionRepo open()
 		{
 			IRevisionRepo database = null;

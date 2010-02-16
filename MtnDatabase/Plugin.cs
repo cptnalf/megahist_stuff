@@ -11,6 +11,11 @@ namespace Monotree
 		public string internalName { get { return this.GetType().FullName; } }
 
 		public string Name { get { return "Monotone"; } }
+		
+		public string IDName { get { return "Revision"; } }
+		public string ParentName { get { return "Ancestor"; } }
+		public string AuthorName { get { return "Author"; } }
+		public string LogName    { get { return "ChangeLog"; } }
 
 		public TFSTree.Databases.IRevisionRepo open()
 		{
