@@ -79,5 +79,11 @@ namespace TFSTree.Databases.SQLiteCache
 			_revsTbl.save(rev);
 			_parentsTbl.save(rev);
 		}
+		
+		public void del(Revision rev)
+		{
+			_revsTbl.del(rev);
+			_parentsTbl.del(rev);
+		}
 	}
 }

@@ -132,7 +132,7 @@ namespace TFSTree
 
 					if (parRev != null)
 						{
-							if (parRev.Branch == rev.Branch) { _drawRev(graph, rev, parRev); }
+							if (parRev.Branch == rev.Branch) { _drawRev(graph, parRev, rev); }
 							else { r.Add(parRev); }
 						}
 				}

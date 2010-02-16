@@ -79,7 +79,7 @@ namespace TFSTree.Databases.TFSDB
 		{
 			get
 				{
-					if (_branches == null) { _queryBranches(); }
+					if (_branches == null || _branches.empty()) { _queryBranches(); }
 					return _branches;
 				}
 		}
@@ -108,40 +108,23 @@ namespace TFSTree.Databases.TFSDB
 			RevisionCont revisions = null;
 			BranchChangesets.iterator it = _branchChangesets.find(branch);
 			
-			if (it != _branchChangesets.end() )
-				{
-					/* we have the branch in the cache, check what we've got. */
-					if ( it.value().size() < limit)
-						{
-							/* try db, this could fail... */
-							revisions = _cache.getBranch(branch, limit);
-							
-							if (revisions != null && revisions.size() < limit)
-								{
-									/* so, we don't actually have everything, 
-									 * let's try to get the rest...
-									 */
-									RevisionCont.reverse_iterator rit = revisions.rbegin();
-									ulong delta = limit - revisions.size();
-									
-									/* this will grab the stuffs from tfs 
-									 * and dump the deltas out to the database.
-									 */
-									_runQuery(branch, delta, rit.item().ID);
-									
-									/* the full list should be in the memory cache now. */
-									revisions = base.getBranch(branch, limit);
-								}
-						}
-					else { revisions = base.getBranch(branch, limit); }
-				}
+			/* it doesn't matter how many items i have in the cache, 
+			 * i want the last X in connected descending order.
+			 */
+			_runQuery(branch, limit, null);
 			
-			if (revisions == null)
+			/* the full list should be in the memory cache now. */
+			revisions = base.getBranch(branch, limit);
+			
+			if (revisions != null)
 				{
-					/* full retrievial. */
-					_runQuery(branch, limit, null);
+					RevisionCont.iterator revit = revisions.begin();
 					
-					revisions = base.getBranch(branch, limit);
+					logger.Debug("tossing back revisions:");
+					for(; revit != revisions.end(); ++revit)
+						{
+							logger.DebugFormat("r[{0}]", revit.item().ID);
+						}
 				}
 			
 			return revisions;

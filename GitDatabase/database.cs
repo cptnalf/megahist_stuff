@@ -34,7 +34,7 @@ namespace Git.Database
 				}
 		}
 
-		public TFSTree.Databases.Revision  rev(string id)
+		public TFSTree.Databases.Revision rev(string id)
 		{
  			_runCmd.run(string.Format("log -1 {0} {1}", _formatArg, id));
 			
@@ -46,7 +46,7 @@ namespace Git.Database
 			return rev;
 		}
 		
-		public RevisionIdx  getBranch(string branch, ulong limit)
+		public RevisionIdx getBranch(string branch, ulong limit)
 		{
 			RevisionIdx revisions = new RevisionIdx();
 			

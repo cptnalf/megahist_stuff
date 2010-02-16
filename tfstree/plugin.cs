@@ -49,6 +49,15 @@ namespace TFSTree
 			string fullpath = Path.GetFullPath(directory);
 			string[] files = Directory.GetFiles(fullpath, "*.dll");
 			
+			/* so this is probably not going to work too well.
+			 * best thing would be another app domain,
+			 * but that has a whole slew of problems...
+			 *
+			System.AppDomain me = System.AppDomain.CurrentDomain;
+			
+			me.SetupInformation.PrivateBinPath += string.Format(";{0}", directory);
+			*/
+			
 			foreach(string file in files)
 				{
 					try

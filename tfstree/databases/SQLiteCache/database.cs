@@ -163,6 +163,10 @@ namespace TFSTree.Databases.SQLiteCache
 							rev.Date = rdr.GetDateTime(3);
 							rev.Log = rdr.GetString(4);
 						}
+					rdr.Dispose();
+					rdr = null;
+					cmd.Connection.Close();
+					cmd.Connection = null;
 				}
 			
 			return rev;
@@ -195,6 +199,32 @@ namespace TFSTree.Databases.SQLiteCache
 					cmd.Parameters[4].Value = rev.Log;
 					
 					cmd.ExecuteNonQuery();
+				}
+		}
+		
+		public void del(Revision rev)
+		{
+			using (SQLiteCommand cmd = _getCmd(
+@"DELETE FROM revisions
+WHERE id = @id AND branch = @branch AND author = @author AND created = @created"))
+				{
+					cmd.Parameters.Add("@id", DbType.Int32);
+					cmd.Parameters[0].Value = int.Parse(rev.ID);
+					
+					cmd.Parameters.Add("@branch", DbType.String);
+					cmd.Parameters[1].Value = rev.Branch;
+					
+					cmd.Parameters.Add("@author", DbType.String);
+					cmd.Parameters[2].Value = rev.Author;
+					
+					cmd.Parameters.Add("@created", DbType.DateTime);
+					cmd.Parameters[3].Value = rev.Date;
+					
+					cmd.ExecuteNonQuery();
+					
+					System.Threading.Thread.Sleep(2);
+					cmd.Connection.Close();
+					cmd.Connection = null;
 				}
 		}
 		
@@ -241,7 +271,11 @@ namespace TFSTree.Databases.SQLiteCache
 				}
 			catch(System.Exception) { }
 			
-			if (cmd != null) { cmd.Dispose(); }
+			if (cmd != null) 
+				{
+					cmd.Dispose();
+					cmd = null;
+				}
 		}
 		
 		public void load(ref Revision rev)
@@ -265,6 +299,11 @@ namespace TFSTree.Databases.SQLiteCache
 									rev.addParent(id.ToString());
 								}
 						}
+					
+					rdr.Dispose();
+					rdr = null;
+					cmd.Connection.Close();
+					cmd.Connection = null;
 				}
 		}
 		
@@ -291,6 +330,35 @@ namespace TFSTree.Databases.SQLiteCache
 							
 							cmd.ExecuteNonQuery();
 						}
+					
+					cmd.Connection.Close();
+					cmd.Connection = null;
+				}
+		}
+		
+		public void del(Revision rev)
+		{
+			using (SQLiteCommand cmd = _getCmd(
+@"DELETE FROM parents 
+WHERE child = @child AND parent = @parent"))
+				{
+					cmd.Parameters.Add("@child", DbType.Int32);
+					cmd.Parameters.Add("@parent", DbType.Int32);
+					int child = int.Parse(rev.ID);
+					
+					cmd.Parameters[0].Value = child;
+					
+					foreach(string parent in rev.Parents)
+						{
+							int parentID = int.Parse(parent);
+							cmd.Parameters[1].Value = parentID;
+							
+							cmd.ExecuteNonQuery();
+						}
+					
+					System.Threading.Thread.Sleep(2);
+					cmd.Connection.Close();
+					cmd.Connection = null;
 				}
 		}
 	}

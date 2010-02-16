@@ -12,6 +12,11 @@ namespace TFSTree.Databases.TFSDB
 		internal treelib.AVLDict<string, treelib.AVLDict<string, Revision>, treelib.StringSorterInsensitive>
 		  getBranchChangesets() { return _branchChangesets; }
 		
+		public void addRevision(Revision rev)
+		{
+			_addRevision(rev);
+		}
+		
 		public Revision visit(string branch, Changeset cs)
 		{
 			Revision rev = null;
@@ -24,6 +29,14 @@ namespace TFSTree.Databases.TFSDB
 					
 					if (rev == null)
 						{
+							System.DateTime t;
+							
+							if (cs.CreationDate.Kind == System.DateTimeKind.Unspecified)
+								{
+									t = System.DateTime.SpecifyKind(cs.CreationDate, System.DateTimeKind.Local);
+								}
+							else { t = cs.CreationDate; }
+							
 							rev = new Revision(id, branch,
 																 cs.Owner, cs.CreationDate,
 																 cs.Comment);
