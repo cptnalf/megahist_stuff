@@ -25,6 +25,8 @@ namespace TFSTree.Databases.TFSDB
 				new treelib.AVLTree<Changeset,ChangesetDescSorter>();
 			AsyncQueue<QueryRec> queries = new AsyncQueue<QueryRec>(int.MaxValue);
 			
+			visitor.primeBranches(_branches.begin(), _branches.end());
+			
 			VersionSpec fromVer = null;
 			VersionSpec toVer = null;
 			

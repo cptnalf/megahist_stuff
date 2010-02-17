@@ -3,6 +3,8 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace TFSTree.Databases.TFSDB
 {
+	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	
 	internal class TFSDBVisitor : RevisionRepoBase, megahistory.IVisitor<Revision>
 	{
 		protected System.Threading.Mutex _csMux = new System.Threading.Mutex();
@@ -11,6 +13,34 @@ namespace TFSTree.Databases.TFSDB
 		
 		internal treelib.AVLDict<string, treelib.AVLDict<string, Revision>, treelib.StringSorterInsensitive>
 		  getBranchChangesets() { return _branchChangesets; }
+		
+		internal string cleanseBranch(string branch)
+		{
+			lock(_branches)
+				{
+					BranchContainer.iterator it = _branches.find(branch);
+					
+					if (it != _branches.end())
+						{
+							/* if they're not equal, return the one in the list.
+							 * otherwise, return the one they gave us.
+							 */
+							if (branch != it.item()) { branch = it.item(); }
+						}
+					else
+						{
+							/* i don't already know about this branch,
+							 * so record it.
+							 */
+							_branches.insert(branch);
+						}
+				}
+					
+			return branch;
+		}
+		
+		internal void primeBranches(BranchContainer.iterator beg, BranchContainer.iterator end)
+		{ for(; beg != end; ++beg) { _branches.insert(beg.item()); } }
 		
 		public void addRevision(Revision rev)
 		{
@@ -40,7 +70,9 @@ namespace TFSTree.Databases.TFSDB
 							rev = new Revision(id, branch,
 																 cs.Owner, cs.CreationDate,
 																 cs.Comment);
+							
 							rev.Branch = megahistory.Utils.GetEGSBranch(branch) + "/EGS/";
+							rev.Branch = cleanseBranch(rev.Branch);
 							//logger.DebugFormat("{0}=>{1}", rev.Branch, cs.ChangesetId);
 							
 							_addRevision(rev);
