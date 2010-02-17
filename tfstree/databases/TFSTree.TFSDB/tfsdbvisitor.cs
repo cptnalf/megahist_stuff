@@ -4,6 +4,9 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 namespace TFSTree.Databases.TFSDB
 {
 	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using BranchChangesets =
+		treelib.AVLDict<string, treelib.AVLDict<string, Revision>, treelib.StringSorterInsensitive>;
+	using RevisionIdx = treelib.AVLDict<string,Revision>;
 	
 	internal class TFSDBVisitor : RevisionRepoBase, megahistory.IVisitor<Revision>
 	{
@@ -100,6 +103,24 @@ namespace TFSTree.Databases.TFSDB
 			_csMux.ReleaseMutex();
 			
 			return rev != null;
+		}
+		
+		internal void save(TFSDB db)
+		{
+			for(BranchChangesets.iterator bit = _branchChangesets.begin();
+					bit != _branchChangesets.end();
+					++bit)
+				{
+					for(RevisionIdx.iterator rit = bit.value().begin();
+							rit != bit.value().end();
+							++rit)
+						{
+							TFSDB.logger.DebugFormat("s[{0}]", rit.value().ID);
+							
+							/* database. */
+							db.save(rit.value());
+						}
+				}
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace TFSTree.Databases.TFSDB
 	/// <summary>
 	/// 
 	/// </summary>
-	public partial class TFSDB : RevisionRepoBase, IRevisionRepo
+	public partial class TFSDB : SQLiteCache.SQLiteCache, IRevisionRepo
 	{
 		internal static int THREAD_COUNT = 8;
 		internal static log4net.ILog logger = log4net.LogManager.GetLogger("tfsdb_logger");
@@ -28,9 +28,7 @@ namespace TFSTree.Databases.TFSDB
 		
 		private string _tfsServerName;
 		private VersionControlServer _vcs;
-		private SQLiteCache.SQLiteCache _cache;
-		
-		public event System.EventHandler<ProgressArgs> OnProgress;
+		private BranchContainer _branches = new BranchContainer();
 		
 		public TFSDB()
 		{
@@ -60,21 +58,26 @@ namespace TFSTree.Databases.TFSDB
 				}
 		}
 		
-		public void load(string filename)
+		public override void load(string filename)
 		{
 			_tfsServerName = filename;
 			_vcs = megahistory.Utils.GetTFSServer(filename);
-			_cache = new SQLiteCache.SQLiteCache();
-			_cache.load(filename);
+			base.load(filename);
 		}
 		
-		public void close()
+		/// <summary>
+		/// close
+		/// </summary>
+		public override void close()
 		{
-			_cache.close();
+			base.close();
 		}
 		
-		public string Name { get { return _tfsServerName; } }
+		public override string Name { get { return _tfsServerName; } }
 		
+		/// <summary>
+		/// prepopulate
+		/// </summary>
 		public override System.Collections.Generic.IEnumerable<string> BranchNames
 		{
 			get
@@ -84,36 +87,16 @@ namespace TFSTree.Databases.TFSDB
 				}
 		}
 		
-		/// <summary>
-		/// grab a revision.
-		/// </summary>
-		/// <remarks>
-		/// this will consult the local cache db to see if it exists in there
-		/// so:
-		/// cached-in-memory index
-		/// database
-		/// </remarks>
-		/// <param name="id"></param>
-		/// <returns>null if it's not been loaded.</returns>
-		public override Revision rev(string id)
-		{
-			Revision rev = null;
-			rev = base.rev(id);
-			if (rev == null) { rev = _cache.rev(id); }
-			return rev;
-		}
-		
 		public override RevisionCont getBranch(string branch, ulong limit)
 		{
 			RevisionCont revisions = null;
-			BranchChangesets.iterator it = _branchChangesets.find(branch);
 			
 			/* it doesn't matter how many items i have in the cache, 
 			 * i want the last X in connected descending order.
 			 */
 			_runQuery(branch, limit, null);
 			
-			/* the full list should be in the memory cache now. */
+			/* the full list should be in the cache now. */
 			revisions = base.getBranch(branch, limit);
 			
 			if (revisions != null)
@@ -145,6 +128,8 @@ namespace TFSTree.Databases.TFSDB
 			_branches.insert("$/IGT_0803/development/dev_sb/EGS/");
 			_branches.insert("$/IGT_0803/main/EGS/");
 			_branches.insert("$/IGT_0803/release/EGS8.2/dev_sp/EGS/");
+			
+			foreach(string branch in base.BranchNames) { _branches.insert(branch); }
 		}
 	}		
 }

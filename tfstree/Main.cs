@@ -179,8 +179,12 @@ namespace TFSTree
 
 							Graph graph = _grapher.Create(revisions, database);
 							toolStripProgressBar.Value = toolStripProgressBar.Maximum;
-							viewer.Graph = graph;
-							viewer.ZoomF = Math.Max(graph.Width / viewer.Width, graph.Height / viewer.Height);
+							
+							if (graph.EdgeCount > 0)
+								{
+									viewer.Graph = graph;
+									viewer.ZoomF = Math.Max(graph.Width / viewer.Width, graph.Height / viewer.Height);
+								}
 							toolStripProgressBar.Visible = false;
 							viewer.Focus();
 							

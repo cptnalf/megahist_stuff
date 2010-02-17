@@ -14,12 +14,12 @@ namespace TFSTree.Databases.SQLiteCache
 
 #region IRevisionRepo Members
 
-		public string Name { get { return _connStr; } }
+		public virtual string Name { get { return _connStr; } }
 		
 		/// <summary>
 		/// load the branches from the database.
 		/// </summary>
-		public System.Collections.Generic.IEnumerable<string> BranchNames
+		public virtual System.Collections.Generic.IEnumerable<string> BranchNames
 		{ get { return _revsTbl.getBranches(); } }
 		
 		/// <summary>
@@ -27,7 +27,7 @@ namespace TFSTree.Databases.SQLiteCache
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public Revision rev(string id)
+		public virtual Revision rev(string id)
 		{
 			int revID = int.Parse(id);
 			Revision revision = _revsTbl.getRev(revID);
@@ -36,7 +36,7 @@ namespace TFSTree.Databases.SQLiteCache
 			return revision;
 		}
 
-		public RevisionCont getBranch(string branch, ulong limit)
+		public virtual RevisionCont getBranch(string branch, ulong limit)
 		{
 			RevisionCont revisions = new RevisionCont();
 			BranchRevisionResults query = new BranchRevisionResults(_revsTbl, _parentsTbl,
@@ -58,7 +58,7 @@ namespace TFSTree.Databases.SQLiteCache
 		/// prime the database
 		/// </summary>
 		/// <param name="filename"></param>
-		public void load(string filename)
+		public virtual void load(string filename)
 		{
 			_connStr = string.Format("data source={0}", filename);
 			_revsTbl.ConnectionString = _connStr;
@@ -68,9 +68,12 @@ namespace TFSTree.Databases.SQLiteCache
 			_parentsTbl.create();
 		}
 		
-		public void close() { }
+		public virtual void close() { }
 		
 		public event System.EventHandler<ProgressArgs> OnProgress;
+		
+		protected void _onProgress(int delta, object arg)
+		{ if (OnProgress != null) { OnProgress(this, new ProgressArgs(delta, arg)); } }
 
 #endregion
 		

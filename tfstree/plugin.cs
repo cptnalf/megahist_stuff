@@ -98,6 +98,8 @@ namespace TFSTree
 					catch(System.Exception e)
 						{
 							/* ?? */
+							int x=1;
+							x+=1;
 						}
 				}
 		}

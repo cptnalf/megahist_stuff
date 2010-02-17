@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 namespace TFSTree.Databases
 {
 	/// <summary>A revision in monotone.</summary>
+	[Serializable]
 	[XmlRoot("revision")]
 	public class Revision : IComparable<Revision>
 	{
