@@ -18,9 +18,6 @@ namespace TFSTree
 	public partial class Main : Form
 	{		
 		PluginLoader _plugins = new PluginLoader();
-		
-		/// <summary>Database connection.</summary>
-		StarTree.Host.Database.Snapshot database;
 				
 		/// <summary>Active revision.</summary>
 		/// <remarks>A revision is active when the user right-clicks on it.</remarks>
@@ -167,10 +164,12 @@ namespace TFSTree
 			if (sender == toolStripRefresh)
 				{
 					string branch = toolStripBranches.SelectedItem.ToString();
-					treelib.AVLTree<Revision, StarTree.Host.Database.RevisionSorterDesc> revisions;	
+					Snapshot snapshot;
 					long limit = Int64.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
 					                           toolStripLimit.SelectedItem.ToString().IndexOf(' ')));
-					revisions = database.getBranch(branch, limit);
+					snapshot = _activePlugin.getBranch(branch, limit);
+					treelib.AVLTree<Revision, StarTree.Host.Database.RevisionSorterDesc> revisions;
+					revisions = snapshot.getBranch(branch, limit);
 					
 					if (revisions.size() < 2)
             {
@@ -180,9 +179,9 @@ namespace TFSTree
             {
 							toolStripProgressBar.Visible = true;
 							toolStripProgressBar.Value = 0;
-							toolStripProgressBar.Maximum = (int)revisions.size();
+							toolStripProgressBar.Maximum = (int)snapshot.Revisions.size();
 
-							Graph graph = _grapher.Create(revisions, database);
+							Graph graph = _grapher.Create(revisions, snapshot);
 							toolStripProgressBar.Value = toolStripProgressBar.Maximum;
 							
 							if (graph.EdgeCount > 0)
