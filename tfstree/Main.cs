@@ -11,15 +11,16 @@ using Microsoft.Glee.GraphViewerGdi;
 
 namespace TFSTree
 {
-	using Revision = Databases.Revision;
+	using Revision = StarTree.Host.Database.Revision;
+	using Snapshot = StarTree.Host.Database.Snapshot;
 	
 	/// <summary>Main window of TFSTree.</summary>
 	public partial class Main : Form
 	{		
-		Plugins _plugins = new Plugins();
+		PluginLoader _plugins = new PluginLoader();
 		
 		/// <summary>Database connection.</summary>
-		Databases.IRevisionRepo database;
+		StarTree.Host.Database.Snapshot database;
 				
 		/// <summary>Active revision.</summary>
 		/// <remarks>A revision is active when the user right-clicks on it.</remarks>
@@ -29,7 +30,7 @@ namespace TFSTree
 		System.Drawing.Point wheelPosition;
 		private Grapher _grapher = new Grapher();
 		
-		Databases.IDBPlugin _activePlugin = null;
+		StarTree.Host.Database.Plugin _activePlugin = null;
 		
 		/// <summary>Creates and shows the main window.</summary>
 		public Main()
@@ -48,27 +49,31 @@ namespace TFSTree
 				{
 					toolStripProgressBar.PerformStep();
 				};
-						
-			_plugins = new Plugins();
+			
 			_plugins.load("plugins");
 			
-			foreach(Databases.IDBPlugin dbplug in _plugins.getDBPlugins())
+			foreach(StarTree.Host.Database.Plugin plug in _plugins.getDBPlugins())
 			  {
-			    ToolStripItem itm = _DBTypeBtn.DropDownItems.Add(dbplug.Name);
-			    itm.Tag = dbplug;
+			    ToolStripItem itm = _DBTypeBtn.DropDownItems.Add(plug.names.name);
+			    itm.Tag = plug;
 			    itm.Click += _DBTypeBtn_Click;
 			  }
 		}
 
-		private void _init(Databases.IRevisionRepo repo)
+		private void _init(StarTree.Host.Database.Plugin plugin)
 		{
-			database = repo;
+			if (plugin != null) { _init(plugin.currentName, plugin.branches()); }
+			else { _init(null, null); }
+		}
+		
+		private void _init(string currentName, IEnumerable<string> branches)
+		{
 			toolStripBranches.Items.Clear();
-			if (database != null)
+			if (branches != null)
 				{
-					Text = "TFSTree - " + Regex.Replace(database.Name, @"^.*\\", "");
+					Text = "TFSTree - " + Regex.Replace(currentName, @"^.*\\", "");
 					
-					foreach (string name in database.BranchNames)
+					foreach (string name in branches)
 						{ toolStripBranches.Items.Add(name); }
 
 					if (toolStripBranches.Items.Count > 0)
@@ -76,7 +81,7 @@ namespace TFSTree
 							toolStripBranches.SelectedIndex = 0;
 							InitGUI();
 						}
-					_grapher.Name = database.Name;
+					_grapher.Name = currentName;
 				}
 		}
 		
@@ -117,27 +122,27 @@ namespace TFSTree
 				}
 			else if (sender == menuItemCompress)
 				{
-					saveFileDialog.Title = "Compress";
-					saveFileDialog.Filter = "MTN (*.mtn)|*.mtn";
-					saveFileDialog.DefaultExt = ".mtn";
-					saveFileDialog.FileName = Regex.Replace(database.Name, @"\.[^.]*$", ".mtn");
-					if (saveFileDialog.ShowDialog() == DialogResult.OK)
-						{
-							if (database.Name.Equals(saveFileDialog.FileName))
-								{
-									MessageBox.Show("The database is currently open and can't be overwritten.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-								}
-							else
-								{
-									Thread thread = new Thread(delegate()
-																						 {
-																							 //File.Copy(database.FileName, saveFileDialog.FileName);
-																							 //IRevisionRepo db = new Repository();
-																							 //db.Compress();
-																						 });
-									thread.Start();
-								}
-						}
+					//saveFileDialog.Title = "Compress";
+					//saveFileDialog.Filter = "MTN (*.mtn)|*.mtn";
+					//saveFileDialog.DefaultExt = ".mtn";
+					//saveFileDialog.FileName = Regex.Replace(database.Name, @"\.[^.]*$", ".mtn");
+					//if (saveFileDialog.ShowDialog() == DialogResult.OK)
+					//  {
+					//    if (database.Name.Equals(saveFileDialog.FileName))
+					//      {
+					//        MessageBox.Show("The database is currently open and can't be overwritten.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					//      }
+					//    else
+					//      {
+					//        Thread thread = new Thread(delegate()
+					//                                   {
+					//                                     //File.Copy(database.FileName, saveFileDialog.FileName);
+					//                                     //IRevisionRepo db = new Repository();
+					//                                     //db.Compress();
+					//                                   });
+					//        thread.Start();
+					//      }
+					//  }
 				}
 			else if (sender == menuItemOptions)
 				{
@@ -162,8 +167,8 @@ namespace TFSTree
 			if (sender == toolStripRefresh)
 				{
 					string branch = toolStripBranches.SelectedItem.ToString();
-					treelib.AVLTree<Revision, Databases.RevisionSorterDesc> revisions;	
-					ulong limit = UInt64.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
+					treelib.AVLTree<Revision, StarTree.Host.Database.RevisionSorterDesc> revisions;	
+					long limit = Int64.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
 					                           toolStripLimit.SelectedItem.ToString().IndexOf(' ')));
 					revisions = database.getBranch(branch, limit);
 					
@@ -312,10 +317,14 @@ namespace TFSTree
 					saveFileDialog.Title = "Save TFSTree Snapshot";
 					if (saveFileDialog.ShowDialog() == DialogResult.OK)
 						{
-							Databases.Snapshot snapshot = new Databases.Snapshot();
-							snapshot.save(saveFileDialog.FileName, 
-														(string)toolStripBranches.SelectedItem, 
-														viewer.Graph);
+							Snapshot snapshot = new Snapshot();
+							StarTree.Utils.SnapshotSaver.Save(snapshot, viewer.Graph);
+							
+							using (Stream w = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write))
+								{
+									snapshot.save(w);
+								}
+							
 							snapshot = null;
 						}
 				}
@@ -326,10 +335,12 @@ namespace TFSTree
 			openFileDialog.Title = "Open TFSTree Snapshot";
 			if (openFileDialog.ShowDialog() == DialogResult.OK)
 				{
-					Databases.Snapshot snapshot = new Databases.Snapshot();
-					snapshot.load(openFileDialog.FileName);
-							
-					_init(snapshot);
+					Snapshot snapshot = new Snapshot();
+					using (Stream r = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
+						{
+							snapshot.load(r);
+						}
+					_init(openFileDialog.FileName, snapshot.BranchNames);
 				}
 		}
 
@@ -338,7 +349,7 @@ namespace TFSTree
 			saveFileDialog.Title = "Save As";
 			saveFileDialog.Filter = "PNG (*.png)|*.png";
 			saveFileDialog.DefaultExt = ".png";
-			saveFileDialog.FileName = Regex.Replace(database.Name, @"\.[^.]*$", ".png");
+			saveFileDialog.FileName = Regex.Replace(_grapher.Name, @"\.[^.]*$", ".png");
 			if (saveFileDialog.ShowDialog() == DialogResult.OK)
 				{
 					if (viewer.Graph != null)
@@ -369,21 +380,21 @@ namespace TFSTree
 				{
 					_DBTypeBtn.Text = itm.Text;
 					_DBTypeBtn.Tag = itm.Tag;
-					
-					Databases.IDBPlugin plugin = itm.Tag as Databases.IDBPlugin;
+
+					StarTree.Host.Database.Plugin plugin = itm.Tag as StarTree.Host.Database.Plugin;
 					_activePlugin = plugin;
 				}
 		}
 
 		private void _newBtn_Click(object sender, EventArgs e)
 		{
-			Databases.IDBPlugin plugin = _DBTypeBtn.Tag as Databases.IDBPlugin;
+		StarTree.Host.Database.Plugin plugin = _DBTypeBtn.Tag as StarTree.Host.Database.Plugin;
 
 			if (plugin != null)
 				{
-					database = plugin.open();
+					plugin.open();
 
-					_init(database);
+					_init(plugin);
 				}
 		}
 
@@ -394,17 +405,17 @@ namespace TFSTree
 					Node clicked = viewer.GetObjectAt(e.X, e.Y) as Node;
 					if (clicked != null)
 						{
-							Databases.Revision revision = clicked.UserData as Databases.Revision;
+							Revision revision = clicked.UserData as Revision;
 							RevisionViewer revVwr = new RevisionViewer();
 							
 							if (revision != null)
 								{
-									revVwr.setRevision(_activePlugin, revision);
+									revVwr.setRevision(_activePlugin.names, revision);
 								}
 							else
 								{
 									List<Revision> revs = clicked.UserData as List<Revision>;
-									revVwr.setRevision(_activePlugin, revs);
+									revVwr.setRevision(_activePlugin.names, revs);
 								}
 							
 							revVwr.Show();

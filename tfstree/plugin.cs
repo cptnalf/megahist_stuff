@@ -1,106 +1,44 @@
 
 using System.Reflection;
 using System.Collections.Generic;
-using System.IO;
+using System.AddIn.Hosting;
+using System.Collections.ObjectModel;
 
 namespace TFSTree
 {
+	using Plugin = StarTree.Host.Database.Plugin;
 	using Type = System.Type;
 	
-	internal class Plugin
-	{
-		internal Assembly Assembly { get; set; }
-		internal Type DatabaseType { get; set; }
-		
-		internal Databases.IDBPlugin dbInterface { get; private set; }
-		
-		internal void load()
-		{
-			ConstructorInfo constructor = DatabaseType.GetConstructor(Type.EmptyTypes);
-			
-			if (constructor != null)
-				{
-					dbInterface = constructor.Invoke(null) as Databases.IDBPlugin;
-				}
-		}
-	}
-
-	internal class Plugins
+	internal class PluginLoader
 	{
 		private List<Plugin> _plugins = new List<Plugin>();
 		
-		internal Plugins() { }
+		internal PluginLoader() { }
 		
-		internal List<Databases.IDBPlugin> getDBPlugins()
+		internal List<Plugin> getDBPlugins() { return _plugins; }
+		
+		internal void unload()
 		{
-			List<Databases.IDBPlugin> dbs = new List<Databases.IDBPlugin>();
-			
-			foreach(Plugin p in _plugins)
-				{
-					Databases.IDBPlugin obj = p.dbInterface;
-					if (obj != null) { dbs.Add(obj); }
-				}
-			
-			return dbs;
+			_plugins.Clear();
+			_plugins = null;
+			_plugins = new List<Plugin>();
 		}
 		
 		internal void load(string directory)
 		{
-			string fullpath = Path.GetFullPath(directory);
-			string[] files = Directory.GetFiles(fullpath, "*.dll");
+			string fullpath = System.IO.Path.GetFullPath(directory);
 			
-			/* so this is probably not going to work too well.
-			 * best thing would be another app domain,
-			 * but that has a whole slew of problems...
-			 *
-			System.AppDomain me = System.AppDomain.CurrentDomain;
+			/* rebuild the plugin cache. */
+			AddInStore.Rebuild(fullpath);
 			
-			me.SetupInformation.PrivateBinPath += string.Format(";{0}", directory);
-			*/
+			/* grab the list o' addins. */
+			Collection<AddInToken> addins = AddInStore.FindAddIns(typeof(StarTree.Host.Database.Plugin), fullpath);
 			
-			foreach(string file in files)
+			foreach(AddInToken token in addins)
 				{
-					try
-						{
-							Plugin plugin;
-							Assembly assy = Assembly.LoadFile(file);
-							Type dbType = null;
+					Plugin p = token.Activate<Plugin>( AddInSecurityLevel.Host);
 					
-							Type[] types = assy.GetExportedTypes();
-					
-							foreach(Type t in types)
-								{
-									if (t.IsClass)
-										{
-											foreach(Type it in t.GetInterfaces())
-												{
-													if (it == typeof(Databases.IDBPlugin))
-														{
-															dbType = t;
-														}
-												}
-										}
-								}
-					
-							if (dbType != null)
-								{
-									plugin = new Plugin
-										{
-											Assembly = assy,
-											DatabaseType = dbType,
-										};
-									
-									plugin.load();
-									
-									_plugins.Add(plugin);
-								}
-						}
-					catch(System.Exception e)
-						{
-							/* ?? */
-							int x=1;
-							x+=1;
-						}
+					if (p != null) { _plugins.Add(p); }
 				}
 		}
 	}

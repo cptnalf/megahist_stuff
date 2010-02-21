@@ -6,12 +6,14 @@ using Microsoft.Glee.GraphViewerGdi;
 
 namespace TFSTree
 {
-	using Revision = Databases.Revision;
+	using Revision = StarTree.Host.Database.Revision;
+	using Snapshot = StarTree.Host.Database.Snapshot;
+	using RevisionSorterDesc = StarTree.Host.Database.RevisionSorterDesc;
 	using DrwColor = System.Drawing.Color;
 	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
 	using RevisionCont = treelib.AVLTree<string>;
 	using BranchChangesets =
-		treelib.AVLDict<string, treelib.AVLDict<int, Databases.Revision, treelib.IntSorterDesc>, treelib.StringSorterInsensitive>;
+		treelib.AVLDict<string, treelib.AVLDict<int, StarTree.Host.Database.Revision, treelib.IntSorterDesc>, treelib.StringSorterInsensitive>;
 	
 	internal struct RevisionColors
 	{
@@ -51,8 +53,8 @@ namespace TFSTree
 		/// <param name="revisions">Revisions to create graph for.</param>
 		/// <param name="database">database the revisions came from (to look up parents)</param>
 		/// <returns>Graph.</returns>		
-		internal Graph Create(treelib.AVLTree<Revision, Databases.RevisionSorterDesc> revisions, 
-		                       Databases.IRevisionRepo database)
+		internal Graph Create(treelib.AVLTree<Revision, RevisionSorterDesc> revisions, 
+		                      Snapshot snapshot)
 		{
 			Graph graph = _buildGraph(_name);
 			
@@ -61,12 +63,12 @@ namespace TFSTree
 					if (rev.Parents.Count < 4)
 						{
 							_printParentsFull(graph, rev, 
-																(parent) => { return database.rev(parent); } );
+																(parent) => { return snapshot.rev(parent); } );
 						}
 					else
 						{
 							_printParentsPartial(graph, rev, 
-																	 (parent) => { return database.rev(parent); } );
+																	 (parent) => { return snapshot.rev(parent); } );
 							/* so, let's collapse some of the history. */
 						}
 										

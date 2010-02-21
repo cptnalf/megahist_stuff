@@ -16,7 +16,7 @@ namespace TFSTree
 			InitializeComponent();
 		}
 		
-		public void setRevision(Databases.IDBPlugin plugin, Databases.Revision revision)
+		public void setRevision(StarTree.Host.Database.DisplayNames names, StarTree.Host.Database.Revision revision)
 		{
 			this.SuspendLayout();
 			
@@ -38,30 +38,30 @@ namespace TFSTree
 			
 			bldr.AppendFormat("branch {0}", revision.Branch);
 			bldr.AppendLine();
-			bldr.AppendLine(plugin.ParentName);
+			bldr.AppendLine(names.parent);
 			foreach(string parent in revision.Parents)
 				{
 					bldr.AppendLine(parent);
 				}
-			bldr.AppendFormat("{0} {1}",plugin.IDName, revision.ID);
+			bldr.AppendFormat("{0} {1}",names.id, revision.ID);
 			bldr.AppendLine();
-			bldr.AppendFormat("{0}: {1}", plugin.AuthorName, revision.Author);
+			bldr.AppendFormat("{0}: {1}", names.author, revision.Author);
 			bldr.AppendLine();
-			bldr.AppendFormat("Date: {0}", (Properties.Settings.Default.ToLocalTime ? revision.Date.ToLocalTime() : revision.Date));
+			bldr.AppendFormat("{0} {1}", names.date, (Properties.Settings.Default.ToLocalTime ? revision.Date.ToLocalTime() : revision.Date));
 			bldr.AppendLine();
 			bldr.AppendLine(revision.Log);
 			textBox1.Text = bldr.ToString();
 			
 			this.ResumeLayout();
 		}
-		
-		public void setRevision(Databases.IDBPlugin plugin, List<Databases.Revision> revisions)
+
+		public void setRevision(StarTree.Host.Database.DisplayNames names, List<StarTree.Host.Database.Revision> revisions)
 		{
 			DataGridView dgv = new DataGridView();
 			DataGridViewTextBoxColumn idCol = new DataGridViewTextBoxColumn();
 			idCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
 			idCol.DataPropertyName = "ID";
-			idCol.HeaderText = plugin.IDName;
+			idCol.HeaderText = names.id;
 			idCol.ReadOnly = true;
 			idCol.ValueType = typeof(string);
 			
@@ -75,27 +75,27 @@ namespace TFSTree
 			DataGridViewTextBoxColumn authorCol = new DataGridViewTextBoxColumn();
 			authorCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
 			authorCol.DataPropertyName = "Author";
-			authorCol.HeaderText = plugin.AuthorName;
+			authorCol.HeaderText = names.author;
 			authorCol.ReadOnly = true;
 			authorCol.ValueType = typeof(string);
 			
 			DataGridViewTextBoxColumn dateCol = new DataGridViewTextBoxColumn();
 			dateCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
 			dateCol.DataPropertyName = "Date";
-			dateCol.HeaderText = "Date";
+			dateCol.HeaderText = names.date;
 			dateCol.ReadOnly = true;
 			dateCol.ValueType = typeof(DateTime);
 			
 			DataGridViewTextBoxColumn logCol = new DataGridViewTextBoxColumn();
 			logCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 			logCol.DataPropertyName = "Log";
-			logCol.HeaderText = plugin.LogName;
+			logCol.HeaderText = names.log;
 			logCol.ReadOnly = true;
 			logCol.ValueType = typeof(string);
 			
 			dgv.Columns.AddRange( idCol, branchCol, authorCol, dateCol, logCol);
-			
-			foreach(Databases.Revision rev in revisions)
+
+			foreach (StarTree.Host.Database.Revision rev in revisions)
 				{
 					dgv.Rows.Add(rev.ID, rev.Branch, rev.Author, rev.Date, rev.Log);
 				}

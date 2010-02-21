@@ -139,6 +139,12 @@
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.AddIn">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.AddIn.Contract">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -159,7 +165,6 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="databases\snapshot.cs" />
     <Compile Include="DisplayOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -234,6 +239,7 @@
     <Compile Include="RevisionViewer.Designer.cs">
       <DependentUpon>RevisionViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="SnapshotSaver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\folder_page.png" />
@@ -300,16 +306,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\megahistorylib\megahistorylib.csproj">
-      <Project>{8723DA6D-9CBD-43D6-9218-88278099A063}</Project>
-      <Name>megahistorylib</Name>
-    </ProjectReference>
-    <ProjectReference Include="databases\TFSTree.DBInterface\TFSTree.DBInterface.csproj">
-      <Project>{F10693E1-5010-4337-92AB-026860F6DE8A}</Project>
-      <Name>TFSTree.DBInterface</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(EGSINCPATH)\EndProject.inc" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -319,4 +315,13 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ProjectReference Include="..\startree\StarTree.Host\StarTree.Host.csproj">
+      <Project>{7220103A-F444-4B43-95A0-96C2A6422CAC}</Project>
+      <Name>StarTree.Host</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="databases\" />
+  </ItemGroup>
 </Project>
