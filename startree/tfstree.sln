@@ -29,7 +29,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarTree.TFSDB", "plugins\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistorylib", "..\megahistorylib\megahistorylib.csproj", "{8723DA6D-9CBD-43D6-9218-88278099A063}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteStorage", "SQLiteStorage\SQLiteStorage.csproj", "{D863FFD6-9859-4C44-9AEF-B51D05E03700}"
+EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 1
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://rnotfsat:8080/
+		SccProjectUniqueName0 = ..\\megahistorylib\\megahistorylib.csproj
+		SccProjectName0 = ../megahistorylib
+		SccAuxPath0 = http://rnotfsat:8080
+		SccLocalPath0 = ..\\megahistorylib
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -171,6 +183,18 @@ Global
 		{8723DA6D-9CBD-43D6-9218-88278099A063}.Release|x64.Build.0 = Release|x64
 		{8723DA6D-9CBD-43D6-9218-88278099A063}.Release|x86.ActiveCfg = Release|x86
 		{8723DA6D-9CBD-43D6-9218-88278099A063}.Release|x86.Build.0 = Release|x86
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Debug|x64.ActiveCfg = Debug|x64
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Debug|x64.Build.0 = Debug|x64
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Debug|x86.ActiveCfg = Debug|x86
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Debug|x86.Build.0 = Debug|x86
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Release|x64.ActiveCfg = Release|x64
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Release|x64.Build.0 = Release|x64
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Release|x86.ActiveCfg = Release|x86
+		{D863FFD6-9859-4C44-9AEF-B51D05E03700}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

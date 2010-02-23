@@ -76,13 +76,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\log4net\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.TeamFoundation.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.Client.dll</HintPath>
+    <Reference Include="Microsoft.TeamFoundation, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
+    <Reference Include="Microsoft.TeamFoundation.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.VersionControl.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AddIn">
@@ -126,15 +136,14 @@
       <Project>{8723DA6D-9CBD-43D6-9218-88278099A063}</Project>
       <Name>megahistorylib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SQLiteCache\StarTree.Plugin.SQLiteCache.csproj">
-      <Project>{28A05E9B-1842-4B57-B84B-A8B8E5242A6D}</Project>
-      <Name>StarTree.Plugin.SQLiteCache</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\addinviews\StarTree.DatabasePlugin\StarTree.Plugin.Database.csproj">
       <Project>{EB64267B-668E-4B6B-9832-11C5A58831EC}</Project>
       <Name>StarTree.Plugin.Database</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SQLiteStorage\SQLiteStorage.csproj">
+      <Project>{D863FFD6-9859-4C44-9AEF-B51D05E03700}</Project>
+      <Name>SQLiteStorage</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -22,7 +22,19 @@ namespace StarTree.Plugin.TFSDB
 			
 			_mergeHist = new MergeHist(_vcs, _visitor);
 		}
-
+		
+		internal void push(int id, Item itm, int distance)
+		{
+			QueryRec rec = new QueryRec
+				{
+					id = id,
+					item = itm,
+					distance = distance,
+				};
+			
+			_queries.push(rec); 
+		}
+		
 		internal void runThreads()
 		{
 			Thread[] threads = new Thread[TFSDB.THREAD_COUNT];

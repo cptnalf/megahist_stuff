@@ -1,5 +1,5 @@
-﻿
-namespace StarTree.Plugin.SQLiteCache
+
+namespace SQLiteStorage
 {
 	using Revision = StarTree.Plugin.Database.Revision;
 	using Snapshot = StarTree.Plugin.Database.Snapshot;

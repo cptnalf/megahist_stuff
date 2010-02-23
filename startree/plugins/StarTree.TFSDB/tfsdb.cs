@@ -16,7 +16,7 @@ namespace StarTree.Plugin.TFSDB
 	/// <summary>
 	/// 
 	/// </summary>
-	public partial class TFSDB : StarTree.Plugin.SQLiteCache.SQLiteCache
+	public partial class TFSDB : SQLiteStorage.SQLiteCache
 	{
 		internal static int THREAD_COUNT = 8;
 		internal static log4net.ILog logger = log4net.LogManager.GetLogger("tfsdb_logger");

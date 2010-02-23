@@ -60,14 +60,15 @@ namespace StarTree.Plugin.TFSDB
 					};
 			}
 			//_onProgress(20, "finished history query");
-			
-			visitor.primeBranches(_branches.begin(), _branches.end());
-			_insertQueries(history, queries, branch, visitor);
-			
+
 			/* do the queries in parallel.
 			 * after that's done, walk the list of changesets marking parents correctly.
 			 */
 			QueryProcessor qp = new QueryProcessor(visitor, _vcs);
+			
+			visitor.primeBranches(_branches.begin(), _branches.end());
+			_insertQueries(history, qp, branch, visitor);
+			
 			qp.runThreads();
 			//_onProgress(60, "finished merge queries");
 			
@@ -163,7 +164,7 @@ namespace StarTree.Plugin.TFSDB
 			//_onProgress(10, "finished persisting the results");
 		}
 		
-		private bool _handleVisit(Changeset cs, AsyncQueue<QueryRec> queries, int depth)
+		private bool _handleVisit(Changeset cs, QueryProcessor qp, int depth)
 		{
 			/* grab the branches for this changeset. */
 			List<string> branchParts = megahistory.Utils.FindChangesetBranches(cs);
@@ -174,22 +175,14 @@ namespace StarTree.Plugin.TFSDB
 																	new ChangesetVersionSpec(cs.ChangesetId));
 
 					logger.DebugFormat("qm[{0},{1}]", itm.ServerItem, cs.ChangesetId);
-					/* queue the visiting work. */
-					QueryRec rec = new QueryRec
-						{
-							id = cs.ChangesetId,
-							item = itm,
-							distance = RECURSIVE_QUERY_COUNT,
-						};
-
-					queries.push(rec);
+					qp.push(cs.ChangesetId, itm, depth);
 				}
 			
 			return branchParts.Count > 0;
 		}
 		
 		private void _insertQueries(treelib.AVLTree<Changeset,ChangesetDescSorter> history,
-																AsyncQueue<QueryRec> queries, 
+																QueryProcessor qp,
 																string branch, 
 																TFSDBVisitor visitor)
 		{
@@ -213,13 +206,13 @@ namespace StarTree.Plugin.TFSDB
 											/* so, we need to do a 2nd level query, but not a first level. */
 											Changeset cs = _vcs.GetChangeset(int.Parse(parent));
 											
-											_handleVisit(cs, queries, RECURSIVE_QUERY_COUNT -1);
+											_handleVisit(cs, qp, RECURSIVE_QUERY_COUNT -1);
 										}
 								}
 						}
 					else
 						{
-							if (! _handleVisit(it.item(), queries, RECURSIVE_QUERY_COUNT))
+							if (! _handleVisit(it.item(), qp, RECURSIVE_QUERY_COUNT))
 								{
 									/* manufacture a visit since this changeset
 									 * has no merge actions to get branches from

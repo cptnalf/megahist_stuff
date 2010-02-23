@@ -11,7 +11,7 @@ namespace StarTree.Plugin.SQLiteCache
 	[System.AddIn.AddIn("SQLiteCache", Description="sqlite 3 database support")]
 	public class PluginInterface : StarTree.Plugin.Database.Plugin
 	{
-		private SQLiteCache _db;
+		private SQLiteStorage.SQLiteCache _db;
 		private DisplayNames _dn;
 		
 		public PluginInterface()
@@ -40,7 +40,7 @@ namespace StarTree.Plugin.SQLiteCache
 			DialogResult result = ofd.ShowDialog();
 			if (result == DialogResult.OK)
 				{
-					_db = new SQLiteCache();
+					_db = new SQLiteStorage.SQLiteCache();
 					_db.load(ofd.FileName);
 				}
 		}
