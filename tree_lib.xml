@@ -450,6 +450,11 @@
             end iterator, or an iterator pointing to the item in the list.
             </returns>
         </member>
+        <member name="M:treelib.AVLTree`1.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.AVLTree`1.begin">
              <summary>
             
@@ -461,6 +466,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.AVLTree`1.rbegin">
              <summary>
@@ -1118,6 +1128,11 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="M:treelib.TreapDict`3.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.TreapDict`3.begin">
              <summary>
             
@@ -1129,6 +1144,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`3.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.TreapDict`3.rbegin">
              <summary>
@@ -1328,6 +1348,11 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="M:treelib.Treap`1.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.Treap`1.begin">
              <summary>
             
@@ -1339,6 +1364,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.Treap`1.rbegin">
              <summary>
@@ -1519,6 +1549,11 @@
             <typeparam name="K"></typeparam>
             <typeparam name="V"></typeparam>
         </member>
+        <member name="M:treelib.AVLDict`3.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.AVLDict`3.begin">
              <summary>
             
@@ -1530,6 +1565,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`3.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.AVLDict`3.rbegin">
              <summary>
@@ -1736,6 +1776,11 @@
             </summary>
             <typeparam name="T">type being stored in the splaytree</typeparam>
         </member>
+        <member name="M:treelib.SplayTree`2.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.SplayTree`2.begin">
              <summary>
             
@@ -1747,6 +1792,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`2.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.SplayTree`2.rbegin">
              <summary>
@@ -1927,6 +1977,11 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="M:treelib.Treap`2.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.Treap`2.begin">
              <summary>
             
@@ -1938,6 +1993,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`2.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.Treap`2.rbegin">
              <summary>
@@ -2118,6 +2178,11 @@
             <typeparam name="K"></typeparam>
             <typeparam name="V"></typeparam>
         </member>
+        <member name="M:treelib.AVLDict`2.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.AVLDict`2.begin">
              <summary>
             
@@ -2129,6 +2194,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.AVLDict`2.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.AVLDict`2.rbegin">
              <summary>
@@ -2323,6 +2393,11 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="M:treelib.AVLTree`2.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.AVLTree`2.begin">
              <summary>
             
@@ -2334,6 +2409,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`2.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.AVLTree`2.rbegin">
              <summary>
@@ -2722,6 +2802,11 @@
             <typeparam name="K"></typeparam>
             <typeparam name="V"></typeparam>
         </member>
+        <member name="M:treelib.TreapDict`2.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.TreapDict`2.begin">
              <summary>
             
@@ -2733,6 +2818,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.TreapDict`2.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.TreapDict`2.rbegin">
              <summary>
@@ -3071,6 +3161,11 @@
             </summary>
             <typeparam name="T">type being stored in the splaytree</typeparam>
         </member>
+        <member name="M:treelib.SplayTree`1.End">
+            <summary>
+            static access to an End iterator.
+            </summary>
+        </member>
         <member name="M:treelib.SplayTree`1.begin">
              <summary>
             
@@ -3082,6 +3177,11 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.REnd">
+            <summary>
+            static access to an End iterator.
+            </summary>
         </member>
         <member name="M:treelib.SplayTree`1.rbegin">
              <summary>

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace StarTree.Host.Database
+namespace StarTree.Contracts.Database
 {
 	/// <summary>A revision in monotone.</summary>
 	[Serializable]
@@ -111,7 +111,7 @@ namespace StarTree.Host.Database
 		{
 			bool found = false;
 			foreach (string revid in _parents)
-				{ if (revid == id) { found = true; break; } }
+			{ if (revid == id) { found = true; break; } }
 			if (!found) { _parents.Add(id); }
 		}
 

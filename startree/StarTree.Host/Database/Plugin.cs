@@ -12,6 +12,7 @@ namespace StarTree.Host.Database
 		public abstract void open();
 		public abstract void close();
 		public abstract string[] branches();
+		public abstract Revision getRevision(string id);
 		public abstract Snapshot getBranch(string branch, long limit);
 	}
 }

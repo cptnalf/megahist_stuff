@@ -16,11 +16,40 @@ namespace StarTree.Host.Database
 		private static readonly byte[] MAGIC_BYTES = new byte[] { 0,0};
 		
 		private string _filename;
+		private Plugin _plugin;
 		
-		public RevisionIdx Revisions { get { return this._changesetIdx; } }
-		public BranchChangesets BranchChangesets { get { return this._branchChangesets; } }
+		//public RevisionIdx Revisions { get { return this._changesetIdx; } }
+		//public BranchChangesets BranchChangesets { get { return this._branchChangesets; } }
 		
-		public Snapshot() { }
+		public Snapshot(Plugin p) { _plugin = p; }
+		
+		public ulong size() { return _changesetIdx.size(); }
+		
+		public RevisionIdx.iterator find(string branch)
+		{
+			RevisionIdx.iterator rit = RevisionIdx.End();
+			BranchChangesets.iterator bit = _branchChangesets.find(branch);
+			
+			if (bit != _branchChangesets.end()) { rit = bit.value().begin(); }			
+			return rit;
+		}
+		
+		public override Revision rev(string id)
+		{
+			Revision rev = null;
+			RevisionIdx.iterator it = this._changesetIdx.find(id);
+			if (it != _changesetIdx.end()) { rev = it.value(); }
+			else
+				{
+					if (_plugin != null)
+						{
+							rev = _plugin.getRevision(id);
+							add(rev);
+						}
+				}
+			
+			return rev;
+		}
 		
 		public void add(Revision rev) { _addRevision(rev); }
 		
