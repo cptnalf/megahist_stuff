@@ -47,8 +47,15 @@ namespace StarTree.Plugin.Adapter.Database
 		
 		public Contracts.Database.Revision getRevision(string id)
 		{
-			Converters.Revision revcon = _plugin.getRevision(id);
-			return revcon;
+			Contracts.Database.Revision cr = null;
+			Plugin.Database.Revision rev = _plugin.getRevision(id);
+			
+			if (rev != null)
+				{
+					Converters.Revision revcon = rev;
+					cr = revcon;
+				}
+			return cr;
 		}
 
 #endregion

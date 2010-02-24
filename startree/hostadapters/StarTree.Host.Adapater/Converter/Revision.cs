@@ -33,7 +33,7 @@ namespace StarTree.Host.Adapter.Converter
 					Log = cr.Log,
 				};
 			foreach(string parent in cr.Parents) { hr.addParent(parent); }
-			
+	
 			return new Revision(cr, hr);
 		}
 		

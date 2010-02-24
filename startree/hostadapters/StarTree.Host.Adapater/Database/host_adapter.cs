@@ -50,8 +50,16 @@ namespace StarTree.Host.Adapter.Database
 
 		public override StarTree.Host.Database.Revision getRevision(string id)
 		{
-			Converter.Revision revcon = _plugin.getRevision(id);
-			return revcon;
+			Host.Database.Revision hr = null;
+			Contracts.Database.Revision rev = _plugin.getRevision(id);
+			
+			if (rev != null)
+				{
+					Converter.Revision revcon = rev; 
+					hr = revcon;
+				}
+			
+			return hr;
 		}
 	}
 }

@@ -11,26 +11,33 @@ namespace StarTree.Plugin.TFSDB
 	using RevisionCont = treelib.AVLTree<StarTree.Plugin.Database.Revision, StarTree.Plugin.Database.RevisionSorterDesc>;
 	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
 	using RevisionIdx = treelib.AVLDict<string, StarTree.Plugin.Database.Revision>;
-	using BranchChangesets =
-		treelib.AVLDict<string, treelib.AVLDict<string, StarTree.Plugin.Database.Revision>, treelib.StringSorterInsensitive>;
+	using ChangesetsDesc = treelib.AVLTree<Changeset,ChangesetDescSorter>;
 	
-	public partial class TFSDB
+	internal partial class TFSDB
 	{
-		private void _runQuery(string branch, ulong limit, string startID)
+		private VersionControlServer _vcs;
+		private string _branch;
+		private TFSDBVisitor _visitor;
+		
+		internal TFSDB(VersionControlServer vcs, string branch, TFSDBVisitor visitor)
 		{
-			TFSDBVisitor visitor = new TFSDBVisitor();
-			treelib.AVLTree<Changeset,ChangesetDescSorter> history = 
-				new treelib.AVLTree<Changeset,ChangesetDescSorter>();
-			AsyncQueue<QueryRec> queries = new AsyncQueue<QueryRec>(int.MaxValue);
+			_vcs = vcs;
+			_branch = branch;
+			_visitor = visitor;
+		}
+		
+		internal ChangesetsDesc queryHistory(ulong limit, string startID)
+		{
+			ChangesetsDesc history = new ChangesetsDesc();
 			
 			VersionSpec fromVer = null;
 			VersionSpec toVer = null;
 			
 			if (startID != null) { toVer = new ChangesetVersionSpec(startID); }
 
-			logger.DebugFormat("qh[{0},{1}]", branch, limit);
+			logger.DebugFormat("qh[{0},{1}]", _branch, limit);
 			IEnumerable foo =
-				_vcs.QueryHistory(branch, VersionSpec.Latest, 0, RecursionType.Full,
+				_vcs.QueryHistory(_branch, VersionSpec.Latest, 0, RecursionType.Full,
 													null, fromVer, toVer, /* user, from ver, to ver */
 													(int)limit, 
 													true, false, false); 
@@ -39,6 +46,11 @@ namespace StarTree.Plugin.TFSDB
 			/* sort the changesets in Descending order */
 			foreach (object o in foo) { history.insert(o as Changeset); }
 			
+			return history;
+		}
+
+		internal void queryMerges(ChangesetsDesc history, SQLiteStorage.SQLiteCache cache)
+		{
 			{
 				/* this is used by the 'FindChangesetBranches' to figure out which
 				 * changes to pay attention to.
@@ -64,111 +76,67 @@ namespace StarTree.Plugin.TFSDB
 			/* do the queries in parallel.
 			 * after that's done, walk the list of changesets marking parents correctly.
 			 */
-			QueryProcessor qp = new QueryProcessor(visitor, _vcs);
+			QueryProcessor qp = new QueryProcessor(_visitor, _vcs);
 			
-			visitor.primeBranches(_branches.begin(), _branches.end());
-			_insertQueries(history, qp, branch, visitor);
+			_insertQueries(history, qp, cache);
 			
 			qp.runThreads();
 			//_onProgress(60, "finished merge queries");
-			
-			{
-				int i = 0;
-				treelib.AVLTree<Changeset, ChangesetDescSorter>.iterator it;
-				Revision prev = null;
-				bool inMemory = false;
-				List<Revision> delRevs = new List<Revision>();
-				
-				for(it = history.begin(); it != history.end(); ++it)
-					{
-						/* i need to find a path to use as a base item for this merge history query. 
-						 *
-						 * this could skew the results a little bit.
-						 * unfortunately, to support renames, i need to get the previous name, 
-						 * which might be in the changeset history (?)
-						 * 
-						 * however, this won't detect situations where the user checked-in
-						 * changes on two separate branches.
-						 */
-						Changeset cs = it.item();
-						string id = TFSDB.MakeID(cs.ChangesetId);
+		}
+		
+		/// <summary>
+		/// this adds in the parents as part of the branch's standard history list.
+		/// </summary>
+		/// <param name="history"></param>
+		/// <param name="visitor"></param>
+		internal void fixHistory(ChangesetsDesc history)
+		{
+			int i = 0;
+			treelib.AVLTree<Changeset, ChangesetDescSorter>.iterator it;
+			Revision prev = null;
 						
-						if (prev != null)
-							{
-								if (!inMemory)
-									{
-										/* did we already query this far or further back?
-										 * does this parent already exist?
-										 */
-										bool found = false;
-										foreach(string parent in prev.Parents)
-											{ if (id == parent) { found = true; break; } }
+			for(it = history.begin(); it != history.end(); ++it)
+				{
+					Changeset cs = it.item();
+					string id = TFSDB.MakeID(cs.ChangesetId);
+					
+					if (prev != null)
+						{
+							/* fix up the parent.
+							 * this will only add the parent if they're not already in the list.
+							 */
+							prev.addParent(id);
+							if (null == _visitor.rev(prev.ID)) { _visitor.addRevision(prev, true); }
+						}
+					
+					Revision rev = _visitor.rev(id);
+					
+					if (rev == null)
+						{
+							logger.ErrorFormat("didn't find {0}!", id);
+						}
 										
-										if (!found)
-											{
-												/* deltas would be nice, 
-												 * but i think i'm going to purge 
-												 * and allow below to add back.
-												 */
-												delRevs.Add(prev);
-												
-												/* this will modify the in-memory copy
-												 * this ensures that the graphs will look as they are supposed to.
-												 */
-												prev.addParent(id);
-												visitor.addRevision(prev);
-											}
-									}
-								else
-									{
-										prev.addParent(id);
-									}
-							}
-						
-						Revision rev = visitor.rev(id);
-						
-						if (rev != null)
-							{
-								inMemory = true;
-								/* fill in the item from the queried one. */
-								//rev.addParent(prevID);
-							}
-						else
-							{
-								/* ok so it wasn't there, try my memory cache. 
-								 * this is the original changeset list, 
-								 * so if i found these in the db cache, 
-								 * they should be in my memory cache.
-								 */
-								//rev = _cache.rev(id);
-								rev = this.rev(id);
-								inMemory = false;
-							}
-						
-						prev = rev;
-						++i;
-					}
-				
-				logger.DebugFormat("del {0} revs", delRevs.Count);
-				foreach(Revision dr in delRevs)
-					{
-						logger.DebugFormat("d[{0}]", dr.ID);
-						this.del(dr);
-					}
-			}
+					prev = rev;
+					++i;
+				}
+		
 			//_onProgress(10, "finished history fixage");
-			
-			/* now we need to now save the stuff we just queried */
-			visitor.save(this);
-			
-			//_onProgress(10, "finished persisting the results");
 		}
 		
 		private bool _handleVisit(Changeset cs, QueryProcessor qp, int depth)
 		{
 			/* grab the branches for this changeset. */
 			List<string> branchParts = megahistory.Utils.FindChangesetBranches(cs);
-			
+
+			/* i need to find a path to use as a base item for this merge history query. 
+			 *
+			 * this could skew the results a little bit.
+			 * unfortunately, to support renames, i need to get the previous name, 
+			 * which might be in the changeset history (?)
+			 * 
+			 * however, this won't detect situations where the user checked-in
+			 * changes on two separate branches.
+			 */			
 			for (int bpi = 0; bpi < branchParts.Count; ++bpi)
 				{
 					Item itm = _vcs.GetItem(branchParts[bpi],
@@ -181,26 +149,25 @@ namespace StarTree.Plugin.TFSDB
 			return branchParts.Count > 0;
 		}
 		
-		private void _insertQueries(treelib.AVLTree<Changeset,ChangesetDescSorter> history,
+		private void _insertQueries(ChangesetsDesc history,
 																QueryProcessor qp,
-																string branch, 
-																TFSDBVisitor visitor)
+																SQLiteStorage.SQLiteCache cache)
 		{
-			treelib.AVLTree<Changeset,ChangesetDescSorter>.iterator it = history.begin();
+			ChangesetsDesc.iterator it = history.begin();
 			
 			for(; it != history.end(); ++it)
 				{					
 					logger.DebugFormat("saw[{0}]", it.item().ChangesetId);
 
 					/* do a cache lookup first. */
-					Revision rev = base.rev(MakeID(it.item().ChangesetId));
+					Revision rev = cache.rev(it.item().ChangesetId);
 					
 					if (rev != null)
 						{
-							visitor.addRevision(rev);
+							_visitor.addRevision(rev);
 							foreach(string parent in rev.Parents)
 								{
-									Revision pr = base.rev(parent);
+									Revision pr = cache.rev(parent);
 									if (pr == null)
 										{
 											/* so, we need to do a 2nd level query, but not a first level. */
@@ -217,7 +184,7 @@ namespace StarTree.Plugin.TFSDB
 									/* manufacture a visit since this changeset
 									 * has no merge actions to get branches from
 									 */
-									visitor.visit(branch, it.item());
+									_visitor.visit(_branch, it.item());
 								}
 						}
 				}

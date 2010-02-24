@@ -72,6 +72,29 @@ namespace SQLiteStorage
 		/// <param name="rev"></param>
 		public void save(Revision rev)
 		{
+			/* does it exist? */
+			bool exists = false;
+			using (SQLiteCommand cmd = _getCmd(
+@"SELECT id FROM revisions WHERE id = @ID"))
+				{
+					cmd.Parameters.Add("@id", DbType.Int32);
+					cmd.Parameters[0].Value = int.Parse(rev.ID);
+					
+					SQLiteDataReader rdr = cmd.ExecuteReader();
+					
+					if (rdr.HasRows && rdr.Read())
+						{
+							string id = rdr.GetString(0);
+							exists = (id == rev.ID);
+						}
+				}
+			
+			if (!exists) { _insert(rev); }
+			else  { _update(rev); }
+		}
+		
+		private void _insert(Revision rev)
+		{
 			using (SQLiteCommand cmd = 
 						 _getCmd(
 @"INSERT INTO revisions (id, branch, author, created, comment)
@@ -94,6 +117,36 @@ namespace SQLiteStorage
 					
 					cmd.ExecuteNonQuery();
 				}
+		}
+		
+		private void _update(Revision rev)
+		{
+		using (SQLiteCommand cmd =
+					 _getCmd(
+@"UPDATE revisions 
+SET branch = @branch,
+    author = @author,
+    created = @created,
+    comment = @comment
+WHERE id = @id"))
+			{
+				cmd.Parameters.Add("@id", DbType.Int32);
+				cmd.Parameters[0].Value = int.Parse(rev.ID);
+
+				cmd.Parameters.Add("@branch", DbType.String);
+				cmd.Parameters[1].Value = rev.Branch;
+
+				cmd.Parameters.Add("@author", DbType.String);
+				cmd.Parameters[2].Value = rev.Author;
+
+				cmd.Parameters.Add("@created", DbType.DateTime);
+				cmd.Parameters[3].Value = rev.Date;
+
+				cmd.Parameters.Add("@comment", DbType.String);
+				cmd.Parameters[4].Value = rev.Log;
+
+				cmd.ExecuteNonQuery();
+			}			
 		}
 		
 		public void del(Revision rev)

@@ -6,17 +6,11 @@ namespace StarTree.Plugin.TFSDB
 {
 	using Revision = StarTree.Plugin.Database.Revision;
 	using Snapshot = StarTree.Plugin.Database.Snapshot;
-	using StringEnumerable = System.Collections.Generic.IEnumerable<string>;
-	using RevisionCont = treelib.AVLTree<StarTree.Plugin.Database.Revision, StarTree.Plugin.Database.RevisionSorterDesc>;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
-	using RevisionIdx = treelib.AVLDict<string, StarTree.Plugin.Database.Revision>;
-	using BranchChangesets =
-		treelib.AVLDict<string, treelib.AVLDict<string, StarTree.Plugin.Database.Revision>, treelib.StringSorterInsensitive>;
 		
 	/// <summary>
 	/// 
 	/// </summary>
-	public partial class TFSDB : SQLiteStorage.SQLiteCache
+	internal partial class TFSDB
 	{
 		internal static int THREAD_COUNT = 8;
 		internal static log4net.ILog logger = log4net.LogManager.GetLogger("tfsdb_logger");
@@ -28,11 +22,7 @@ namespace StarTree.Plugin.TFSDB
 		 */
 		private static readonly int RECURSIVE_QUERY_COUNT = 2;
 		
-		private string _tfsServerName;
-		private VersionControlServer _vcs;
-		private BranchContainer _branches = new BranchContainer();
-		
-		public TFSDB()
+		internal void LoadLogger()
 		{
 			if (! logger.Logger.Repository.Configured)
 				{
@@ -60,67 +50,22 @@ namespace StarTree.Plugin.TFSDB
 				}
 		}
 		
-		public override void load(string filename)
+		internal static string[] DefaultBranches()
 		{
-			_tfsServerName = filename;
-			_vcs = megahistory.Utils.GetTFSServer(filename);
-			base.load(filename);
-		}
-		
-		/// <summary>
-		/// close
-		/// </summary>
-		public override void close()
-		{
-			base.close();
-		}
-		
-		public override string Name { get { return _tfsServerName; } }
-		
-		/// <summary>
-		/// prepopulate
-		/// </summary>
-		public override System.Collections.Generic.IEnumerable<string> BranchNames
-		{
-			get
-				{
-					if (_branches == null || _branches.empty()) { _queryBranches(); }
-					return _branches;
-				}
-		}
-		
-		public override Snapshot getBranch(string branch, ulong limit)
-		{
-			Snapshot sn = null;
-			
-			/* it doesn't matter how many items i have in the cache, 
-			 * i want the last X in connected descending order.
-			 */
-			_runQuery(branch, limit, null);
-			
-			/* the full list should be in the cache now. */
-			sn = base.getBranch(branch, limit);
-			
-			return sn;
-		}
-		
-		private void _queryBranches()
-		{
-			_branches = new BranchContainer();
-			
 			/* replace this with a dynamic tfs query.
 			 * maybe cache that too.
 			 */
+			string[] staticBranches = {
+				"$/IGT_0803/development/dev_adv/EGS/",
+				"$/IGT_0803/development/dev_adv_cr/EGS/",
+				"$/IGT_0803/development/dev_build/EGS/",
+				"$/IGT_0803/development/dev_ABS/EGS/",
+				"$/IGT_0803/development/dev_sb/EGS/",
+				"$/IGT_0803/main/EGS/",
+				"$/IGT_0803/release/EGS8.2/dev_sp/EGS/",
+				};
 			
-			_branches.insert("$/IGT_0803/development/dev_adv/EGS/");
-			_branches.insert("$/IGT_0803/development/dev_adv_cr/EGS/");
-			_branches.insert("$/IGT_0803/development/dev_build/EGS/");
-			_branches.insert("$/IGT_0803/development/dev_ABS/EGS/");
-			_branches.insert("$/IGT_0803/development/dev_sb/EGS/");
-			_branches.insert("$/IGT_0803/main/EGS/");
-			_branches.insert("$/IGT_0803/release/EGS8.2/dev_sp/EGS/");
-			
-			foreach(string branch in base.BranchNames) { _branches.insert(branch); }
+			return staticBranches;
 		}
 	}		
 }

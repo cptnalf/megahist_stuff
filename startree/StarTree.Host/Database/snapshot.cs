@@ -44,7 +44,8 @@ namespace StarTree.Host.Database
 					if (_plugin != null)
 						{
 							rev = _plugin.getRevision(id);
-							add(rev);
+							/* only add if we actually found something */
+							if (rev != null) { add(rev); }
 						}
 				}
 			

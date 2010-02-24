@@ -55,8 +55,10 @@ namespace TFSTree
 		internal Graph Create(Snapshot snapshot, string branch)
 		{
 			Graph graph = _buildGraph(_name);
-			RevisionIdx.iterator it = snapshot.find(branch);
+			_colors.Clear();
 			
+			RevisionIdx.iterator it = snapshot.find(branch);
+						
 			for(; it != RevisionIdx.End(); ++it)
 				{
 					if (it.value().Parents.Count < 4)

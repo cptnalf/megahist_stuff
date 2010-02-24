@@ -43,12 +43,41 @@ namespace StarTree.Plugin.TFSDB
 			return branch;
 		}
 		
+		internal void primeBranches(string[] branches)
+		{ foreach(string b in branches) { _branches.insert(b); } }
+		
 		internal void primeBranches(BranchContainer.iterator beg, BranchContainer.iterator end)
 		{ for(; beg != end; ++beg) { _branches.insert(beg.item()); } }
 		
 		public void addRevision(Revision rev)
 		{
 			_addRevision(rev);
+		}
+		
+		public void addRevision(Revision rev, bool replace)
+		{
+			if (replace)
+				{
+					/* overwrite the existing one. 
+					 * since this is a reference type and not a value type,
+					 * changing the one in the index should alter the rest 
+					 * (they should all point to the same object)
+					 */
+					RevisionIdx.iterator it = this._changesetIdx.find(rev.ID);
+					if (it != _changesetIdx.end())
+						{
+							/* so, we already have the changeset.
+							 * let's change some stuff about it.
+							 */
+							it.value().Branch = rev.Branch;
+							it.value().Author = rev.Author;
+							it.value().Date = new System.DateTime(rev.Date.Ticks, rev.Date.Kind);
+							it.value().Log = rev.Log;
+							foreach(string p in rev.Parents) { it.value().addParent(p); }
+						}
+					else { addRevision(rev); }
+				}
+			else { addRevision(rev); }
 		}
 		
 		public Revision visit(string branch, Changeset cs)
@@ -106,7 +135,7 @@ namespace StarTree.Plugin.TFSDB
 			return rev != null;
 		}
 		
-		internal void save(TFSDB db)
+		internal void save(SQLiteStorage.SQLiteCache db)
 		{
 			for(BranchChangesets.iterator bit = _branchChangesets.begin();
 					bit != _branchChangesets.end();

@@ -74,27 +74,54 @@ namespace SQLiteStorage
 		/// <param name="rev"></param>
 		public void save(Revision rev)
 		{
-			using (SQLiteCommand cmd = _getCmd(
-@"INSERT INTO parents (child, parent) 
- VALUES(@child, @parent)"))
+			bool exists = false;
+			SQLiteCommand cmd = _getCmd(string.Empty);
+			cmd.Parameters.Add("@child", DbType.Int32);
+			cmd.Parameters.Add("@parent", DbType.Int32);
+			
+			int child = int.Parse(rev.ID);
+			foreach(string parent in rev.Parents)
 				{
-					cmd.Parameters.Add("@child", DbType.Int32);
-					cmd.Parameters.Add("@parent", DbType.Int32);
-					int child = int.Parse(rev.ID);
-					
-					cmd.Parameters[0].Value = child;
-					
-					foreach(string parent in rev.Parents)
-						{
-							int parentID = int.Parse(parent);
-							cmd.Parameters[1].Value = parentID;
-							
-							cmd.ExecuteNonQuery();
-						}
-					
-					cmd.Connection.Close();
-					cmd.Connection = null;
+					int parentID = int.Parse(parent);
+					if (! _exists(cmd, child, parentID)) { _insert(cmd, child, parentID); }
 				}
+			cmd.Dispose();
+			cmd = null;
+		}
+		
+		private void _insert(SQLiteCommand cmd, int child, int parent)
+		{		
+			cmd.CommandText = 
+@"INSERT INTO parents (child, parent) 
+ VALUES(@child, @parent)";
+
+			cmd.Parameters[0].Value = child;
+			cmd.Parameters[1].Value = parent;
+					
+			cmd.ExecuteNonQuery();
+		}
+		
+		private bool _exists(SQLiteCommand cmd, int child, int parent)
+		{
+			cmd.CommandText = 
+@"SELECT child, parent 
+FROM parents 
+WHERE child = @child 
+  AND parent = @parent";
+			cmd.Parameters[0].Value = child;
+			cmd.Parameters[1].Value = parent;
+			SQLiteDataReader rdr = cmd.ExecuteReader();
+			
+			bool result = false;
+			if (rdr.HasRows && rdr.Read())
+				{
+					int c = rdr.GetInt32(0);
+					int p = rdr.GetInt32(1);
+					
+					result = (c == child) && (parent == p);
+				}
+			
+			return result;
 		}
 		
 		public void del(Revision rev)

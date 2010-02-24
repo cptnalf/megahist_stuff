@@ -30,10 +30,15 @@ namespace SQLiteStorage
 		public virtual Revision rev(string id)
 		{
 			int revID = int.Parse(id);
-			Revision revision = _revsTbl.getRev(revID);
+			return rev(revID);
+		}
+		
+		public virtual Revision rev(int id)
+		{
+			Revision revision = _revsTbl.getRev(id);
 			if (revision != null) { _parentsTbl.load(ref revision); }
-			
-			return revision;
+
+			return revision;			
 		}
 
 		public virtual Snapshot getBranch(string branch, ulong limit)
