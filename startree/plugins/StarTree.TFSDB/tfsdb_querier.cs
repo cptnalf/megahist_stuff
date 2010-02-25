@@ -105,8 +105,11 @@ namespace StarTree.Plugin.TFSDB
 							/* fix up the parent.
 							 * this will only add the parent if they're not already in the list.
 							 */
-							prev.addParent(id);
-							if (null == _visitor.rev(prev.ID)) { _visitor.addRevision(prev, true); }
+							if (! prev.addParent(id))
+								{
+									_visitor.addRevision(prev, true);
+								}
+							else { if (null == _visitor.rev(prev.ID)) { _visitor.addRevision(prev); } }
 						}
 					
 					Revision rev = _visitor.rev(id);

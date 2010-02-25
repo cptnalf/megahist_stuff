@@ -70,22 +70,25 @@ namespace SQLiteStorage
 		/// save a revision to the database cache.
 		/// </summary>
 		/// <param name="rev"></param>
-		public void save(Revision rev)
+		public void save(SQLiteConnection conn, Revision rev)
 		{
 			/* does it exist? */
 			bool exists = false;
-			using (SQLiteCommand cmd = _getCmd(
-@"SELECT id FROM revisions WHERE id = @ID"))
+			using (SQLiteCommand cmd = conn.CreateCommand())
 				{
+					cmd.CommandText = @"SELECT id FROM revisions WHERE id = @ID";
+					cmd.CommandType = System.Data.CommandType.Text;
 					cmd.Parameters.Add("@id", DbType.Int32);
 					cmd.Parameters[0].Value = int.Parse(rev.ID);
 					
-					SQLiteDataReader rdr = cmd.ExecuteReader();
-					
-					if (rdr.HasRows && rdr.Read())
+					using (SQLiteDataReader rdr = cmd.ExecuteReader())
 						{
-							string id = rdr.GetString(0);
-							exists = (id == rev.ID);
+							if (rdr.HasRows && rdr.Read())
+								{
+									int i = rdr.GetInt32(0);
+									int rev_id = int.Parse(rev.ID);
+									exists = (i == rev_id);
+								}
 						}
 				}
 			

@@ -108,12 +108,14 @@ namespace StarTree.Plugin.Database
 		/// add a parent, ensuring we're not adding a duplicate
 		/// </summary>
 		/// <param name="id"></param>
-		public void addParent(string id)
+		public bool addParent(string id)
 		{
 			bool found = false;
 			foreach(string revid in _parents)
 				{ if (revid == id) { found = true; break; } }
 			if (!found) { _parents.Add(id); }
+			
+			return found;
 		}
 		
 		/// <summary>Gets the parent IDs.</summary>

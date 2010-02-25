@@ -72,10 +72,10 @@ namespace SQLiteStorage
 		/// save parents of a revision.
 		/// </summary>
 		/// <param name="rev"></param>
-		public void save(Revision rev)
+		public void save(SQLiteConnection conn, Revision rev)
 		{
 			bool exists = false;
-			SQLiteCommand cmd = _getCmd(string.Empty);
+			SQLiteCommand cmd = conn.CreateCommand();
 			cmd.Parameters.Add("@child", DbType.Int32);
 			cmd.Parameters.Add("@parent", DbType.Int32);
 			
@@ -90,7 +90,8 @@ namespace SQLiteStorage
 		}
 		
 		private void _insert(SQLiteCommand cmd, int child, int parent)
-		{		
+		{
+			cmd.CommandType = System.Data.CommandType.Text;
 			cmd.CommandText = 
 @"INSERT INTO parents (child, parent) 
  VALUES(@child, @parent)";
@@ -103,6 +104,7 @@ namespace SQLiteStorage
 		
 		private bool _exists(SQLiteCommand cmd, int child, int parent)
 		{
+			cmd.CommandType = System.Data.CommandType.Text;
 			cmd.CommandText = 
 @"SELECT child, parent 
 FROM parents 
@@ -110,15 +112,17 @@ WHERE child = @child
   AND parent = @parent";
 			cmd.Parameters[0].Value = child;
 			cmd.Parameters[1].Value = parent;
-			SQLiteDataReader rdr = cmd.ExecuteReader();
 			
-			bool result = false;
-			if (rdr.HasRows && rdr.Read())
+			bool result = false;			
+			using (SQLiteDataReader rdr = cmd.ExecuteReader())
 				{
-					int c = rdr.GetInt32(0);
-					int p = rdr.GetInt32(1);
-					
-					result = (c == child) && (parent == p);
+					if (rdr.HasRows && rdr.Read())
+						{
+							int c = rdr.GetInt32(0);
+							int p = rdr.GetInt32(1);
+							
+							result = (c == child) && (parent == p);
+						}
 				}
 			
 			return result;

@@ -73,11 +73,27 @@ namespace SQLiteStorage
 		}
 		
 		public virtual void close() { }
-		
-		public void save(Revision rev)
+
+		public object start()
 		{
-			_revsTbl.save(rev);
-			_parentsTbl.save(rev);
+			System.Data.SQLite.SQLiteConnection conn = new System.Data.SQLite.SQLiteConnection(_connStr);
+			conn.Open();
+			
+			return conn;
+		}
+		
+		public void end(object data)
+		{
+			System.Data.SQLite.SQLiteConnection conn = data as System.Data.SQLite.SQLiteConnection;
+			conn.Close();
+			conn = null;
+		}
+		
+		public void save(object data, Revision rev)
+		{
+			System.Data.SQLite.SQLiteConnection conn = data as System.Data.SQLite.SQLiteConnection;
+			_revsTbl.save(conn, rev);
+			_parentsTbl.save(conn, rev);
 		}
 		
 		public void del(Revision rev)

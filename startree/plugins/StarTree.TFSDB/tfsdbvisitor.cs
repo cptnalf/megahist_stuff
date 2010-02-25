@@ -137,6 +137,8 @@ namespace StarTree.Plugin.TFSDB
 		
 		internal void save(SQLiteStorage.SQLiteCache db)
 		{
+			object data = db.start();
+			
 			for(BranchChangesets.iterator bit = _branchChangesets.begin();
 					bit != _branchChangesets.end();
 					++bit)
@@ -148,9 +150,11 @@ namespace StarTree.Plugin.TFSDB
 							TFSDB.logger.DebugFormat("s[{0}]", rit.value().ID);
 							
 							/* database. */
-							db.save(rit.value());
+							db.save(data, rit.value());
 						}
 				}
+			
+			db.end(data);
 		}
 	}
 }
