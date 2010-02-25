@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Git.Database
 {
+	using Revision = StarTree.Plugin.Database.Revision;
+	using Snapshot = StarTree.Plugin.Database.Snapshot;
+	
 	[System.AddIn.AddIn("GitPlugin", Description="Git StarTree plugin for git source control", Version="1.0.0.0")]
 	public class PluginInterface : StarTree.Plugin.Database.Plugin
 	{
@@ -62,12 +65,18 @@ namespace Git.Database
 			return branches;
 		}
 
-		public override StarTree.Plugin.Database.Snapshot getBranch(string branch, long limit)
+		public override Snapshot getBranch(string branch, long limit)
 		{
-			StarTree.Plugin.Database.Snapshot sn = _db.getBranch(branch, (ulong)limit);
+			Snapshot sn = _db.getBranch(branch, (ulong)limit);
 			return sn;
 		}
-		public override StarTree.Plugin.Database.Revision getRevision(string id)
+		public override Revision getRevision(string id)
 		{ return _db.rev(id); }
+		
+		public override Snapshot queryMerges(Revision rev)
+		{
+			/* blank */
+			return new Snapshot();
+		}
 	}
 }

@@ -21,7 +21,7 @@ namespace TFSTree
 				
 		/// <summary>Active revision.</summary>
 		/// <remarks>A revision is active when the user right-clicks on it.</remarks>
-		Revision activeRev;
+		Node _activeNode;
 		
 		/// <summary>Last position where mouse wheel was moved.</summary>
 		System.Drawing.Point wheelPosition;
@@ -155,7 +155,23 @@ namespace TFSTree
 					about.ShowDialog();
 				}
 			else if (sender == ctxMenuItemCopyRevisionID)
-				{ if (activeRev != null) { Clipboard.SetText(activeRev.ID); } }
+				{
+					if (_activeNode != null)
+						{
+							Revision rev = _activeNode.UserData as Revision;
+							if (rev != null) { Clipboard.SetText(rev.ID); }
+							else
+								{
+									List<Revision> revs = _activeNode.UserData as List<Revision>;
+									if (revs != null)
+										{
+											System.Text.StringBuilder bldr = new System.Text.StringBuilder();
+											foreach(Revision r in revs) { bldr.AppendLine(r.ID); }
+											Clipboard.SetText(bldr.ToString());
+										}
+								}
+						}
+				}
 		}
 
 		/// <summary>Event handler for clicks on toolbar buttons.</summary>
@@ -267,9 +283,8 @@ namespace TFSTree
 		private void contextMenuStripViewer_Opening(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			Point p = viewer.PointToClient(Cursor.Position);
-			Node current = viewer.GetObjectAt(p.X, p.Y) as Node;
-			activeRev = (current != null) ? (Revision)current.UserData : null;
-			ctxMenuItemCopyRevisionID.Enabled = (activeRev != null);
+			_activeNode = viewer.GetObjectAt(p.X, p.Y) as Node;
+			ctxMenuItemCopyRevisionID.Enabled = (_activeNode != null);
 		}
 
 		private void toolStripButton1_Click(object sender, EventArgs e)
@@ -418,6 +433,24 @@ namespace TFSTree
 								}
 							
 							revVwr.Show();
+						}
+				}
+		}
+
+		private void queryMoreToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_activeNode != null)
+				{
+					Revision rev = _activeNode.UserData as Revision;
+					if (rev != null)
+						{
+							/* run a nice query, pasting the revisions into this graph. */
+						}
+					else
+						{
+							MessageBox.Show("consolidated parent nodes are not currently supported.", 
+							                "bad user", MessageBoxButtons.RetryCancel, 
+							                MessageBoxIcon.Error, MessageBoxDefaultButton.Button2);
 						}
 				}
 		}

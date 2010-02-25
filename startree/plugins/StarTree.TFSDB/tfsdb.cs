@@ -1,11 +1,10 @@
 
-using System.Collections.Generic;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace StarTree.Plugin.TFSDB
 {
-	using Revision = StarTree.Plugin.Database.Revision;
-	using Snapshot = StarTree.Plugin.Database.Snapshot;
+	using IEnumerable = System.Collections.IEnumerable;
+	using ChangesetsDesc = treelib.AVLTree<Changeset, ChangesetDescSorter>;
 		
 	/// <summary>
 	/// 
@@ -67,6 +66,35 @@ namespace StarTree.Plugin.TFSDB
 			
 			return staticBranches;
 		}
+		
+		/// <summary>
+		/// run VersionControlServer.QueryHistory
+		/// </summary>
+		internal static TFSDB QueryHistory(VersionControlServer vcs, string branch,
+																			 ulong limit, string startID)
+		{
+			TFSDB tfsdb = new TFSDB(vcs, branch);
+			tfsdb._history = new ChangesetsDesc();
+			
+			VersionSpec fromVer = null;
+			VersionSpec toVer = null;
+			
+			if (startID != null) { toVer = new ChangesetVersionSpec(startID); }
+
+			logger.DebugFormat("qh[{0},{1}]", branch, limit);
+			IEnumerable foo =
+				vcs.QueryHistory(branch, VersionSpec.Latest, 0, RecursionType.Full,
+												 null, fromVer, toVer, /* user, from ver, to ver */
+												 (int)limit, 
+												 true, false, false); 
+			/* inc changes, slot mode, inc download info. */
+			
+			/* sort the changesets in Descending order */
+			foreach (object o in foo) { tfsdb._history.insert(o as Changeset); }
+			
+			return tfsdb;
+		}
+
 	}		
 }
 

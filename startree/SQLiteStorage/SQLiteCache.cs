@@ -58,6 +58,27 @@ namespace SQLiteStorage
 			return sn;
 		}
 		
+		public virtual Snapshot queryMerges(Revision rev)
+		{
+			Snapshot sn = new Snapshot();
+			
+			sn.add(rev);
+			foreach(string parent in rev.Parents)
+				{
+					int id = int.Parse(parent);
+					Revision p = _revsTbl.getRev(id);
+					
+					if (p != null)
+						{
+							_parentsTbl.load(ref p);
+							
+							sn.add(p);
+						}
+				}
+			
+			return sn;
+		}
+		
 		/// <summary>
 		/// prime the database
 		/// </summary>

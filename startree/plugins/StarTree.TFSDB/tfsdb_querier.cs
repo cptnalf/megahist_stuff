@@ -18,38 +18,19 @@ namespace StarTree.Plugin.TFSDB
 		private VersionControlServer _vcs;
 		private string _branch;
 		private TFSDBVisitor _visitor;
+		private ChangesetsDesc _history;
 		
-		internal TFSDB(VersionControlServer vcs, string branch, TFSDBVisitor visitor)
+		internal ChangesetsDesc history { get { return _history; } }
+		internal TFSDBVisitor visitor { get { return _visitor; } }
+		
+		internal TFSDB(VersionControlServer vcs, string branch)
 		{
 			_vcs = vcs;
 			_branch = branch;
-			_visitor = visitor;
+			_visitor = new TFSDBVisitor();
 		}
 		
-		internal ChangesetsDesc queryHistory(ulong limit, string startID)
-		{
-			ChangesetsDesc history = new ChangesetsDesc();
-			
-			VersionSpec fromVer = null;
-			VersionSpec toVer = null;
-			
-			if (startID != null) { toVer = new ChangesetVersionSpec(startID); }
-
-			logger.DebugFormat("qh[{0},{1}]", _branch, limit);
-			IEnumerable foo =
-				_vcs.QueryHistory(_branch, VersionSpec.Latest, 0, RecursionType.Full,
-													null, fromVer, toVer, /* user, from ver, to ver */
-													(int)limit, 
-													true, false, false); 
-			/* inc changes, slot mode, inc download info. */
-			
-			/* sort the changesets in Descending order */
-			foreach (object o in foo) { history.insert(o as Changeset); }
-			
-			return history;
-		}
-
-		internal void queryMerges(ChangesetsDesc history, SQLiteStorage.SQLiteCache cache)
+		internal void queryMerges(SQLiteStorage.SQLiteCache cache)
 		{
 			{
 				/* this is used by the 'FindChangesetBranches' to figure out which
@@ -78,7 +59,7 @@ namespace StarTree.Plugin.TFSDB
 			 */
 			QueryProcessor qp = new QueryProcessor(_visitor, _vcs);
 			
-			_insertQueries(history, qp, cache);
+			_insertQueries(qp, cache);
 			
 			qp.runThreads();
 			//_onProgress(60, "finished merge queries");
@@ -89,15 +70,12 @@ namespace StarTree.Plugin.TFSDB
 		/// </summary>
 		/// <param name="history"></param>
 		/// <param name="visitor"></param>
-		internal void fixHistory(ChangesetsDesc history)
+		internal void fixHistory()
 		{
-			int i = 0;
-			treelib.AVLTree<Changeset, ChangesetDescSorter>.iterator it;
 			Revision prev = null;
 						
-			for(it = history.begin(); it != history.end(); ++it)
+			foreach(Changeset cs in _history)
 				{
-					Changeset cs = it.item();
 					string id = TFSDB.MakeID(cs.ChangesetId);
 					
 					if (prev != null)
@@ -105,25 +83,20 @@ namespace StarTree.Plugin.TFSDB
 							/* fix up the parent.
 							 * this will only add the parent if they're not already in the list.
 							 */
-							if (! prev.addParent(id))
-								{
-									_visitor.addRevision(prev, true);
-								}
-							else { if (null == _visitor.rev(prev.ID)) { _visitor.addRevision(prev); } }
+							prev.addParent(id);
 						}
 					
+					/* lookup the item for the next round. 
+					 * everything we're looking for should already be in the visitor
+					 * if it's not, there's a problem with the algorithm.
+					 */
 					Revision rev = _visitor.rev(id);
 					
-					if (rev == null)
-						{
-							logger.ErrorFormat("didn't find {0}!", id);
-						}
-										
+					/* sanity check. */
+					if (rev == null) { logger.ErrorFormat("didn't find {0}!", id); }
+					
 					prev = rev;
-					++i;
 				}
-		
-			//_onProgress(10, "finished history fixage");
 		}
 		
 		private bool _handleVisit(Changeset cs, QueryProcessor qp, int depth)
@@ -152,43 +125,77 @@ namespace StarTree.Plugin.TFSDB
 			return branchParts.Count > 0;
 		}
 		
-		private void _insertQueries(ChangesetsDesc history,
-																QueryProcessor qp,
+		/// <summary>
+		/// insert queries into the processor that haven't already been done.
+		/// (eg, in the cache)
+		/// </summary>
+		private void _insertQueries(QueryProcessor qp,
 																SQLiteStorage.SQLiteCache cache)
 		{
-			ChangesetsDesc.iterator it = history.begin();
+			ChangesetsDesc.iterator it = _history.begin();
 			
-			for(; it != history.end(); ++it)
-				{					
+			for(; it != _history.end(); ++it)
+				{
 					logger.DebugFormat("saw[{0}]", it.item().ChangesetId);
-
-					/* do a cache lookup first. */
-					Revision rev = cache.rev(it.item().ChangesetId);
 					
-					if (rev != null)
+					/* do a cache lookup first. */
+					Revision rev = _visitor.rev(MakeID(it.item().ChangesetId));
+					
+					if (rev == null)
 						{
-							_visitor.addRevision(rev);
-							foreach(string parent in rev.Parents)
+							/* try a cache lookup. */
+							rev = cache.rev(it.item().ChangesetId);
+							
+							if (rev == null)
 								{
-									Revision pr = cache.rev(parent);
-									if (pr == null)
+									/* ok, ok, we really don't have it... 
+									 * didn't find it, so do the first level query. 
+									 */
+									if (! _handleVisit(it.item(), qp, RECURSIVE_QUERY_COUNT))
 										{
-											/* so, we need to do a 2nd level query, but not a first level. */
-											Changeset cs = _vcs.GetChangeset(int.Parse(parent));
-											
-											_handleVisit(cs, qp, RECURSIVE_QUERY_COUNT -1);
+											/* manufacture a visit since this changeset
+											 * has no merge actions to get branches from
+											 */
+											_visitor.visit(_branch, it.item());
 										}
+								}
+							else
+								{
+									/* hah! found it in the cache, 
+									 * so add it to our in-memory lookup 
+									 * this will ensure that the merge-queries are able to see this
+									 * already-looked-up item.
+									 */
+									_visitor.addRevision(rev);
 								}
 						}
 					else
 						{
-							if (! _handleVisit(it.item(), qp, RECURSIVE_QUERY_COUNT))
-								{
-									/* manufacture a visit since this changeset
-									 * has no merge actions to get branches from
-									 */
-									_visitor.visit(_branch, it.item());
-								}
+							populateQueries(rev, qp, cache);
+						}
+				}
+		}
+		
+		/// <summary>
+		/// this populates the 2nd level queries.
+		/// </summary>
+		internal void populateQueries(Revision rev, QueryProcessor qp, SQLiteStorage.SQLiteCache cache)
+		{
+			/* did find it, so try the second level queries. */
+			foreach(string parent in rev.Parents)
+				{
+					Revision pr = cache.rev(parent);
+					if (pr == null)
+						{
+							/* so, we need to do a 2nd level query, but not a first level. */
+							Changeset cs = _vcs.GetChangeset(int.Parse(parent));
+							
+							_handleVisit(cs, qp, RECURSIVE_QUERY_COUNT -1);
+						}
+					else
+						{
+							/* it's in the cache, sweet, plunk it into the visitor */
+							_visitor.addRevision(rev);
 						}
 				}
 		}

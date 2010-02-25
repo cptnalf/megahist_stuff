@@ -22,7 +22,10 @@ namespace StarTree.Plugin.TFSDB
 			
 			_mergeHist = new MergeHist(_vcs, _visitor);
 		}
-		
+
+		/// <summary>
+		/// add a new item to the queue
+		/// </summary>
 		internal void push(int id, Item itm, int distance)
 		{
 			QueryRec rec = new QueryRec
@@ -35,25 +38,31 @@ namespace StarTree.Plugin.TFSDB
 			_queries.push(rec); 
 		}
 		
+		/// <summary>
+		/// run the threaded querymerges workers
+		/// </summary>
 		internal void runThreads()
 		{
 			Thread[] threads = new Thread[TFSDB.THREAD_COUNT];
 			Timer t = new Timer();
-
+			
+			TFSDB.logger.DebugFormat("qm[using {0} threads]", TFSDB.THREAD_COUNT);
+			
 			t.start();
 			for (int i = 0; i < threads.Length; ++i)
 				{
-				threads[i] = new Thread(new ParameterizedThreadStart(_qm_worker));
-
-				threads[i].Priority = ThreadPriority.Lowest;
-				threads[i].Start(null);
+					threads[i] = new Thread(new ParameterizedThreadStart(_qm_worker));
+					
+					threads[i].Priority = ThreadPriority.Lowest;
+					threads[i].Start(null);
 				}
-
+			
 			for (int i = 0; i < threads.Length; ++i) { threads[i].Join(); }
 			t.stop();
 
 			/* sanity check. */
-			if (_queries.Count > 0) { throw new System.Exception("fuck!"); }
+			if (_queries.Count > 0) 
+				{ throw new System.Exception("FUCK!! I still have shit left to query!"); }
 
 			/* report some statistics. */
 			TFSDB.logger.DebugFormat("qm[{0} queries took {1}]",
@@ -72,7 +81,7 @@ namespace StarTree.Plugin.TFSDB
 			
 			while (!done)
 				{
-					bool signaled = _queries.ItemsWaiting.WaitOne(500);
+					bool signaled = _queries.ItemsWaiting.WaitOne(100);
 					
 					if (signaled)
 						{

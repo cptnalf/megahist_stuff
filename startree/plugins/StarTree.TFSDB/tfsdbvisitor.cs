@@ -9,7 +9,9 @@ namespace StarTree.Plugin.TFSDB
 		treelib.AVLDict<string, treelib.AVLDict<string, StarTree.Plugin.Database.Revision>, treelib.StringSorterInsensitive>;
 	using RevisionIdx = treelib.AVLDict<string, StarTree.Plugin.Database.Revision>;
 
-	internal class TFSDBVisitor : StarTree.Plugin.Database.RevisionRepoBase, megahistory.IVisitor<StarTree.Plugin.Database.Revision>
+	internal class TFSDBVisitor
+	  : StarTree.Plugin.Database.RevisionRepoBase, 
+		  megahistory.IVisitor<StarTree.Plugin.Database.Revision>
 	{
 		protected System.Threading.Mutex _csMux = new System.Threading.Mutex();
 		
@@ -54,31 +56,31 @@ namespace StarTree.Plugin.TFSDB
 			_addRevision(rev);
 		}
 		
-		public void addRevision(Revision rev, bool replace)
-		{
-			if (replace)
-				{
-					/* overwrite the existing one. 
-					 * since this is a reference type and not a value type,
-					 * changing the one in the index should alter the rest 
-					 * (they should all point to the same object)
-					 */
-					RevisionIdx.iterator it = this._changesetIdx.find(rev.ID);
-					if (it != _changesetIdx.end())
-						{
-							/* so, we already have the changeset.
-							 * let's change some stuff about it.
-							 */
-							it.value().Branch = rev.Branch;
-							it.value().Author = rev.Author;
-							it.value().Date = new System.DateTime(rev.Date.Ticks, rev.Date.Kind);
-							it.value().Log = rev.Log;
-							foreach(string p in rev.Parents) { it.value().addParent(p); }
-						}
-					else { addRevision(rev); }
-				}
-			else { addRevision(rev); }
-		}
+		// public void addRevision(Revision rev, bool replace)
+		// {
+		// 	if (replace)
+		// 		{
+		// 			/* overwrite the existing one. 
+		// 			 * since this is a reference type and not a value type,
+		// 			 * changing the one in the index should alter the rest 
+		// 			 * (they should all point to the same object)
+		// 			 */
+		// 			RevisionIdx.iterator it = this._changesetIdx.find(rev.ID);
+		// 			if (it != _changesetIdx.end())
+		// 				{
+		// 					/* so, we already have the changeset.
+		// 					 * let's change some stuff about it.
+		// 					 */
+		// 					it.value().Branch = rev.Branch;
+		// 					it.value().Author = rev.Author;
+		// 					it.value().Date = new System.DateTime(rev.Date.Ticks, rev.Date.Kind);
+		// 					it.value().Log = rev.Log;
+		// 					foreach(string p in rev.Parents) { it.value().addParent(p); }
+		// 				}
+		// 			else { addRevision(rev); }
+		// 		}
+		// 	else { addRevision(rev); }
+		// }
 		
 		public Revision visit(string branch, Changeset cs)
 		{

@@ -76,39 +76,49 @@ namespace StarTree.Plugin.TFSDB
 		public override Snapshot getBranch(string branch, long limit)
 		{
 			Snapshot sn = null;
-			TFSDBVisitor visitor = new TFSDBVisitor();
-			TFSDB db = new TFSDB(_vcs, branch, visitor);
 			
-			visitor.primeBranches(branches());
-
-			/* it doesn't matter how many items i have in the cache, 
-			 * i want the last X in connected descending order.
+			/* get the last x changesets from tfs. */
+			TFSDB db = TFSDB.QueryHistory(_vcs, branch, (ulong)limit, null);
+			
+			{
+				string[] bs = branches();
+				db.visitor.primeBranches(bs);
+			}
+			
+			/* copy stuff we've already seen from the db cache into the visitor cache.
+			 * this only does the top-level stuff
+			 * any further queries we get will be passed to the cache.
 			 */
-			treelib.AVLTree<Changeset, ChangesetDescSorter> history = db.queryHistory((ulong)limit, null);
-			
-			/* populate from the cache. */
-			foreach(Changeset cs in history)
+			foreach(Changeset cs in db.history)
 				{
 					Revision rev = _cache.rev(TFSDB.MakeID(cs.ChangesetId));
-					if (rev != null) { visitor.addRevision(rev); }
+					if (rev != null) { db.visitor.addRevision(rev); }
 				}
 			
-			/* do the merge querying. 
-			 * the cache is passed in to alievate the need for already
-			 * executed merge queries.
+			/* prime the merge history querying.
+			 * this will take out all top-level queries which have already been done.
+			 * already been done = exists in cache.
+			 * 
+			 * this will also query tfs for the merge info.
 			 */
-			db.queryMerges(history, _cache);
+			db.queryMerges(_cache);
+			
+			/* at this point, ALL the changesets in 'history' MUST be in the visitor.
+			 * if not, then there's a problem with:
+			 *  insertQueries or the QueryProcessor.
+			 */
 			
 			/* this adds in the branch's history to the parent lists of the
 			 * appropriate changesets.
 			 * this will also update the cache
 			 */
-			db.fixHistory(history);
+			db.fixHistory();
 			
-			/* now we need to now save the stuff we just queried */
-			visitor.save(_cache);
-
-			//_onProgress(10, "finished persisting the results");
+			/* now dump everything in the visitor to the cache. */
+			db.visitor.save(_cache);
+			
+			db = null;
+			
 			/* the full list should be in the cache now. */
 			sn = _cache.getBranch(branch, (ulong)limit);
 
@@ -116,5 +126,30 @@ namespace StarTree.Plugin.TFSDB
 		}
 
 		public override Revision getRevision(string id) { return _cache.rev(id); }
+		
+		public override Snapshot queryMerges(Revision rev)
+		{
+			Snapshot sn = null;
+			TFSDB db = new TFSDB(_vcs, rev.Branch);
+			
+			/* add this revision to the visitor */
+			db.visitor.addRevision(rev);
+			
+			QueryProcessor qp = new QueryProcessor(db.visitor, _vcs);
+			
+			/* generate a bunch of queries given this revision's parents. */
+			db.populateQueries(rev, qp, _cache);
+			
+			/* run the TFS queries. */
+			qp.runThreads();
+			
+			/* now dump the result back to the cache. */
+			db.visitor.save(_cache);
+			
+			/* now run the query against the cache. */
+			sn = _cache.queryMerges(rev);
+			
+			return sn;
+		}
 	}
 }

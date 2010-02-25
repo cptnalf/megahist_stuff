@@ -72,5 +72,11 @@ namespace Monotree
 		}
 
 		public override Revision getRevision(string id) { return _db.rev(id); }
+		
+		public override Snapshot queryMerges(Revision rev)
+		{
+			/* return blank... */
+			return new Snapshot(); 
+		}
 	}
 }

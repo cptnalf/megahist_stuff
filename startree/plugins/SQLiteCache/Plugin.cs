@@ -67,5 +67,10 @@ namespace StarTree.Plugin.SQLiteCache
 		{
 			return _db.rev(id);
 		}
+		
+		public override Snapshot queryMerges(Revision rev)
+		{
+			return _db.queryMerges(rev);
+		}
 	}
 }

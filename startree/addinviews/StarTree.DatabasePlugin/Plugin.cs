@@ -22,5 +22,10 @@ namespace StarTree.Plugin.Database
 		/// <param name="limit"></param>
 		/// <returns></returns>
 		public abstract Snapshot getBranch(string branch, long limit);
+		
+		/// <summary>
+		/// this will decompose the specified revision into possible list of changesets.
+		/// </summary>
+		public abstract Snapshot queryMerges(Revision rev);
 	}
 }

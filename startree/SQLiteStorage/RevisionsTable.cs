@@ -57,6 +57,7 @@ namespace SQLiteStorage
 							rev.Date = rdr.GetDateTime(3);
 							rev.Log = rdr.GetString(4);
 						}
+					
 					rdr.Dispose();
 					rdr = null;
 					cmd.Connection.Close();
