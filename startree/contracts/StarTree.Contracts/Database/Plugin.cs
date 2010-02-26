@@ -15,5 +15,6 @@ namespace StarTree.Contracts.Database
 		string[] branches();
 		byte[] getBranch(string branch, long limit);
 		Revision getRevision(string id);
+		byte[] queryMerges(Revision rev);
 	}
 }

@@ -48,6 +48,36 @@ namespace TFSTree
 		
 		private delegate Revision GetRevisionFx_T(string parent);
 		
+		internal void update(Graph graph, Snapshot snapshot, Revision rev)
+		{
+			if (rev.Parents.Count < 4)
+				{
+					foreach(string parent in rev.Parents)
+						{
+							Revision p = snapshot.rev(parent);
+							if (p != null)
+								{
+									/* these will all look like foreign changesets. */
+									Edge edge = graph.AddEdge(parent, rev.ID);
+									edge.Attr.Color = EdgeColor;
+									if (p.Branch != rev.Branch)
+										{ edge.Attr.AddStyle(Style.Dashed); }
+
+									Node node = graph.FindNode(parent);
+									node.UserData = p;
+									if (node.UserData != null)
+										{ FormatNodeFromDifferentBranch(node, p); }
+									if (p.Branch == rev.Branch)
+										{ node.Attr.Fillcolor = Color.Linen; }
+
+									node = graph.FindNode(rev.ID);
+									node.UserData = rev;
+									//FormatNode(node, rev);
+								}
+						}
+				}
+		}
+		
 		/// <summary>Creates the graph for the current branch.</summary>
 		/// <param name="revisions">Revisions to create graph for.</param>
 		/// <param name="database">database the revisions came from (to look up parents)</param>
@@ -61,7 +91,16 @@ namespace TFSTree
 						
 			for(; it != RevisionIdx.End(); ++it)
 				{
-					if (it.value().Parents.Count < 4)
+					int c = 0;
+					/* only want to evaluate the 4-parent part on non-branch parents. */
+					foreach(string parent in it.value().Parents)
+						{
+							Revision p = snapshot.rev(parent);
+							if (p != null && p.Branch == it.value().Branch) { }
+							else { ++c; }
+						}
+					
+					if (c < 4)
 						{
 							_printParentsFull(graph, it.value(), 
 																(parent) => { return snapshot.rev(parent); } );

@@ -57,6 +57,14 @@ namespace StarTree.Plugin.Adapter.Database
 				}
 			return cr;
 		}
+		
+		public byte[] queryMerges(Contracts.Database.Revision rev)
+		{
+			Converters.Revision revcon = rev;
+			StarTree.Plugin.Database.Snapshot sn = _plugin.queryMerges(revcon);
+			
+			return sn.serialize();
+		}
 
 #endregion
 	}

@@ -455,6 +455,17 @@ namespace TFSTree
 					if (rev != null)
 						{
 							/* run a nice query, pasting the revisions into this graph. */
+							Snapshot sn = _activePlugin.queryMerges(rev);
+							Graph g = viewer.Graph;
+							_grapher.update(g, sn, rev);
+							
+							viewer.Graph = g;
+							viewer.Refresh();
+							if (viewer.Graph.EdgeCount > 0)
+								{
+									viewer.ZoomF = Math.Max(viewer.Graph.Width / viewer.Width, viewer.Graph.Height / viewer.Height);
+								}
+							viewer.Focus();
 						}
 					else
 						{

@@ -61,5 +61,15 @@ namespace StarTree.Host.Adapter.Database
 			
 			return hr;
 		}
+		
+		public override StarTree.Host.Database.Snapshot queryMerges(StarTree.Host.Database.Revision rev)
+		{
+			Converter.Revision revCon = rev;
+			StarTree.Host.Database.Snapshot sn = new StarTree.Host.Database.Snapshot(this);
+			byte[] bytes = _plugin.queryMerges(revCon);
+			sn.load(bytes);
+			
+			return sn;
+		}
 	}
 }

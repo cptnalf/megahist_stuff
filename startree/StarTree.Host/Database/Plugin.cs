@@ -14,5 +14,6 @@ namespace StarTree.Host.Database
 		public abstract string[] branches();
 		public abstract Revision getRevision(string id);
 		public abstract Snapshot getBranch(string branch, long limit);
+		public abstract Snapshot queryMerges(Revision rev);
 	}
 }
