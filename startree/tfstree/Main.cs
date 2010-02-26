@@ -180,10 +180,20 @@ namespace TFSTree
 			if (sender == toolStripRefresh)
 				{
 					string branch = toolStripBranches.SelectedItem.ToString();
-					Snapshot snapshot;
+					Snapshot snapshot = null;
 					long limit = Int64.Parse(toolStripLimit.SelectedItem.ToString().Substring(0, 
 					                           toolStripLimit.SelectedItem.ToString().IndexOf(' ')));
-					snapshot = _activePlugin.getBranch(branch, limit);
+					
+					{
+						ProgressForm form = new ProgressForm();
+						System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker();
+						worker.DoWork += (o1, e1) => { snapshot = _activePlugin.getBranch(branch, limit); };
+						worker.WorkerReportsProgress = false;
+						
+						form.worker = worker;
+						DialogResult res = form.ShowDialog();
+					}
+					
 					treelib.AVLTree<Revision, StarTree.Host.Database.RevisionSorterDesc> revisions;
 					revisions = snapshot.getBranch(branch, limit);
 					

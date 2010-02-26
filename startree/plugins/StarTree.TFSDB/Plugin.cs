@@ -8,6 +8,7 @@ namespace StarTree.Plugin.TFSDB
 	using DisplayNames = StarTree.Plugin.Database.DisplayNames;
 	using Revision = StarTree.Plugin.Database.Revision;
 	using Snapshot = StarTree.Plugin.Database.Snapshot;
+	using BranchCont = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
 	
 	[System.AddIn.AddIn("TFSDB", Description="plugin for TFS")]
 	public class PluginInterface : StarTree.Plugin.Database.Plugin
@@ -67,7 +68,24 @@ namespace StarTree.Plugin.TFSDB
 		{
 			string[] bs = null;
 			if (_cache.BranchNames.Any())
-				{ bs = _cache.BranchNames.ToArray(); }
+				{
+					bs = _cache.BranchNames.ToArray();
+					BranchCont brs = TFSDB.GetBranches(_vcs);
+					
+					foreach(string str in bs)
+						{
+							BranchCont.iterator it = brs.find(str);
+							if (it == brs.end()) { brs.insert(str); }
+						}
+					
+					bs = new string[brs.size()];
+					int i=0;
+					foreach(string str in brs)
+						{
+							bs[i] = str;
+							++i;
+						}
+				}
 			else { bs = TFSDB.DefaultBranches(); }
 			
 			return bs;
