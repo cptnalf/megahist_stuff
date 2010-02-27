@@ -53,6 +53,7 @@ namespace StarTree.Plugin.TFSDB
 		
 		public void addRevision(Revision rev)
 		{
+			rev.Branch = cleanseBranch(rev.Branch);
 			_addRevision(rev);
 		}
 		

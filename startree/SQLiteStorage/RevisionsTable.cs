@@ -75,35 +75,38 @@ namespace SQLiteStorage
 		{
 			/* does it exist? */
 			bool exists = false;
-			using (SQLiteCommand cmd = conn.CreateCommand())
-				{
-					cmd.CommandText = @"SELECT id FROM revisions WHERE id = @ID";
-					cmd.CommandType = System.Data.CommandType.Text;
-					cmd.Parameters.Add("@id", DbType.Int32);
-					cmd.Parameters[0].Value = int.Parse(rev.ID);
-					
-					using (SQLiteDataReader rdr = cmd.ExecuteReader())
-						{
-							if (rdr.HasRows && rdr.Read())
-								{
-									int i = rdr.GetInt32(0);
-									int rev_id = int.Parse(rev.ID);
-									exists = (i == rev_id);
-								}
-						}
-				}
 			
-			if (!exists) { _insert(rev); }
-			else  { _update(rev); }
+			using (SQLiteCommand cmd = conn.CreateCommand())
+			  {
+			    cmd.CommandText = @"SELECT id FROM revisions WHERE id = @ID";
+			    cmd.CommandType = System.Data.CommandType.Text;
+			    cmd.Parameters.Add("@id", DbType.Int32);
+			    cmd.Parameters[0].Value = int.Parse(rev.ID);
+					
+			    using (SQLiteDataReader rdr = cmd.ExecuteReader())
+			      {
+			        if (rdr.HasRows && rdr.Read())
+			          {
+			            int i = rdr.GetInt32(0);
+			            int rev_id = int.Parse(rev.ID);
+			            exists = (i == rev_id);
+			          }
+			      }
+			  }
+			
+			if (!exists) { _insert(conn, rev); }
+			else  { _update(conn, rev); }
 		}
 		
-		private void _insert(Revision rev)
+		private void _insert(SQLiteConnection conn, Revision rev)
 		{
-			using (SQLiteCommand cmd = 
-						 _getCmd(
-@"INSERT INTO revisions (id, branch, author, created, comment)
-  VALUES (@id, @branch, @author, @created, @comment)"))
+			using (SQLiteCommand cmd = conn.CreateCommand())
 				{
+					cmd.CommandText = 
+@"INSERT INTO revisions (id, branch, author, created, comment)
+  VALUES (@id, @branch, @author, @created, @comment)";
+					cmd.CommandType = System.Data.CommandType.Text;
+					
 					cmd.Parameters.Add("@id", DbType.Int32);
 					cmd.Parameters[0].Value = int.Parse(rev.ID);
 					
@@ -123,34 +126,36 @@ namespace SQLiteStorage
 				}
 		}
 		
-		private void _update(Revision rev)
+		private void _update(SQLiteConnection conn, Revision rev)
 		{
-		using (SQLiteCommand cmd =
-					 _getCmd(
+			using (SQLiteCommand cmd = conn.CreateCommand())
+				{
+					cmd.CommandType = System.Data.CommandType.Text;
+					cmd.CommandText = 
 @"UPDATE revisions 
 SET branch = @branch,
     author = @author,
     created = @created,
     comment = @comment
-WHERE id = @id"))
-			{
-				cmd.Parameters.Add("@id", DbType.Int32);
-				cmd.Parameters[0].Value = int.Parse(rev.ID);
+WHERE id = @id";
+				
+					cmd.Parameters.Add("@id", DbType.Int32);
+					cmd.Parameters[0].Value = int.Parse(rev.ID);
 
-				cmd.Parameters.Add("@branch", DbType.String);
-				cmd.Parameters[1].Value = rev.Branch;
+					cmd.Parameters.Add("@branch", DbType.String);
+					cmd.Parameters[1].Value = rev.Branch;
 
-				cmd.Parameters.Add("@author", DbType.String);
-				cmd.Parameters[2].Value = rev.Author;
+					cmd.Parameters.Add("@author", DbType.String);
+					cmd.Parameters[2].Value = rev.Author;
 
-				cmd.Parameters.Add("@created", DbType.DateTime);
-				cmd.Parameters[3].Value = rev.Date;
+					cmd.Parameters.Add("@created", DbType.DateTime);
+					cmd.Parameters[3].Value = rev.Date;
 
-				cmd.Parameters.Add("@comment", DbType.String);
-				cmd.Parameters[4].Value = rev.Log;
+					cmd.Parameters.Add("@comment", DbType.String);
+					cmd.Parameters[4].Value = rev.Log;
 
-				cmd.ExecuteNonQuery();
-			}			
+					cmd.ExecuteNonQuery();
+				}
 		}
 		
 		public void del(Revision rev)

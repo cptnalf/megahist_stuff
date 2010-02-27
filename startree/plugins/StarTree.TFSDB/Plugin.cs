@@ -76,6 +76,21 @@ namespace StarTree.Plugin.TFSDB
 						{
 							BranchCont.iterator it = brs.find(str);
 							if (it == brs.end()) { brs.insert(str); }
+							else
+								{
+									if (it.item() != str)
+										{
+											/* well shit. tfs screwed up.
+											 * correct tfs.
+											 */
+											string tmp = it.item();
+											
+											it = null;
+											/* this call will invalidate the iterator. */
+											brs.remove(tmp);
+											brs.insert(str);
+										}
+								}
 						}
 					
 					bs = new string[brs.size()];

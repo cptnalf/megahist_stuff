@@ -55,6 +55,10 @@
 			this._changeCntNUD = new System.Windows.Forms.NumericUpDown();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -66,6 +70,10 @@
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
+			this.toolStripContainer1.ContentPanel.SuspendLayout();
+			this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
+			this.toolStripContainer1.SuspendLayout();
+			this.menuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// progressBar1
@@ -116,7 +124,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.changesetCtrl1);
-			this.splitContainer1.Size = new System.Drawing.Size(604, 355);
+			this.splitContainer1.Size = new System.Drawing.Size(604, 331);
 			this.splitContainer1.SplitterDistance = 206;
 			this.splitContainer1.TabIndex = 6;
 			// 
@@ -139,7 +147,7 @@
 			this.treeListView1.OwnerDraw = true;
 			this.treeListView1.SelectedColumnTint = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(255)))), ((int)(((byte)(250)))), ((int)(((byte)(205)))));
 			this.treeListView1.ShowGroups = false;
-			this.treeListView1.Size = new System.Drawing.Size(206, 355);
+			this.treeListView1.Size = new System.Drawing.Size(206, 331);
 			this.treeListView1.TabIndex = 0;
 			this.treeListView1.TintSortColumn = true;
 			this.treeListView1.UseAlternatingBackColors = true;
@@ -184,7 +192,7 @@
 			this.changesetCtrl1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.changesetCtrl1.Location = new System.Drawing.Point(0, 0);
 			this.changesetCtrl1.Name = "changesetCtrl1";
-			this.changesetCtrl1.Size = new System.Drawing.Size(394, 355);
+			this.changesetCtrl1.Size = new System.Drawing.Size(394, 331);
 			this.changesetCtrl1.TabIndex = 0;
 			// 
 			// label1
@@ -335,7 +343,7 @@
 			this._changeCntNUD.Size = new System.Drawing.Size(75, 20);
 			this._changeCntNUD.TabIndex = 16;
 			this.toolTip1.SetToolTip(this._changeCntNUD, "Maximum number of changes to show in the \'changes\' tab\r\n(too many will result in " +
-					"alot of memory usage, and slowdowns)\r\n");
+							"alot of memory usage, and slowdowns)\r\n");
 			// 
 			// splitContainer2
 			// 
@@ -352,18 +360,63 @@
 			// splitContainer2.Panel2
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.splitContainer1);
-			this.splitContainer2.Size = new System.Drawing.Size(604, 498);
+			this.splitContainer2.Size = new System.Drawing.Size(604, 474);
 			this.splitContainer2.SplitterDistance = 139;
 			this.splitContainer2.TabIndex = 10;
+			// 
+			// toolStripContainer1
+			// 
+			// 
+			// toolStripContainer1.ContentPanel
+			// 
+			this.toolStripContainer1.ContentPanel.AutoScroll = true;
+			this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer2);
+			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(604, 474);
+			this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+			this.toolStripContainer1.Name = "toolStripContainer1";
+			this.toolStripContainer1.Size = new System.Drawing.Size(604, 498);
+			this.toolStripContainer1.TabIndex = 11;
+			this.toolStripContainer1.Text = "toolStripContainer1";
+			// 
+			// toolStripContainer1.TopToolStripPanel
+			// 
+			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
+			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
+			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolsToolStripMenuItem});
+			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(604, 24);
+			this.menuStrip1.TabIndex = 1;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
+			// toolsToolStripMenuItem
+			// 
+			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem});
+			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+			this.toolsToolStripMenuItem.Text = "Tools";
+			// 
+			// optionsToolStripMenuItem
+			// 
+			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+			this.optionsToolStripMenuItem.Text = "Options...";
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(604, 498);
-			this.Controls.Add(this.splitContainer2);
+			this.Controls.Add(this.toolStripContainer1);
+			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Form1";
-			this.Text = "Form1";
+			this.Text = "TFSMegaHistory GUI";
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			this.splitContainer1.Panel2.PerformLayout();
@@ -377,6 +430,13 @@
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			this.splitContainer2.ResumeLayout(false);
+			this.toolStripContainer1.ContentPanel.ResumeLayout(false);
+			this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
+			this.toolStripContainer1.TopToolStripPanel.PerformLayout();
+			this.toolStripContainer1.ResumeLayout(false);
+			this.toolStripContainer1.PerformLayout();
+			this.menuStrip1.ResumeLayout(false);
+			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
 
 			}
@@ -408,6 +468,10 @@
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.NumericUpDown _changeCntNUD;
+		private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
 		}
 	}
 

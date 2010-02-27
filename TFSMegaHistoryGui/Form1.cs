@@ -21,6 +21,9 @@ namespace tfs_fullhistory
 		{
 			InitializeComponent();
 			
+			this.Icon = Properties.Resources.ico21;
+			_tfsServerName = Properties.Settings.Default.TFSServer;
+			
 			_worker.WorkerReportsProgress = true;
 			_worker.DoWork += new DoWorkEventHandler(_worker_DoWork);
 			_worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_worker_RunWorkerCompleted);
@@ -65,6 +68,10 @@ namespace tfs_fullhistory
 		
 		private void _setupTreeListView()
 		{
+			treeListView1.SmallImageList = new ImageList();
+			treeListView1.SmallImageList.Images.Add(Properties.Resources.changeset);
+			treeListView1.SmallImageList.ImageSize = new Size(16,16);
+			
 			treeListView1.HotItemStyle = new BrightIdeasSoftware.HotItemStyle();
 			treeListView1.HotItemStyle.BackColor = Color.CadetBlue;
 			treeListView1.HotItemStyle.ForeColor = Color.Black;
@@ -432,6 +439,12 @@ namespace tfs_fullhistory
 							_getWIData.RunWorkerAsync();
 						}
 				}
+		}
+
+		private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OptionsForm of = new OptionsForm();
+			of.ShowDialog();
 		}
 	}
 }

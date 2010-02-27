@@ -190,7 +190,12 @@ namespace StarTree.Plugin.TFSDB
 							/* so, we need to do a 2nd level query, but not a first level. */
 							Changeset cs = _vcs.GetChangeset(int.Parse(parent));
 							
-							_handleVisit(cs, qp, RECURSIVE_QUERY_COUNT -1);
+							if (!_handleVisit(cs, qp, RECURSIVE_QUERY_COUNT -1))
+								{
+									/* force a visit even if there's nothing to query. */
+#error fix me!
+									_visitor.visit(
+								}
 						}
 					else
 						{
