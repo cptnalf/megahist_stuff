@@ -68,59 +68,13 @@ namespace StarTree.Plugin.TFSDB
 			return staticBranches;
 		}
 		
-		private static void _WalkTree(BranchCont branchStrs, BranchHistoryTreeItem ptr)
-		{
-			if (ptr != null)
-				{
-					if (ptr.Relative != null && ptr.Relative.BranchToItem != null)
-						{
-// 						if (ptr.Relative.BranchFromItem != null)
-// 							{
-// 								Console.WriteLine("{0} => {1}", 
-// 																	ptr.Relative.BranchFromItem.ServerItem,
-// 																	ptr.Relative.BranchToItem.ServerItem);
-// 							}
-// 						else
-// 							{ Console.WriteLine(ptr.Relative.BranchToItem.ServerItem); }
-						
-						string b = ptr.Relative.BranchToItem.ServerItem;
-						
-						if (b[b.Length -1] != '/') { b += '/'; }
-						branchStrs.insert(b);
-						
-						foreach(BranchHistoryTreeItem itm in ptr.Children)
-							{
-								_WalkTree(branchStrs, itm);
-							}
-					}
-				}
-		}
-		
-		internal static BranchCont GetBranches(VersionControlServer vcs)
-		{
-			BranchCont branchStrs = new BranchCont();
-			ItemSpec itm = new ItemSpec("$/IGT_0803/main/EGS/", RecursionType.None);
-			VersionSpec ver = VersionSpec.Latest;
-			BranchHistoryTreeItem[][] branches = vcs.GetBranchHistory(new ItemSpec[] { itm }, ver);
-			
-			for(int i =0; i < branches.Length; ++i)
-				{
-					for(int j=0; j < branches[i].Length; ++j)
-						{
-							_WalkTree(branchStrs, branches[i][j]);
-						}
-				}
-			
-			return branchStrs;
-		}
-		
 		/// <summary>
 		/// run VersionControlServer.QueryHistory
 		/// </summary>
 		internal static TFSDB QueryHistory(VersionControlServer vcs, string branch,
-																			 ulong limit, string startID)
+																			 ulong limit, string startID, SQLiteStorage.SQLiteCache cache)
 		{
-			TFSDB tfsdb = new TFSDB(vcs, branch);
+			TFSDB tfsdb = new TFSDB(vcs, branch, cache);
 			tfsdb._history = new ChangesetsDesc();
 			
 			VersionSpec fromVer = null;
@@ -141,7 +95,6 @@ namespace StarTree.Plugin.TFSDB
 			
 			return tfsdb;
 		}
-
 	}		
 }
 

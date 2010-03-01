@@ -19,18 +19,25 @@ namespace StarTree.Plugin.TFSDB
 		private string _branch;
 		private TFSDBVisitor _visitor;
 		private ChangesetsDesc _history;
+		private QueryProcessor _qp;
+		private SQLiteStorage.SQLiteCache _cache;
 		
 		internal ChangesetsDesc history { get { return _history; } }
 		internal TFSDBVisitor visitor { get { return _visitor; } }
 		
-		internal TFSDB(VersionControlServer vcs, string branch)
+		internal TFSDB(VersionControlServer vcs, string branch, 
+									 SQLiteStorage.SQLiteCache cache)
 		{
 			_vcs = vcs;
 			_branch = branch;
+			_cache = cache;
+			
 			_visitor = new TFSDBVisitor();
+			
+			_qp = new QueryProcessor( _visitor, _vcs);
 		}
 		
-		internal void queryMerges(SQLiteStorage.SQLiteCache cache)
+		internal void queryMerges()
 		{
 			{
 				/* this is used by the 'FindChangesetBranches' to figure out which
@@ -57,11 +64,9 @@ namespace StarTree.Plugin.TFSDB
 			/* do the queries in parallel.
 			 * after that's done, walk the list of changesets marking parents correctly.
 			 */
-			QueryProcessor qp = new QueryProcessor(_visitor, _vcs);
+			_insertQueries();
 			
-			_insertQueries(qp, cache);
-			
-			qp.runThreads();
+			_qp.runThreads();
 			//_onProgress(60, "finished merge queries");
 		}
 		
@@ -99,12 +104,21 @@ namespace StarTree.Plugin.TFSDB
 				}
 		}
 		
-		private bool _handleVisit(Changeset cs, QueryProcessor qp, int depth)
+		private bool _handleVisit(Changeset cs, int depth)
 		{
-			/* grab the branches for this changeset. */
+			/* grab the branches for this changeset,
+			 * looking for merge branches, because we want to decompose if possible
+			 */
+			/* @Note
+			 * worst case here is that you do a checkin to a branch
+			 * of 100k items (say an add or edit).
+			 * in that case the process will probably end up trying to find branches
+			 * twice :/
+			 */
 			List<string> branchParts = megahistory.Utils.FindChangesetBranches(cs);
 
-			/* i need to find a path to use as a base item for this merge history query. 
+			/* @Note
+			 * i need to find a path to use as a base item for this merge history query. 
 			 *
 			 * this could skew the results a little bit.
 			 * unfortunately, to support renames, i need to get the previous name, 
@@ -119,7 +133,7 @@ namespace StarTree.Plugin.TFSDB
 																	new ChangesetVersionSpec(cs.ChangesetId));
 
 					logger.DebugFormat("qm[{0},{1}]", itm.ServerItem, cs.ChangesetId);
-					qp.push(cs.ChangesetId, itm, depth);
+					_qp.push(cs.ChangesetId, itm, depth);
 				}
 			
 			return branchParts.Count > 0;
@@ -129,8 +143,7 @@ namespace StarTree.Plugin.TFSDB
 		/// insert queries into the processor that haven't already been done.
 		/// (eg, in the cache)
 		/// </summary>
-		private void _insertQueries(QueryProcessor qp,
-																SQLiteStorage.SQLiteCache cache)
+		private void _insertQueries()
 		{
 			ChangesetsDesc.iterator it = _history.begin();
 			
@@ -142,67 +155,71 @@ namespace StarTree.Plugin.TFSDB
 					Revision rev = _visitor.rev(MakeID(it.item().ChangesetId));
 					
 					if (rev == null)
-						{
-							/* try a cache lookup. */
-							rev = cache.rev(it.item().ChangesetId);
-							
-							if (rev == null)
-								{
-									/* ok, ok, we really don't have it... 
-									 * didn't find it, so do the first level query. 
-									 */
-									if (! _handleVisit(it.item(), qp, RECURSIVE_QUERY_COUNT))
-										{
-											/* manufacture a visit since this changeset
-											 * has no merge actions to get branches from
-											 */
-											_visitor.visit(_branch, it.item());
-										}
-								}
-							else
-								{
-									/* hah! found it in the cache, 
-									 * so add it to our in-memory lookup 
-									 * this will ensure that the merge-queries are able to see this
-									 * already-looked-up item.
-									 */
-									_visitor.addRevision(rev);
-								}
-						}
+						{ _queueOrVisit(it.item(), RECURSIVE_QUERY_COUNT, _branch); }
 					else
+						{ _queueParents(rev); }
+				}
+		}
+		
+		private void _queueOrVisit(Changeset cs, int distance, string branch)
+		{
+			/* check the database cache. */
+			Revision rev = _cache.rev(cs.ChangesetId);
+			
+			if (rev == null)
+				{
+					/* ok, ok, we really don't have it... 
+					 * didn't find it, so do the first level query. 
+					 */
+					if (!_handleVisit(cs, distance))
 						{
-							populateQueries(rev, qp, cache);
+							/* manufacture a visit since this changeset
+							 * has no merge actions to get branches from
+							 */
+							if (branch == null)
+								{
+									/* determine a branch from the changesets's changes 
+									 * we're not queuing it, so we look for _all_ branches.
+									 * (eg, 2nd level :[ ) 
+									 */
+									List<string> branches = 
+										megahistory.Utils.FindChangesetBranches(cs, (cng) => true );
+									
+									foreach(string b in branches) { _visitor.visit(b, cs); }
+								}
+							else { _visitor.visit(branch, cs); }
 						}
+				}
+			else
+				{
+					/* hah! found it in the cache, 
+					 * so add it to our in-memory lookup 
+					 * this will ensure that the merge-queries are able to see this
+					 * already-looked-up item.
+					 */
+					_visitor.addRevision(rev);
+				}
+		}
+		
+		private void _queueParents(Revision rev)
+		{
+			/* did find it, so try the second level queries. */
+			foreach(string parent in rev.Parents)
+				{
+					/* so, we need to do a 2nd level query, but not a first level. */
+					Changeset cs = _vcs.GetChangeset(int.Parse(parent));
+					
+					_queueOrVisit(cs, RECURSIVE_QUERY_COUNT -1, _branch);
 				}
 		}
 		
 		/// <summary>
 		/// this populates the 2nd level queries.
 		/// </summary>
-		internal void populateQueries(Revision rev, QueryProcessor qp, SQLiteStorage.SQLiteCache cache)
+		internal void queueParents(Revision rev)
 		{
-			/* did find it, so try the second level queries. */
-			foreach(string parent in rev.Parents)
-				{
-					Revision pr = cache.rev(parent);
-					if (pr == null)
-						{
-							/* so, we need to do a 2nd level query, but not a first level. */
-							Changeset cs = _vcs.GetChangeset(int.Parse(parent));
-							
-							if (!_handleVisit(cs, qp, RECURSIVE_QUERY_COUNT -1))
-								{
-									/* force a visit even if there's nothing to query. */
-#error fix me!
-									_visitor.visit(
-								}
-						}
-					else
-						{
-							/* it's in the cache, sweet, plunk it into the visitor */
-							_visitor.addRevision(rev);
-						}
-				}
+			_queueParents(rev);
+			_qp.runThreads();
 		}
 	}
 }

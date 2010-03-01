@@ -9,6 +9,7 @@ namespace StarTree.Plugin.TFSDB
 	using Revision = StarTree.Plugin.Database.Revision;
 	using Snapshot = StarTree.Plugin.Database.Snapshot;
 	using BranchCont = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using ItemDict = treelib.TreapDict<int, Item>;
 	
 	[System.AddIn.AddIn("TFSDB", Description="plugin for TFS")]
 	public class PluginInterface : StarTree.Plugin.Database.Plugin
@@ -67,32 +68,48 @@ namespace StarTree.Plugin.TFSDB
 		public override string[] branches()
 		{
 			string[] bs = null;
+			BranchCont brs = new BranchCont();
+			ItemDict branchItems = 
+				megahistory.SCMUtils.GetBranches(_vcs, 
+																			"$/IGT_0803/main/EGS/", VersionSpec.Latest);
+			
+			/* throw the tfs branches into the branch container. */
+			for(ItemDict.iterator it = branchItems.begin();
+					it != branchItems.end();
+					++it)
+				{
+					BranchCont.iterator bit = brs.find(it.value().ServerItem);
+					if (bit == brs.end()) { brs.insert(it.value().ServerItem); }
+				}
+			
 			if (_cache.BranchNames.Any())
 				{
 					bs = _cache.BranchNames.ToArray();
-					BranchCont brs = TFSDB.GetBranches(_vcs);
 					
 					foreach(string str in bs)
 						{
-							BranchCont.iterator it = brs.find(str);
-							if (it == brs.end()) { brs.insert(str); }
+							BranchCont.iterator bit = brs.find(str);
+							if (bit == brs.end()) { brs.insert(str); }
 							else
 								{
-									if (it.item() != str)
+									if (bit.item() != str)
 										{
 											/* well shit. tfs screwed up.
 											 * correct tfs.
 											 */
-											string tmp = it.item();
+											string tmp = bit.item();
 											
-											it = null;
+											bit = null;
 											/* this call will invalidate the iterator. */
 											brs.remove(tmp);
 											brs.insert(str);
 										}
 								}
 						}
-					
+				}
+			
+			if (brs.size() > 0)
+				{
 					bs = new string[brs.size()];
 					int i=0;
 					foreach(string str in brs)
@@ -101,7 +118,11 @@ namespace StarTree.Plugin.TFSDB
 							++i;
 						}
 				}
-			else { bs = TFSDB.DefaultBranches(); }
+			else 
+				{ 
+					/* this code should never run. */
+					bs = TFSDB.DefaultBranches(); 
+				}
 			
 			return bs;
 		}
@@ -111,7 +132,7 @@ namespace StarTree.Plugin.TFSDB
 			Snapshot sn = null;
 			
 			/* get the last x changesets from tfs. */
-			TFSDB db = TFSDB.QueryHistory(_vcs, branch, (ulong)limit, null);
+			TFSDB db = TFSDB.QueryHistory(_vcs, branch, (ulong)limit, null, _cache);
 			
 			{
 				string[] bs = branches();
@@ -134,7 +155,7 @@ namespace StarTree.Plugin.TFSDB
 			 * 
 			 * this will also query tfs for the merge info.
 			 */
-			db.queryMerges(_cache);
+			db.queryMerges();
 			
 			/* at this point, ALL the changesets in 'history' MUST be in the visitor.
 			 * if not, then there's a problem with:
@@ -163,18 +184,15 @@ namespace StarTree.Plugin.TFSDB
 		public override Snapshot queryMerges(Revision rev)
 		{
 			Snapshot sn = null;
-			TFSDB db = new TFSDB(_vcs, rev.Branch);
+			TFSDB db = new TFSDB(_vcs, rev.Branch, _cache);
 			
 			/* add this revision to the visitor */
 			db.visitor.addRevision(rev);
 			
-			QueryProcessor qp = new QueryProcessor(db.visitor, _vcs);
-			
-			/* generate a bunch of queries given this revision's parents. */
-			db.populateQueries(rev, qp, _cache);
-			
-			/* run the TFS queries. */
-			qp.runThreads();
+			/* generate a bunch of queries given this revision's parents.
+			 * then run the queries.
+			 */
+			db.queueParents(rev);
 			
 			/* now dump the result back to the cache. */
 			db.visitor.save(_cache);

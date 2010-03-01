@@ -36,7 +36,7 @@ namespace megahistorylib
 		{
 			bool result = true;
 			
-			_tree = megahistory.Utils.GetBranches(_vcs, srcPath, srcVersion);
+			_tree = megahistory.SCMUtils.GetBranches(_vcs, srcPath, srcVersion);
 			
 			System.Collections.IEnumerable foo =
 				_vcs.QueryHistory(srcPath, srcVersion, 0, RecursionType.Full,
@@ -90,7 +90,7 @@ namespace megahistorylib
 			RecursionType recurType = RecursionType.None; /* assume these are all files */
 			ChangesetMergeDetails mergedetails;
 			
-			if (_tree == null) { _tree = megahistory.Utils.GetBranches(_vcs, targetPath, targetVer); }
+			if (_tree == null) { _tree = megahistory.SCMUtils.GetBranches(_vcs, targetPath, targetVer); }
 			
 			MH.logger.DebugFormat("visit {0} {1} {2} {3}",
 														parentID, targetPath, targetVer.DisplayString);
