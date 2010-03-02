@@ -78,8 +78,9 @@ namespace StarTree.Plugin.TFSDB
 					it != branchItems.end();
 					++it)
 				{
-					BranchCont.iterator bit = brs.find(it.value().ServerItem);
-					if (bit == brs.end()) { brs.insert(it.value().ServerItem); }
+					string full_branch = it.value().ServerItem + "/";
+					BranchCont.iterator bit = brs.find(full_branch);
+					if (bit == brs.end()) { brs.insert(full_branch); }
 				}
 			
 			if (_cache.BranchNames.Any())

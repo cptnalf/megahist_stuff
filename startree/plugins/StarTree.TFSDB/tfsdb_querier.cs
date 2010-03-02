@@ -209,7 +209,7 @@ namespace StarTree.Plugin.TFSDB
 					/* so, we need to do a 2nd level query, but not a first level. */
 					Changeset cs = _vcs.GetChangeset(int.Parse(parent));
 					
-					_queueOrVisit(cs, RECURSIVE_QUERY_COUNT -1, _branch);
+					_queueOrVisit(cs, RECURSIVE_QUERY_COUNT -1, null);
 				}
 		}
 		
