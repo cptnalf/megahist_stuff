@@ -28,17 +28,22 @@
 		/// </summary>
 		private void InitializeComponent()
 			{
+			this.components = new System.ComponentModel.Container();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.button2 = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.historyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.flowLayoutPanel1.SuspendLayout();
+			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// treeView1
 			// 
+			this.treeView1.ContextMenuStrip = this.contextMenuStrip1;
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView1.Location = new System.Drawing.Point(5, 36);
 			this.treeView1.Margin = new System.Windows.Forms.Padding(5, 10, 5, 10);
@@ -94,6 +99,20 @@
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(406, 29);
 			this.flowLayoutPanel1.TabIndex = 5;
 			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.historyToolStripMenuItem});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.Size = new System.Drawing.Size(111, 26);
+			// 
+			// historyToolStripMenuItem
+			// 
+			this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
+			this.historyToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+			this.historyToolStripMenuItem.Text = "history";
+			this.historyToolStripMenuItem.Click += new System.EventHandler(this.historyToolStripMenuItem_Click);
+			// 
 			// PathSelector
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -106,6 +125,7 @@
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.flowLayoutPanel1.ResumeLayout(false);
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 			}
@@ -117,5 +137,7 @@
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem historyToolStripMenuItem;
 		}
 	}

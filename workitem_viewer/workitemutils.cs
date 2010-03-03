@@ -26,7 +26,7 @@ namespace workitem_viewer
 		internal WorkItemThingy(string srvr, string query)
 		{
 			_server = TeamFoundationServerFactory.GetServer(srvr);
-			_query = query;
+			//_query = query;
 			
 			_store = _server.GetService(typeof(WorkItemStore)) as WorkItemStore;
 		}
@@ -49,11 +49,11 @@ namespace workitem_viewer
 			return queries;
 		}
 		
-		internal List<TaskItem> runQuery(string query)
-		{
-			WorkItemCollection items = _store.Query(query);
+		//internal List<TaskItem> runQuery(string query)
+		//{
+		//  WorkItemCollection items = _store.Query(query);
 			
-		}
+		//}
 		
 		/*
 			id;name;value;fielddef.systemtype;fielddef.name;fielddef.fieldtype

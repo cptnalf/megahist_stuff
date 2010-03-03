@@ -446,5 +446,22 @@ namespace tfs_fullhistory
 			OptionsForm of = new OptionsForm();
 			of.ShowDialog();
 		}
+
+		private void _newTreeView_Click(object sender, EventArgs e)
+		{
+			megahistory.MegaHistory.Options options = new megahistory.MegaHistory.Options();
+			
+			options.NoRecurse = _noRecurse.Checked;
+			options.AllowBranchRevisiting = _allowBranchRevisiting.Checked;
+			options.ForceDecomposition = _forceDecomposition.Checked;
+			
+			PathSelector ps = new PathSelector();
+			
+			ps.options = options;
+			ps.branchesToo = _branchesToo.Checked;
+			ps.maxChanges = (int)_maxChanges.Value;
+			
+			ps.Show();
+		}
 	}
 }

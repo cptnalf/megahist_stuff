@@ -17,6 +17,14 @@ namespace tfs_fullhistory
 		};
 		
 		VersionControlServer _vcs;
+		private bool _branchesToo;
+		private int _maxChanges;
+		private megahistory.MegaHistory.Options _options;
+		
+		public bool branchesToo { get { return _branchesToo; } set { _branchesToo = value; } }
+		public int maxChanges { get { return _maxChanges; } set { _maxChanges = value; } }
+		public megahistory.MegaHistory.Options options
+		{ get { return _options; } set { _options = value; } }
 	
 		public void setVCS(VersionControlServer vcs) { _vcs=vcs; }
 		public string getSelection() { return treeView1.SelectedNode.FullPath; }
@@ -47,7 +55,7 @@ namespace tfs_fullhistory
 		
 		private void _process_items(TreeNode root)
 		{
-			ItemSet items = _vcs.GetItems(root.FullPath, VersionSpec.Latest, RecursionType.OneLevel);
+			ItemSet items = _vcs.GetItems(root.FullPath, VersionSpec.Latest, RecursionType.OneLevel, DeletedState.Any, ItemType.Any);
 			System.Text.RegularExpressions.Regex root_re = new System.Text.RegularExpressions.Regex("\\"+root.FullPath, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 			foreach(Item item in items.Items)
 				{
@@ -61,7 +69,7 @@ namespace tfs_fullhistory
 									path = path.Substring(1);
 								}
 							
-							if (path != string.Empty)
+							if (path != string.Empty && item.DeletionId < 1)
 								{
 									TreeNode node = root.Nodes.Add(path);
 									node.Tag = item.ServerItem;
@@ -79,6 +87,18 @@ namespace tfs_fullhistory
 			root = root.Nodes.Add("IGT_0803");
 			
 			_process_items(root);
+		}
+
+		private void historyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			TreeNode node = treeView1.SelectedNode;
+			
+			if (node != null)
+				{
+					HistoryForm hf = new HistoryForm();
+					hf.setPath(_vcs, node.FullPath, _maxChanges, _branchesToo, _options);
+					hf.Show();
+				}
 		}
 	}
 }

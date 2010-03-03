@@ -37,15 +37,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\log4net\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=0.0.0.0, Culture=neutral">
+    <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=9.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=0.0.0.0, Culture=neutral">
+    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=9.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.WorkItemTracking.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.TeamFoundation.Client, Version=0.0.0.0, Culture=neutral">
+    <Reference Include="Microsoft.TeamFoundation.Client, Version=9.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.Client.dll</HintPath>
     </Reference>

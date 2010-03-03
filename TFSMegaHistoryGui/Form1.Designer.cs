@@ -59,6 +59,7 @@
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newTreeviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -177,12 +178,12 @@
             this.toolStripMenuItem1});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
 			this.contextMenuStrip1.ShowImageMargin = false;
-			this.contextMenuStrip1.Size = new System.Drawing.Size(116, 26);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(108, 26);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
 			this.toolStripMenuItem1.Text = "Compare...";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
 			// 
@@ -397,16 +398,24 @@
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem});
+            this.optionsToolStripMenuItem,
+            this.newTreeviewToolStripMenuItem});
 			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
 			this.toolsToolStripMenuItem.Text = "Tools";
 			// 
 			// optionsToolStripMenuItem
 			// 
 			this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+			this.optionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.optionsToolStripMenuItem.Text = "Options...";
+			// 
+			// newTreeviewToolStripMenuItem
+			// 
+			this.newTreeviewToolStripMenuItem.Name = "newTreeviewToolStripMenuItem";
+			this.newTreeviewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.newTreeviewToolStripMenuItem.Text = "new treeview";
+			this.newTreeviewToolStripMenuItem.Click += new System.EventHandler(this._newTreeView_Click);
 			// 
 			// Form1
 			// 
@@ -472,6 +481,7 @@
 		private System.Windows.Forms.MenuStrip menuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newTreeviewToolStripMenuItem;
 		}
 	}
 

@@ -42,16 +42,16 @@ namespace StarTree.Plugin.TFSDB
 					_name = null;
 				}
 			
-			TFSServersSelectorForm form = new TFSServersSelectorForm();
-			DialogResult result = form.ShowDialog();
-			if (result == DialogResult.OK)
+			//TFSServersSelectorForm form = new TFSServersSelectorForm();
+			//DialogResult result = form.ShowDialog();
+			//if (result == DialogResult.OK)
 				{
-					string serverName = form.getSelection();
-					
+					//string serverName = form.getSelection();
+					string serverName = "rnotfsat";
 					_name = serverName;
 					_vcs = megahistory.Utils.GetTFSServer(serverName);
 					_cache = new SQLiteStorage.SQLiteCache();
-					_cache.load(serverName);
+					_cache.load(serverName+".db");
 				}
 		}
 
