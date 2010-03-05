@@ -1,7 +1,7 @@
 
 using	Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace megahistory
+namespace megahistorylib
 {
 	public static partial class Utils
 	{
@@ -28,16 +28,16 @@ namespace megahistory
 		
 		/** difference a specific set o' stuffs
 		 */
-		public static void VisualDiff(Visitor.PatchInfo p1, Visitor.PatchInfo p2, pair<int,int> items)
+		public static void VisualDiff(Item item1, int csID1, Item item2, int csID2)
 		{
-			VersionControlServer vcs = p1.cs.Changes[items.first].Item.VersionControlServer;
+			VersionControlServer vcs = item1.VersionControlServer;
 			IDiffItem left;
 			IDiffItem right;
 			
-			left = new DiffItemVersionedFile(p1.cs.Changes[items.first].Item, 
-																			 new ChangesetVersionSpec(p1.cs.ChangesetId));
-			right = new DiffItemVersionedFile(p2.cs.Changes[items.second].Item, 
-																				new ChangesetVersionSpec(p2.cs.ChangesetId));
+			left = new DiffItemVersionedFile(item1, 
+																			 new ChangesetVersionSpec(csID1));
+			right = new DiffItemVersionedFile(item2, 
+																				new ChangesetVersionSpec(csID2));
 			
 			Difference.VisualDiffItems(vcs, left, right);
 		}

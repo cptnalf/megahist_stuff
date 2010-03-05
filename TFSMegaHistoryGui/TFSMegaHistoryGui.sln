@@ -11,31 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BranchDifferGui", "..\Branc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistorylib", "..\megahistorylib\megahistorylib.csproj", "{8723DA6D-9CBD-43D6-9218-88278099A063}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itembranchhistory", "..\itembranchhistory\itembranchhistory.csproj", "{5AC1058F-24B5-4D0C-8996-519AAD740137}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "workitem_viewer", "..\workitem_viewer\workitem_viewer.csproj", "{F0548DB5-04F3-403D-A77F-2E02FD3242BA}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://rnotfsat:8080/
-		SccProjectUniqueName0 = TFSMegaHistoryGui.csproj
-		SccProjectName0 = .
-		SccAuxPath0 = http://rnotfsat:8080
-		SccLocalPath0 = .
-		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccProjectUniqueName1 = ..\\TFSMegaHistory\\megahistory.csproj
-		SccProjectName1 = ../TFSMegaHistory
-		SccAuxPath1 = http://rnotfsat:8080
-		SccLocalPath1 = ..\\TFSMegaHistory
-		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccProjectUniqueName2 = ..\\megahistorylib\\megahistorylib.csproj
-		SccProjectName2 = ../megahistorylib
-		SccAuxPath2 = http://rnotfsat:8080
-		SccLocalPath2 = ..\\megahistorylib
-		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -60,10 +38,6 @@ Global
 		{8723DA6D-9CBD-43D6-9218-88278099A063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8723DA6D-9CBD-43D6-9218-88278099A063}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8723DA6D-9CBD-43D6-9218-88278099A063}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AC1058F-24B5-4D0C-8996-519AAD740137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AC1058F-24B5-4D0C-8996-519AAD740137}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AC1058F-24B5-4D0C-8996-519AAD740137}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AC1058F-24B5-4D0C-8996-519AAD740137}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0548DB5-04F3-403D-A77F-2E02FD3242BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0548DB5-04F3-403D-A77F-2E02FD3242BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0548DB5-04F3-403D-A77F-2E02FD3242BA}.Release|Any CPU.ActiveCfg = Release|Any CPU

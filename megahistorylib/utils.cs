@@ -1,24 +1,51 @@
 
 using System;
 
-public class Timer
+namespace megahistorylib
 {
-	private long _start =0;
-	private long _delta =0;
-	private long _total =0;
-	
-	public long DeltaT { get { return _delta; } }
-	public long TotalT { get { return _total; } set { _total = value; } }
-	public TimeSpan Delta { get { return new TimeSpan(_delta); } }
-	public TimeSpan Total { get { return new TimeSpan(_total); } }
-	
-	public Timer() { }
-	
-	public void start() { _start = DateTime.Now.Ticks; }
-	public void stop()
+	/// <summary>
+	/// 
+	/// </summary>
+	public class Timer
 	{
-		long now = DateTime.Now.Ticks;
-		_delta = now -_start;
-		_total += _delta;
+		private long _start =0;
+		private long _delta =0;
+		private long _total =0;
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public long DeltaT { get { return _delta; } }
+		/// <summary>
+		/// 
+		/// </summary>
+		public long TotalT { get { return _total; } set { _total = value; } }
+		/// <summary>
+		/// 
+		/// </summary>
+		public TimeSpan Delta { get { return new TimeSpan(_delta); } }
+		/// <summary>
+		/// 
+		/// </summary>
+		public TimeSpan Total { get { return new TimeSpan(_total); } }
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public Timer() { }
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public void start() { _start = DateTime.Now.Ticks; }
+		/// <summary>
+		/// 
+		/// </summary>
+		public void stop()
+		{
+			long now = DateTime.Now.Ticks;
+			_delta = now -_start;
+			_total += _delta;
+		}
 	}
 }

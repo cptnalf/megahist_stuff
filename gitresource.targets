@@ -1,0 +1,32 @@
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>.</MSBuildCommunityTasksPath>
+  </PropertyGroup>
+  <Import Project=".\MSBuild.Community.Tasks.targets" />
+	
+	<!-- git version resource. -->
+	<Target Name="_GitVersionValue" >
+		<Exec 
+			 Command="@(GitExe) rev-parse HEAD &gt;$(IntermediateOutputPath)$(TargetFileName)" 
+			 />
+    <ReadLinesFromFile File="$(IntermediateOutputPath)$(TargetFileName)">
+      <Output TaskParameter="Lines" PropertyName="GitVersionValue" />
+    </ReadLinesFromFile>
+		
+    <ItemGroup>
+      <Tokens Include="GitVersion">
+        <ReplaceMentValue>$(GitVersionValue)</ReplaceMentValue>
+      </Tokens>
+    </ItemGroup>
+		
+    <PropertyGroup>
+      <_ResTemplateFile>@(ResTemplate -> '%(Identity)')</_ResTemplateFile>
+			<_ResOutputFile>@(ResTemplate -> '%(OutputFile)' )</_ResOutputFile>
+    </PropertyGroup>
+		
+		<TemplateFile 
+			 Template="$(_ResTemplateFile)" 
+			 OutputFilename="$(_ResOutputFile)" 
+			 Tokens="@(Tokens)" />
+	</Target>
+</Project>

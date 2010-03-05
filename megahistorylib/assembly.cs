@@ -7,7 +7,12 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("megahistorylib")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("debug")]
+#else
+[assembly: AssemblyConfiguration("release")]
+#endif
 [assembly: AssemblyCompany("flarg")]
 [assembly: AssemblyProduct("megahistorylib")]
 [assembly: AssemblyCopyright("flarg")]

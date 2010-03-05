@@ -3,7 +3,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
 
-namespace megahistory
+namespace megahistory.deprecated
 {
 
 	/** what happens when we see a changeset?
@@ -109,7 +109,7 @@ namespace megahistory
 				{
 					/* only print stuff we haven't already seen. */
 					List<string> treeBranches = branches;
-					if (treeBranches == null) { treeBranches = Utils.FindChangesetBranches(cs); }
+					if (treeBranches == null) { treeBranches = megahistorylib.Utils.FindChangesetBranches(cs); }
 					p = new PatchInfo(parentID, cs, treeBranches);
 				
 					_cache.Add(p.cs.ChangesetId, p);

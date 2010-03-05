@@ -9,19 +9,19 @@
 using System;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using ItemTree = treelib.TreapDict<int,Microsoft.TeamFoundation.VersionControl.Client.Item>;
-using MH = megahistory.MegaHistory;
+using MH = megahistory.deprecated.MegaHistory;
 
-namespace megahistorylib
+namespace megahistory.deprecated
 {
 	public class ItemHistory
 	{
 		private long _queries;
-		private Timer _queryTimer = new Timer();
+		private megahistorylib.Timer _queryTimer = new megahistorylib.Timer();
 		private VersionControlServer _vcs;
 		private ItemTree _tree;
-		private megahistory.Visitor _visitor;
+		private Visitor _visitor;
 		
-		public ItemHistory(VersionControlServer vcs, megahistory.Visitor visitor) 
+		public ItemHistory(VersionControlServer vcs, Visitor visitor) 
 		{
 			_vcs = vcs;
 			_visitor = visitor;
@@ -51,7 +51,7 @@ namespace megahistorylib
 					bool isMerge = false;
 					
 					result &= true;
-					isMerge = megahistory.Utils.IsMergeChangeset(cs);
+					isMerge = megahistorylib.Utils.IsMergeChangeset(cs);
 					
 					if (isMerge)
 						{
@@ -68,7 +68,7 @@ namespace megahistorylib
 			/* dump some stats out to the log file. */
 			MH.logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
 			MH.logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
-													 megahistory.Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
+													 megahistorylib.Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
 			
 			return result;
 		}

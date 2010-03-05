@@ -7,7 +7,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
 
-namespace megahistory
+namespace megahistory.deprecated
 {
 	/** pulls a chain of changesets out of merges
 	 */
@@ -93,7 +93,7 @@ namespace megahistory
 		private VersionControlServer _vcs;
 		private Visitor _visitor;
 		private uint _queries = 0;
-		private Timer _queryTimer = new Timer();
+		private megahistorylib.Timer _queryTimer = new megahistorylib.Timer();
 
 		public TimeSpan QueryTime { get { return _queryTimer.Total; } }
 		public uint Queries { get { return _queries; } }
@@ -126,7 +126,7 @@ namespace megahistory
 					bool isMerge = false;
 					
 					result &= true;
-					isMerge = Utils.IsMergeChangeset(cs);
+					isMerge = megahistorylib.Utils.IsMergeChangeset(cs);
 					
 					if (isMerge)
 						{
@@ -144,8 +144,8 @@ namespace megahistory
 			
 			/* dump some stats out to the log file. */
 			logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
-			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
-												 Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
+			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.",
+												 megahistorylib.Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
 			
 			return result;
 		}
@@ -176,7 +176,7 @@ namespace megahistory
 			/* dump some stats out to the log file. */
 			logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
 			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
-												 Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
+												 megahistorylib.Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
 		
 			return result;
 		}
@@ -193,8 +193,8 @@ namespace megahistory
 		
 			/* dump some stats out to the log file. */
 			logger.DebugFormat("{0} queries took {1}", _queries, _queryTimer.Total);
-			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.", 
-												 Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
+			logger.DebugFormat("{0} findchangesetbranchcalls for {1} changesets.",
+												 megahistorylib.Utils.FindChangesetBranchesCalls, _visitor.visitedCount());
 			return result;
 		}
 	
@@ -229,7 +229,7 @@ namespace megahistory
 							 * it's parent is the one passed in.
 							 */
 							Changeset cs = _vcs.GetChangeset(csID);
-							string path_part = Utils.GetPathPart(target);
+							string path_part = megahistorylib.Utils.GetPathPart(target);
 							ChangesetVersionSpec cstargetVer = targetVer as ChangesetVersionSpec;
 						
 							/* pass in the known set of branches in this changeset, or let it figure that out. */
@@ -264,7 +264,7 @@ namespace megahistory
 												 */
 												Visitor.PatchInfo p = _visitor[child.ChangesetId];
 												if (p != null) { branches = p.treeBranches; }
-												else { branches = Utils.FindChangesetBranches(child); }
+												else { branches = megahistorylib.Utils.FindChangesetBranches(child); }
 											}
 										
 											/* - this is for the recursive query -

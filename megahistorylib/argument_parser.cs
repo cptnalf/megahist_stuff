@@ -12,23 +12,48 @@ using System.Reflection;
  */
 namespace megahistorylib
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class ArgParser
 	{
 		private Dictionary<string,BaseArg> _str2arg = new Dictionary<string,BaseArg>();
 		private Dictionary<char, BaseArg> _c2arg = new Dictionary<char,BaseArg>();
 		private List<BaseArg> _args = new List<BaseArg>();
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="idx"></param>
+		/// <returns></returns>
 		public BaseArg this[int idx] { get { return _args[idx]; } }
 		
+		/// <summary>
+		/// 
+		/// </summary>
 		public ArgParser() { }
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="idx"></param>
+		/// <returns></returns>
 		public T get_arg<T>(int idx) where T : BaseArg { return (_args[idx]) as T; }
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="args"></param>
 		public void add(BaseArg[] args)
 		{
 			foreach(BaseArg arg in args) { this.add(arg); }
 		}
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="arg"></param>
 		public void add(BaseArg arg)
 		{
 			_args.Add(arg);
@@ -91,6 +116,11 @@ namespace megahistorylib
 			return result;
 		}
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="opts"></param>
+		/// <param name="prog_text"></param>
 		public void print_help(string opts, string[] prog_text)
 		{
 			/* Lookup the assembly info attributes. 
@@ -145,129 +175,5 @@ namespace megahistorylib
 						{ Console.WriteLine("\t{0}", _args[i].help[j]); }
 				}
 		}
-	}
-	
-	/** base class for an argument.
-	 */
-	public class BaseArg
-	{
-		/**< 1 char option we're looking for, eg: -f */
-		private char _opt;
-		private string _optLong; /**< multi-char name for this option, eg: --foo-bar */
-		private string _name;   /**< a helpful name for this option. */
-		private string[] _help; /**< help text for this option. */
-		
-		public char opt       { get { return _opt; } }
-		public string optLong { get { return _optLong; } }
-		public string name    { get { return _name; } }
-		public string[] help  { get { return _help; } }
-		
-		public BaseArg(char n_opt, string n_long, string n_name, string n_help)
-		{ _opt = n_opt; _optLong = n_long; _name = n_name; _help = new string[] { n_help }; }
-
-		public BaseArg(char n_opt, string n_long, string n_name, string[] n_help)
-		{ 
-			_opt = n_opt;
-			_optLong = n_long;
-			_name = n_name;
-			_help = n_help;
-		}
-		
-		public BaseArg(string n_long, string n_name, string[] n_help)
-		: this('\0', n_long, n_name, n_help)
-		{ }
-		
-		public BaseArg(char n_opt, string n_long, string[] n_help)
-		 : this(n_opt, n_long, null, n_help)
-		{ }
-		
-		/** called when the option is found.
-		 *  this can then add another option or set internal data.
-		 *  
-		 *  @return false stops parsing
-		 *          true continues parsing.
-		 */
-		public virtual bool set_opt(ref int i, string[] args) { return true; }
-	}
-	
-	/** a flag argument. */
-	public class FlagArg : BaseArg
-	{
-		private bool _on;
-		public bool On { get { return _on; } }
-		
-		public FlagArg(char n_opt) : this(n_opt, null, false) { }
-		public FlagArg(char n_opt, string[] n_help, bool def_state) 
-			: base(n_opt, null, n_help) { _on = def_state; }
-		
-		public FlagArg(string opt_long, string n_help, bool def_state)
-			:base(opt_long, null, new string[] { n_help }) { _on = def_state; }
-		public FlagArg(string opt_long, string[] n_help, bool def_state)
-			: base(opt_long, null, n_help)
-		{ _on = def_state; }
-		
-		public static implicit operator bool(FlagArg foo) { return foo.On; }
-	}
-	
-	/** a 'normal' argument
-	 *  it looks for the option value, and retrieves the string.
-	 */
-	public class Arg : BaseArg
-	{
-		private string _data;
-		/**< the option value. */
-		public string Data { get { return _data; } }
-		
-		public Arg(char n_opt, string n_optLong, string n_name, string n_help, string def)
-			: this(n_opt, n_optLong, n_name, new string[] { n_help }, def) { }
-		public Arg(char n_opt, string n_optLong, string n_name, string[] n_help, string def)
-			: base(n_opt, n_optLong, n_name, n_help) { _data = def; }
-		
-		public Arg(string n_longOpt, string n_name, string[] n_help)
-			: base(n_longOpt, n_name, n_help)
-			{ _data = null; }
-		
-		public override bool set_opt(ref int argc, string[] args)
-		{
-			bool ok = ((argc+1) < args.Length);
-			if (ok) { _data = args[++argc]; }
-			return ok;
-		}
-		
-		/** report an error parsing the option value.
-		 */
-		protected void err(string arg)
-		{
-			Console.WriteLine("error: invalid type for option {0}; got {1}",
-												name, arg);
-		}
-		
-		/** convert this argument to it's value. */
-		public static implicit operator string(Arg foo) { return foo.Data; }
-	}
-	
-	public class ArgUShort : Arg
-	{
-		private ushort _ushort;
-		public ushort UShort { get { return _ushort; } }
-		
-		public ArgUShort(char n_opt, string n_name, string n_help, ushort def)
-			: this(n_opt, n_name, new string[] { n_help }, def) { }
-		public ArgUShort(char n_opt, string n_name, string[] n_help, ushort def)
-			: base(n_opt, null, n_name, n_help, null)
-		{ _ushort = def; }
-		
-		public override bool set_opt(ref int argc, string[] args)
-		{
-			bool ok = base.set_opt(ref argc, args);
-			if (ok)
-				{
-					bool res = UInt16.TryParse(Data, out _ushort);
-					if (! res) { err(Data); ok = false; }
-				}
-			return ok;
-		}
-		
-		public static implicit operator ushort(ArgUShort foo) { return foo.UShort; }
 	}
 }

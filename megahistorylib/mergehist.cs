@@ -2,26 +2,16 @@
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System.Collections.Generic;
 
-namespace megahistory
+namespace megahistorylib
 {
 	using SortedPaths_T = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
 	using ChangesetDict_T = 
 		treelib.AVLDict<int, treelib.AVLTree<string, treelib.StringSorterInsensitive> >;
-	
-	public interface IVisitor<T>
-	{
-		T visit(string branch, Changeset cs);
-		void addParent(T data, int parentID);
-		bool visited(string branch, int csID);
-	}
-	
-	public class MergeHistQueryRec
-	{
-		public int id { get;set;}
-		public Item item { get;set; }
-		public int distance { get;set; }
-	}
-	
+		
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class MergeHist<T>
 	{
 		private IVisitor<T> _visitor;
@@ -55,7 +45,12 @@ namespace megahistory
 		}
 		
 		private Item _getItem(string targetPath) { return _vcs.GetItem(targetPath); }
-
+		
+		/// <summary>
+		/// get a changeset.
+		/// </summary>
+		/// <param name="csID"></param>
+		/// <returns></returns>
 		public Changeset getCS(int csID)
 		{
 			Timer t = new Timer();
@@ -72,20 +67,43 @@ namespace megahistory
 			return cs;
 		}
 		
+		/// <summary>
+		/// the number of calls to QueryMergeDetails
+		/// </summary>
 		public ulong QueryCount { get { return _qc; } }
+		/// <summary>
+		/// number of GetItem calls.
+		/// </summary>
 		public ulong GetItemCount { get { return _gic; } }
+		/// <summary>
+		/// number of getCS calls.
+		/// </summary>
 		public ulong GetChangesetCount { get { return _gcc; } }
 		
+		/// <summary>
+		/// time taken by QueryMergeDetails.
+		/// </summary>
 		public System.TimeSpan QueryTime { get { return _qt.Total; } }
+		/// <summary>
+		/// time taken by GetItem call.
+		/// </summary>
 		public System.TimeSpan GetItemTime { get { return _git.Total; } }
+		/// <summary>
+		/// time taken by getCS
+		/// </summary>
 		public System.TimeSpan GetChangesetTime { get { return _gct.Total; } }
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="vcs"></param>
+		/// <param name="visitor"></param>
 		public MergeHist(VersionControlServer vcs, IVisitor<T> visitor)
 		{
 			_vcs = vcs;
 			_visitor = visitor;
 			
-			MegaHistory.LoadLogger();
+			Logger.LoadLogger();
 		}
 		
 		/// <summary>
@@ -104,14 +122,21 @@ namespace megahistory
 			List<MergeHistQueryRec> queries = queryMerge(cs, itm, distance);
 			
 			t.stop();
-			MegaHistory.logger.DebugFormat("qm[{0} queries took {1}]", this.QueryCount, this.QueryTime);
-			MegaHistory.logger.DebugFormat("qm[{0} get items took {1}]", this.GetItemCount, this.GetItemTime);
-			MegaHistory.logger.DebugFormat("qm[{0} get changesets took {1}]", this.GetChangesetCount, this.GetChangesetTime);
-			MegaHistory.logger.DebugFormat("qm[total time {1}]", t.Total);
+			Logger.logger.DebugFormat("qm[{0} queries took {1}]", this.QueryCount, this.QueryTime);
+			Logger.logger.DebugFormat("qm[{0} get items took {1}]", this.GetItemCount, this.GetItemTime);
+			Logger.logger.DebugFormat("qm[{0} get changesets took {1}]", this.GetChangesetCount, this.GetChangesetTime);
+			Logger.logger.DebugFormat("qm[total time {1}]", t.Total);
 			
 			return queries;
 		}
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cs"></param>
+		/// <param name="targetItem"></param>
+		/// <param name="distance"></param>
+		/// <returns></returns>
 		public List<MergeHistQueryRec> queryMerge(Changeset cs, Item targetItem, int distance)
 		{
 			string srcPath = null;
@@ -157,7 +182,7 @@ namespace megahistory
 				string itemPath = targetItem.ServerItem;
 				if (targetItem.ItemType != ItemType.File) { itemPath += '/'; }
 				
-				MegaHistory.logger.DebugFormat("v[{0}{1}]", itemPath, cs.ChangesetId);
+				Logger.logger.DebugFormat("v[{0}{1}]", itemPath, cs.ChangesetId);
 				data = _visitor.visit(itemPath, cs);
 			}
 			
@@ -188,7 +213,7 @@ namespace megahistory
 									//Console.WriteLine("---- {0} => {1} + {2}", pair.Value.Values[0], thisBranch, pathPart);
 									if (! string.IsNullOrEmpty(thisBranch))
 										{
-											MegaHistory.logger.DebugFormat("iqm[{0},{1}]", thisBranch+"/EGS/"+pathPart, it.item());
+											Logger.logger.DebugFormat("iqm[{0},{1}]", thisBranch+"/EGS/"+pathPart, it.item());
 											
 											itm = _getItem(thisBranch + "/EGS/" + pathPart, it.item(), 0, false);
 										}
@@ -203,13 +228,13 @@ namespace megahistory
 									 * spawn a new query for just this file (folder?)
 									 */
 									
-									MegaHistory.logger.DebugFormat("iq1[{0},{1}]", pathsIt.item(), it.item());
+									Logger.logger.DebugFormat("iq1[{0},{1}]", pathsIt.item(), it.item());
 							
 									try {
 										itm = _getItem(pathsIt.item(), it.item(), 0, false);
 									} catch(System.Exception ex)
 										{
-											MegaHistory.logger.Fatal("fatal item query:", ex);
+											Logger.logger.Fatal("fatal item query:", ex);
 									
 											try{
 												/* try just the path, i doubt this will work either, but *shrug* */

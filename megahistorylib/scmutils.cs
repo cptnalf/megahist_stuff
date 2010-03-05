@@ -1,13 +1,15 @@
 
 using	Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace megahistory
+namespace megahistorylib
 {
 	using ItemDict = treelib.TreapDict<int,Item>;
 	
+	/// <summary>
+	/// 
+	/// </summary>
 	public static class SCMUtils
 	{
-		
 		
 		/** retreive the branches of a particular path, at a particular version
 		 *

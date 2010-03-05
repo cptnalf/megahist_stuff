@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using	Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 
-namespace megahistory
+namespace megahistorylib
 {
 	using BranchCont = treelib.AVLTree<string,treelib.StringSorterInsensitive>;
 	
+	/// <summary>
+	/// 
+	/// </summary>
 	public static partial class Utils
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public static uint FindChangesetBranchesCalls = 0;
+		/// <summary>
+		/// 
+		/// </summary>
 		public static int NonThreadedFindLimit = 1000;
 		
 		/// <summary>
@@ -18,6 +27,32 @@ namespace megahistory
 		/// 0 or &lt; 1 => processor count.
 		/// </summary>
 		public static int FIND_THREAD_COUNT = -1;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cng"></param>
+		/// <returns></returns>
+		public delegate bool ChangeTypeToConsiderDelegate(Change cng);
+
+		/** what ChangeType(s) do we want to consider when we query for decomposition.
+		 *  this defaults to a function which only considers:
+		 *   changes which are not just ChangeType.Merge
+		 *   and changes which contain a ChangeType.Merge
+		 */
+		public static ChangeTypeToConsiderDelegate IsChangeToConsider = _isChangeToConsider;
+
+		private static bool _isChangeToConsider(Change cng)
+		{
+			/* look at only merge and branch changes, 
+			 * but ignore only 'Merge' changes (these are TFS's way of syncing it's internal merge state)
+			 */
+			return (cng.ChangeType != ChangeType.Merge) &&
+				(
+				//((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch) ||
+				 ((cng.ChangeType & ChangeType.Merge) == ChangeType.Merge)
+				 );
+		}
 		
 		/** walk the changes in the changeset and find all unique 'EGS' trees.
 		 *  eg:
@@ -31,17 +66,23 @@ namespace megahistory
 		 *
 		 */
 		public static List<string> FindChangesetBranches(Changeset cs)
-		{ return FindChangesetBranches(cs, MegaHistory.IsChangeToConsider); }
+		{ return FindChangesetBranches(cs, IsChangeToConsider); }
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cs"></param>
+		/// <param name="op"></param>
+		/// <returns></returns>
 		public static List<string> FindChangesetBranches(Changeset cs, 
-		                                                 MegaHistory.ChangeTypeToConsiderDelegate op)
+		                                                 ChangeTypeToConsiderDelegate op)
 		{
 			Timer timer = new Timer();
 			List<string> itemBranches = new List<string>();
 			
 			++FindChangesetBranchesCalls;
 			
-			MegaHistory.LoadLogger();
+			Logger.LoadLogger();
 				
 			timer.start();
 			if (cs.Changes.Length > NonThreadedFindLimit)
@@ -54,13 +95,13 @@ namespace megahistory
 				}
 			timer.stop();
 			
-			MegaHistory.logger.DebugFormat("branches for {0} took: {1}", cs.ChangesetId, timer.Delta);
+			Logger.logger.DebugFormat("branches for {0} took: {1}", cs.ChangesetId, timer.Delta);
 		
 			return itemBranches;
 		}
 		
 		private static List<string> _Get_egs_branches_nonthreaded(Changeset cs, 
-		                                                          MegaHistory.ChangeTypeToConsiderDelegate op)
+		                                                          ChangeTypeToConsiderDelegate op)
 		{
 			List<string> itemBranches = new List<string>();
 			
@@ -103,7 +144,7 @@ namespace megahistory
 											if (itemPath.IndexOf("$/IGT_0803/") == 0)
 												{
 #endif
-													MegaHistory.logger.DebugFormat("branch={0}", itemPath);
+													Logger.logger.DebugFormat("branch={0}", itemPath);
 													itemBranches.Add(itemPath);
 #if DEBUG
 												}
@@ -130,13 +171,13 @@ namespace megahistory
 			internal int ptr;
 			internal System.Threading.ReaderWriterLock rwlock;
 			internal List<string> itemBranches;
-			internal MegaHistory.ChangeTypeToConsiderDelegate op;
+			internal ChangeTypeToConsiderDelegate op;
 		}
 		
 		/** this starts the worker threads and then waits for their results.
 		 */
 		private static List<string> _Get_egs_branches_threaded(Changeset cs, 
-		                                                       MegaHistory.ChangeTypeToConsiderDelegate op)
+		                                                       ChangeTypeToConsiderDelegate op)
 		{
 			System.Threading.Thread[] threads;
 			_args args = new _args();
@@ -249,7 +290,7 @@ namespace megahistory
 															
 															if (! reallyFound) 
 																{
-																	MegaHistory.logger.DebugFormat("branch={0}", itemPath);
+																	Logger.logger.DebugFormat("branch={0}", itemPath);
 																	args.itemBranches.Add(itemPath); 
 																}
 														}
