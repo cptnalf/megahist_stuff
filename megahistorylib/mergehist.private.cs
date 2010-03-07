@@ -10,10 +10,10 @@ namespace megahistorylib
 	
 	public partial class MegaHistory
 	{
-		private IVisitor _visitor;
 		private VersionControlServer _vcs;
 		private bool _threaded = true;
 		private int _baseDistance = 3;
+		private IMergeResults _results = new MergeResults();
 		
 		private ulong _qc = 0;
 		private saastdlib.Timer _qt = new saastdlib.Timer();
@@ -49,28 +49,48 @@ namespace megahistorylib
 		
 		private Item _getItem(string targetPath) { return _vcs.GetItem(targetPath); }
 
-		private void _queueOrVisit(QueryProcessor qp, Changeset cs, int distance, string branch)
+		private void _queueOrVisit(QueryProcessor qp, 
+															 Changeset cs, int distance, string branch)
 		{
-			/* ok, ok, we really don't have it... 
-			* didn't find it, so do the first level query. 
-			*/
-			if (!_handleVisit(qp, cs, distance))
+			Revision rev = _results.getRevision(cs.ChangesetId);
+			
+			if (rev == null)
 				{
-					/* manufacture a visit since this changeset
-					* has no merge actions to get branches from
-					*/
-					if (branch == null)
+					/* ok, ok, we really don't have it... 
+					 * didn't find it, so do the first level query. 
+					 */
+					if (!_handleVisit(qp, cs, distance))
 						{
-							/* determine a branch from the changesets's changes 
-							 * we're not queuing it, so we look for _all_ branches.
-							 * (eg, 2nd level :[ ) 
+							/* manufacture a visit since this changeset
+							 * has no merge actions to get branches from
 							 */
-							List<string> branches =
-							tfsinterface.Utils.FindChangesetBranches(cs, (cng) => true);
-							
-							foreach (string b in branches) { _visitor.construct(b, cs); }
+							if (branch == null)
+								{
+									/* determine a branch from the changesets's changes 
+									 * we're not queuing it, so we look for _all_ branches.
+									 * (eg, 2nd level :[ ) 
+									 */
+									List<string> branches =
+										tfsinterface.Utils.FindChangesetBranches(cs, (cng) => true);
+									
+									foreach (string b in branches) { _results.construct(b, cs); }
+								}
+							else { _results.construct(branch, cs); }
 						}
-					else { _visitor.construct(branch, cs); }
+				}
+			else
+				{
+					/* woo, got nothing left to do! */
+				}
+		}
+		
+		private void _queueParents(QueryProcessor qp, Revision rev)
+		{
+			foreach(int parentID in rev.Parents)
+				{
+					Changeset cs = getCS(parentID);
+					
+					_queueOrVisit(qp, cs, _baseDistance -1, null);
 				}
 		}
 		

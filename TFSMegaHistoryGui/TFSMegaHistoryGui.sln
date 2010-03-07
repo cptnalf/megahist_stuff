@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "workitem_viewer", "..\worki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterface", "..\tfsinterface\tfsinterface.csproj", "{8A520826-8639-42DA-9D87-9504BDD74BC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "saastdlib", "..\saastdlib\saastdlib.csproj", "{92E81AC4-410F-42B1-A541-82370DF308CF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,10 +48,6 @@ Global
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92E81AC4-410F-42B1-A541-82370DF308CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92E81AC4-410F-42B1-A541-82370DF308CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92E81AC4-410F-42B1-A541-82370DF308CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92E81AC4-410F-42B1-A541-82370DF308CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

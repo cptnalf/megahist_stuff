@@ -49,6 +49,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.Client.dll</HintPath>
     </Reference>
+    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\saastdlib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -62,10 +66,6 @@
     <ProjectReference Include="..\megahistorylib\megahistorylib.csproj">
       <Project>{8723DA6D-9CBD-43d6-9218-88278099A063}</Project>
       <Name>megahistorylib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\saastdlib\saastdlib.csproj">
-      <Project>{92E81AC4-410F-42B1-A541-82370DF308CF}</Project>
-      <Name>saastdlib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ using mh_ns = megahistorylib;
 using Arg = saastdlib.Arg;
 using ArgParser = saastdlib.ArgParser;
 using FlagArg = saastdlib.FlagArg;
-
+using ArgInt = saastdlib.ArgInt;
 
 namespace tfsmegahistory
 {
@@ -71,7 +71,7 @@ namespace tfsmegahistory
 			argParser.add(new FlagArg("name-only", "add the path of the files to the changeset info", true));
 			argParser.add(new FlagArg("name-status",
 																"print the path and the change type in the changeset info", false));
-			argParser.add(new saastdlib.ArgInt('d', "distance", 
+			argParser.add(new ArgInt('d', "distance", 
 				new string[] {
 					"distance or number of merge queries to run.",
 					"default=1",
@@ -83,6 +83,15 @@ namespace tfsmegahistory
 					"  10 => $/code_review/group1/ version 8",
 					" process stops."
 				}, 1));
+			argParser.add(new ArgInt('j', "threads", 
+			  new string[] {
+			    "number of threads to run merge queries in",
+			    " defaults to 8.",
+			    " if set to 1, queries are done in order.",
+			    " e.g. ",
+			    "query changeset 12, query parents of changeset 12, starting at the first parent.",
+			    " query the first parent, <insert recursion>"
+			   }, 8));
 			
 			List<int> unknownArgs;
 			bool argError = !argParser.parse_args(args, out unknownArgs);
@@ -94,7 +103,7 @@ namespace tfsmegahistory
 				{
 					/* get the version of the megahistory library. */
 					Version version = null;
-					Assembly asm = Assembly.GetAssembly(typeof(megahistorylib.VisitorBase));
+					Assembly asm = Assembly.GetAssembly(typeof(megahistorylib.MegaHistory));
 					version = asm.GetName().Version;
 					/* ******************** */
 					string libVersion = null;
@@ -158,16 +167,13 @@ namespace tfsmegahistory
 				{ values.printWhat = HistoryViewer.Printwhat.NameStatus; }
 			
 			values.maxDistance = (int)argParser.get_arg<saastdlib.ArgInt>("distance");
-					
-			HistoryViewer visitor = new HistoryViewer(values.printWhat);
 			
-			bool result = false;
-
 			megahistorylib.MegaHistory megahistory = 
-				new megahistorylib.MegaHistory(values.server, visitor, values.maxDistance);
+				new megahistorylib.MegaHistory(values.server, values.maxDistance);
 			
 			megahistory.query(values.srcPath, values.srcVer, int.MaxValue, values.fromVer, values.toVer, null);
-			
+
+			HistoryViewer visitor = new HistoryViewer(values.printWhat, megahistory.Results);
 			visitor.print(Console.Out);
 			
 			return 0;

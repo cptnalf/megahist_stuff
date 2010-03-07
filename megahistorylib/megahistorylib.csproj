@@ -102,6 +102,10 @@
     <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.WorkItemTracking.Client.dll</HintPath>
     </Reference>
+    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\saastdlib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -116,16 +120,15 @@
     <Compile Include="assembly.cs" />
     <Compile Include="$(GitResourcePath)AssemblyInfo.cs" />
     <Compile Include="ChangesetSorter.cs" />
-    <Compile Include="CSWrapper.cs" />
+    <Compile Include="IMergeResults.cs" />
     <Compile Include="IntDescSorter.cs" />
-    <Compile Include="IRevision.cs" />
-    <Compile Include="IVisitor.cs" />
     <Compile Include="logger.cs" />
     <Compile Include="mergehist.cs" />
     <Compile Include="mergehist.private.cs" />
+    <Compile Include="MergeResults.cs" />
     <Compile Include="QueryRec.cs" />
     <Compile Include="queryprocessor.cs" />
-    <Compile Include="VisitorBase.cs" />
+    <Compile Include="Revision.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -147,10 +150,6 @@
   <Target Name="BeforeBuild" DependsOnTargets="_GitVersionValue" />
   <Import Project="$(EGSINCPATH)\EndProject.inc" />
   <ItemGroup>
-    <ProjectReference Include="..\saastdlib\saastdlib.csproj">
-      <Project>{92E81AC4-410F-42B1-A541-82370DF308CF}</Project>
-      <Name>saastdlib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
       <Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
       <Name>tfsinterface</Name>

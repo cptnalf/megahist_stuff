@@ -102,6 +102,10 @@
     <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.WorkItemTracking.Client.dll</HintPath>
     </Reference>
+    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\saastdlib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -136,10 +140,4 @@
   </Target>
   -->
   <Import Project="$(EGSINCPATH)\EndProject.inc" />
-  <ItemGroup>
-    <ProjectReference Include="..\saastdlib\saastdlib.csproj">
-      <Project>{92E81AC4-410F-42B1-A541-82370DF308CF}</Project>
-      <Name>saastdlib</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

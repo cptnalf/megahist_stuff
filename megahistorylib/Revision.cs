@@ -1,4 +1,4 @@
-
+﻿
 using System.Collections.Generic;
 
 namespace megahistorylib
@@ -7,9 +7,9 @@ namespace megahistorylib
 	using Change = Microsoft.TeamFoundation.VersionControl.Client.Change;
 	
 	/// <summary>
-	/// 
+	/// a revision interface.
 	/// </summary>
-	public class CSWrapper : IRevision
+	public class Revision
 	{
 		private Changeset _cs;
 		private string _branch;
@@ -19,7 +19,8 @@ namespace megahistorylib
 		/// <summary>
 		/// 
 		/// </summary>
-		public System.Collections.Generic.IEnumerable<int> Parents { get { return _parents; } }
+		public System.Collections.Generic.IEnumerable<int> Parents
+		{ get { return _parents; } }
 		
 		/// <summary>the branch the changeset belongs to</summary>
 		public string Branch { get { return _branch; } }
@@ -29,10 +30,10 @@ namespace megahistorylib
 
 		/// <summary>who checked in the changeset</summary>
 		public string User { get { return _cs.Owner; } }
-
+		
 		/// <summary>when the changeset was created</summary>
 		public System.DateTime CreationDate { get { return _cs.CreationDate; } }
-
+		
 		/// <summary></summary>
 		public string Comment { get { return _cs.Comment; } }
 		
@@ -51,18 +52,16 @@ namespace megahistorylib
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="idx"></param>
-		/// <returns></returns>
-		public Change this[int idx] { get { return _cs.Changes[idx]; } }
+		public Change[] Changes { get { return _cs.Changes; } }
 		
 		/// <summary>
 		/// </summary>
-		public CSWrapper(Changeset cs, string branch)
+		public Revision(Changeset cs, string branch)
 		{
 			_cs = cs;
 			_branch = branch;
 		}
-
+		
 		/// <summary>
 		/// add a parent of this changeset.
 		/// </summary>

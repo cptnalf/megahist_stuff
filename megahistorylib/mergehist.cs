@@ -41,13 +41,20 @@ namespace megahistorylib
 		}
 		
 		/// <summary>
+		/// 
+		/// </summary>
+		public IMergeResults Results
+		{ get { return _results; } set { _results = value; } }
+		
+		/// <summary>
 		/// run the merge query threaded.
 		/// </summary>
 		public bool Threaded { get { return _threaded; } }
 		/// <summary>
 		/// base query depth
 		/// do this many queries, no more.
-		/// when distance = 0, no more queries are done, nor is the target changeset visited
+		/// when distance = 0, no more queries are done, 
+		/// nor is the target changeset visited
 		/// 
 		/// so:
 		/// BaseDistance=3
@@ -88,11 +95,9 @@ namespace megahistorylib
 		/// constructor
 		/// </summary>
 		/// <param name="tfsServerName"></param>
-		/// <param name="visitor"></param>
 		/// <param name="distance"></param>
-		public MegaHistory(string tfsServerName, IVisitor visitor, int distance)
+		public MegaHistory(string tfsServerName, int distance)
 		{
-			_visitor = visitor;
 			_vcs = tfsinterface.SCMUtils.GetTFSServer(tfsServerName);
 			_baseDistance = distance;
 			
@@ -103,12 +108,10 @@ namespace megahistorylib
 		/// 
 		/// </summary>
 		/// <param name="vcs"></param>
-		/// <param name="visitor"></param>
 		/// <param name="distance"></param>
-		public MegaHistory(VersionControlServer vcs, IVisitor visitor, int distance)
+		public MegaHistory(VersionControlServer vcs, int distance)
 		{
 			_vcs = vcs;
-			_visitor = visitor;
 			_baseDistance = distance;
 			
 			Logger.LoadLogger();
@@ -124,7 +127,8 @@ namespace megahistorylib
 		/// <param name="to"></param>
 		/// <param name="user"></param>
 		public void query(string path, VersionSpec pathVer, 
-		                  int limit, VersionSpec from, VersionSpec to, string user)
+											int limit, VersionSpec from, VersionSpec to, 
+											string user)
 		{
 			Item item = _getItem(path, pathVer, 0, false);
 			query(item, limit, from, to, user);
@@ -135,7 +139,8 @@ namespace megahistorylib
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="limit"></param>
-		public void query(Item path, int limit) { query(path, limit, null, null, null); }
+		public void query(Item path, int limit) 
+		{ query(path, limit, null, null, null); }
 		
 		/// <summary>
 		/// 
@@ -145,18 +150,20 @@ namespace megahistorylib
 		/// <param name="from"></param>
 		/// <param name="to"></param>
 		/// <param name="user"></param>
-		public void query(Item path, int limit, VersionSpec from, VersionSpec to, string user)
+		public void query(Item path, int limit, 
+											VersionSpec from, VersionSpec to, string user)
 		{
 			ChangesetVersionSpec ver = new ChangesetVersionSpec(path.ChangesetId);
 			ChangesetCont history = new ChangesetCont();
 			
-			System.Collections.IEnumerable stuff = _vcs.QueryHistory(path.ServerItem, ver, path.DeletionId,
-			   RecursionType.Full, user, from, to, limit, true, true, false);
+			System.Collections.IEnumerable stuff = 
+				_vcs.QueryHistory(path.ServerItem, ver, path.DeletionId,
+													RecursionType.Full, user, from, to, limit, 
+													true, true, false);
 			
 			foreach(object o in stuff)
 				{
 					Changeset cs = o as Changeset;
-					
 					history.insert(cs);
 				}
 
@@ -181,6 +188,12 @@ namespace megahistorylib
 						};
 			}
 			
+			/* prime the result-set. */
+			for (ChangesetCont.iterator it = history.begin();
+					 it != history.end();
+					 ++it)
+				{ Revision r = _results.getRevision(it.item().ChangesetId); }
+			
 			QueryProcessor qp = new QueryProcessor(this, THREAD_COUNT);
 			string branch = tfsinterface.Utils.GetEGSBranch(path.ServerItem);
 			
@@ -188,27 +201,35 @@ namespace megahistorylib
 			    it != history.end();
 			    ++it)
 				{
-					_queueOrVisit(qp, it.item(), this._baseDistance -1, branch);
+					Revision rev = _results.getRevision(it.item().ChangesetId);
+					
+					if (rev != null)
+						{ _queueOrVisit(qp, it.item(), this._baseDistance -1, branch); }
+					else { _queueParents(qp, rev); }
 				}
+			
 			qp.runThreads();
 			
 			{
-				int prev = 0;
+				Revision prev = null;
 				
 				for(ChangesetCont.iterator it = history.begin();
 						it != history.end();
 						++it)
 					{
-						if (prev != 0)
+						int id = it.item().ChangesetId;
+						
+						if (prev != null)
 							{
 								/* fix up the parent.
 								 * this will only add the parent if they're not already in the list.
 								 */
-								_visitor.addParent(prev, it.item().ChangesetId);
+								
+								prev.addParent(id);
 							}
 						
-						prev = it.item().ChangesetId;
-						_visitor.addPrimaryID(prev);
+						prev = _results.getRevision(id);
+						_results.addPrimaryID(id);
 					}
 			}
 		}
@@ -254,7 +275,7 @@ namespace megahistorylib
 			VersionSpec toVer = targetVer;
 			RecursionType recurType = RecursionType.None; /* assume these are all files */
 			ChangesetMergeDetails mergedetails;
-			IRevision revision;
+			Revision revision;
 			
 			ChangesetDict_T visitedItems;
 			/* map a changeset id to a list of items in that changeset which were merged.
@@ -264,9 +285,8 @@ namespace megahistorylib
 			/* don't do queries when we've reached the distance limit. */
 			if (distance == 0) { return new List<QueryRec>(); }
 			
-			if (targetItem.ItemType != ItemType.File) 
-				{ recurType = RecursionType.Full; }
-
+			if (targetItem.ItemType != ItemType.File) { recurType = RecursionType.Full; }
+			
 			saastdlib.Timer t = new saastdlib.Timer();
 			t.start();
 			mergedetails = 
@@ -290,7 +310,7 @@ namespace megahistorylib
 				if (targetItem.ItemType != ItemType.File) { itemPath += '/'; }
 				
 				Logger.logger.DebugFormat("v[{0}{1}]", itemPath, cs.ChangesetId);
-				revision = _visitor.construct(itemPath, cs);
+				revision = _results.construct(itemPath, cs);
 			}
 			
 			/* now walk the list of compiled changesetid + itempath and 
@@ -320,14 +340,14 @@ namespace megahistorylib
 									//Console.WriteLine("---- {0} => {1} + {2}", pair.Value.Values[0], thisBranch, pathPart);
 									if (! string.IsNullOrEmpty(thisBranch))
 										{
-											Logger.logger.DebugFormat("iqm[{0},{1}]", thisBranch+"/EGS/"+pathPart, it.item());
+											Logger.logger.DebugFormat("iqm[{0},{1}]", 
+																								thisBranch+"/EGS/"+pathPart, 
+																								it.item());
 											
-											itm = _getItem(thisBranch + "/EGS/" + pathPart, it.item(), 0, false);
+											itm = _getItem(thisBranch + "/EGS/" + pathPart, 
+																		 it.item(), 0, false);
 										}
-									else
-										{
-											System.Console.WriteLine("---[e] {0}", pathsIt.item());
-										}
+									else { System.Console.WriteLine("---[e] {0}", pathsIt.item()); }
 								}
 							else
 								{
@@ -343,17 +363,17 @@ namespace megahistorylib
 										{
 											Logger.logger.Fatal("fatal item query:", ex);
 									
-											try{
+											try {
 												/* try just the path, i doubt this will work either, but *shrug* */
 												itm = _getItem(pathsIt.item());
-											}catch(System.Exception) { itm = null; }
+											} catch(System.Exception) { itm = null; }
 										}
 								}
 					
 							/* queue it. */
 							if (itm != null) 
 								{
-									if (!_visitor.visited(itm.ServerItem, it.item()))
+									if (! _results.visited(it.item()))
 										{
 											QueryRec rec = new QueryRec
 												{
@@ -370,6 +390,5 @@ namespace megahistorylib
 			
 			return items;
 		}
-		
 	}
 }
