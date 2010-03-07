@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System.Linq;
 
-namespace megahistorylib
+namespace tfsinterface
 {
 	/// <summary>
 	/// 
@@ -11,7 +11,7 @@ namespace megahistorylib
 	public class TFSWorkspaces
 	{
 		private VersionControlServer _vcs = null;
-		private Workspace[] _workspaces = null;
+		private Workspace[] _workspaces;
 		
 		/// <summary>
 		/// 

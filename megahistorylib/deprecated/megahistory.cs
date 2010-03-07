@@ -13,14 +13,24 @@ namespace megahistory.deprecated
 	 */
 	public class MegaHistory
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public static readonly string version = "f998a4d529c1cb415b0efaeb072dd3cda173d3e1";
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cng"></param>
+		/// <returns></returns>
 		public delegate bool ChangeTypeToConsiderDelegate(Change cng);
 
-		/** what ChangeType(s) do we want to consider when we query for decomposition.
-		 *  this defaults to a function which only considers:
-		 *   changes which are not just ChangeType.Merge
-		 *   and changes which contain a ChangeType.Merge
-		 */
+		/// <summary>
+		/// what ChangeType(s) do we want to consider when we query for decomposition.
+		///  this defaults to a function which only considers:
+		///  changes which are not just ChangeType.Merge
+		///  and changes which contain a ChangeType.Merge
+		/// </summary>
 		public static ChangeTypeToConsiderDelegate IsChangeToConsider = _isChangeToConsider;
 
 		private static bool _isChangeToConsider(Change cng)

@@ -2,11 +2,13 @@
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 using System.Collections.Generic;
-using megahistory;
+using megahistorylib;
+
+using PrimaryIDsCont = treelib.AVLTree<int, megahistorylib.IntDescSorter>;
 
 /** print the changeset when we see it.
  */
-class HistoryViewer : Visitor
+class HistoryViewer : VisitorBase
 {
 	public enum Printwhat : short
 	{
@@ -19,59 +21,47 @@ class HistoryViewer : Visitor
 	
 	public HistoryViewer(Printwhat printWhat) { _printWhat = printWhat; }
 	
-	protected override void _visit(PatchInfo p) { _print(0, p); }
-	
-	private void _print(int parentID, PatchInfo p)
+	private void _print(System.IO.TextWriter wr, CSWrapper cs)
 	{
-		if (parentID == 0)
+		wr.WriteLine("Parents: ");
+		foreach(int p in cs.Parents) { wr.WriteLine("{0}", p); }
+		
+		wr.WriteLine(cs.Branch);
+		wr.WriteLine("Changeset: {0}", cs.ID);
+		wr.WriteLine("Author: {0}", cs.User);
+		wr.WriteLine("Date: {0}", cs.CreationDate);
+		
+		/* @TODO pretty print the comment */
+		wr.WriteLine(cs.Comment);
+		wr.WriteLine();
+		
+		if (_printWhat != Printwhat.None)
 			{
-				p.print(Console.Out);
-				
-				/* only print the list if it wasn't a merge changeset. 
-				 * merge changesets have tree-branches
-				 */
-				if (p.treeBranches == null || p.treeBranches.Count == 0)
+				for(int i=0; i < cs.ChangesCount; ++i)
 					{
-						if (_printWhat != Printwhat.None)
+						switch (_printWhat)
 							{
-								for(int i=0; i < p.cs.Changes.Length; ++i)
-									{
-										switch(_printWhat)
-											{
-											case(Printwhat.NameOnly): 
-												{ Console.WriteLine("{0}", p.cs.Changes[i].Item.ServerItem); break; }
-											case(Printwhat.NameStatus):
-												{
-													Console.WriteLine("{0:20}{1}", 
-																						p.cs.Changes[i].ChangeType, p.cs.Changes[i].Item.ServerItem);
-													break;
-												}
-											}
-									}
-								Console.WriteLine();
+								case(Printwhat.NameOnly):
+									{ wr.WriteLine("{0}", cs[i].Item.ServerItem); break; }
+								case(Printwhat.NameStatus):
+									{ wr.WriteLine("{0:20} {1}", cs[i].ChangeType, cs[i].Item.ServerItem); break; }
 							}
 					}
+				
+				wr.WriteLine();
 			}
-		else
+	}
+	
+	public void print(System.IO.TextWriter wr)
+	{
+		for(PrimaryIDsCont.iterator it = _primaryIDs.begin();
+				it != _primaryIDs.end();
+				++it)
 			{
-				Console.WriteLine("Parent: {0}", parentID);
-				Console.WriteLine("Changeset: {0}", p.cs.ChangesetId);
-				Console.WriteLine();
+				CSWrapper w = this.find(it.item());
+				_print(wr, w);
 			}
+		
+		if (_primaryIDs.empty()) { wr.WriteLine("No changesets found."); }
 	}
-	
-	protected override void _seen(int parentID, PatchInfo p)
-	{
-		//Console.WriteLine("again! {0} -> ({1}) {2}", parentID, p.parent, p.cs.ChangesetId);
-		_print(parentID, p);
-	}
-	
-	public override void visit(int parentID, int csID, Exception e)
-	{
-		Console.WriteLine("Changeset: {0}", csID);
-		Console.WriteLine(" --Error retrieving changeset-- ");
-		Console.WriteLine();
-		Console.WriteLine(e);
-	}
-
 }

@@ -1,7 +1,7 @@
 
 using	Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace megahistorylib
+namespace tfsinterface
 {
 	using ItemDict = treelib.TreapDict<int,Item>;
 	
@@ -10,6 +10,30 @@ namespace megahistorylib
 	/// </summary>
 	public static class SCMUtils
 	{
+		/// <summary>
+		/// get the tfs server given by the name.
+		/// </summary>
+		/// <param name="serverName"></param>
+		/// <returns></returns>
+		public static VersionControlServer GetTFSServer(string serverName)
+		{
+			Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
+			
+			if (serverName != null && serverName != string.Empty)
+				{
+					srvr = Microsoft.TeamFoundation.Client.TeamFoundationServerFactory.GetServer(serverName);
+				}
+			else
+				{
+					/* hmm, they didn't specify one, so get the first in the list. */
+					Microsoft.TeamFoundation.Client.TeamFoundationServer[] servers =
+						Microsoft.TeamFoundation.Client.RegisteredServers.GetServers();
+					
+					srvr = servers[0];
+				}
+			
+			return (srvr.GetService(typeof(VersionControlServer)) as VersionControlServer);
+		}
 		
 		/** retreive the branches of a particular path, at a particular version
 		 *

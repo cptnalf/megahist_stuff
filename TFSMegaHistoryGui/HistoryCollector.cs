@@ -1,11 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using megahistory;
+using megahistorylib;
 
 namespace tfs_fullhistory
 {
-	class HistoryCollector : Visitor
+	/*
+	 * change the megahistory querier to use the addParent(id, parentID) function.
+	 * 
+	 * have this visitor handle the progress reporting.
+	 * i'm not sure if i can do a progressive fill of the history.
+	 * 
+	 * i will need to generate a IRevision object (interface goes away)
+	 * 
+ponder removing the external visitor classes.
+move it all internal, maybe it's exposed as a results object.
+
+- do need to remember that the visit call is one that is done 
+across multiple threads!
+	 */
+	class HistoryCollector : VisitorBase
 	{
 		public PatchInfo Root = null;
 		private Stack<PatchInfo> _nodes = new Stack<PatchInfo>();

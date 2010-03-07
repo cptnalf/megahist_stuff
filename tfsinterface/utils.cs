@@ -1,33 +1,20 @@
 
 using	Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace megahistorylib
+namespace tfsinterface
 {
+	/// <summary>
+	/// utils
+	/// </summary>
 	public static partial class Utils
 	{
-		/** get a tfs server. */
-		public static VersionControlServer GetTFSServer(string serverName)
-		{
-			Microsoft.TeamFoundation.Client.TeamFoundationServer srvr;
-			
-			if (serverName != null && serverName != string.Empty)
-				{
-					srvr = Microsoft.TeamFoundation.Client.TeamFoundationServerFactory.GetServer(serverName);
-				}
-			else
-				{
-					/* hmm, they didn't specify one, so get the first in the list. */
-					Microsoft.TeamFoundation.Client.TeamFoundationServer[] servers =
-						Microsoft.TeamFoundation.Client.RegisteredServers.GetServers();
-					
-					srvr = servers[0];
-				}
-			
-			return (srvr.GetService(typeof(VersionControlServer)) as VersionControlServer);
-		}
-		
-		/** difference a specific set o' stuffs
-		 */
+		/// <summary>
+		/// difference a specific set o' stuffs
+		/// </summary>
+		/// <param name="item1"></param>
+		/// <param name="csID1"></param>
+		/// <param name="item2"></param>
+		/// <param name="csID2"></param>
 		public static void VisualDiff(Item item1, int csID1, Item item2, int csID2)
 		{
 			VersionControlServer vcs = item1.VersionControlServer;
@@ -42,9 +29,13 @@ namespace megahistorylib
 			Difference.VisualDiffItems(vcs, left, right);
 		}
 		
-		/** try to diff what's on the harddrive, 
-		 *  then fall back to the latest version of the server items.
-		 */
+		/// <summary>
+		/// try to diff what's on the harddrive, 
+		/// then fall back to the latest version of the server items.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <param name="vcs"></param>
 		public static void VisualDiff(string left, string right, VersionControlServer vcs)
 		{
 			Difference.VisualDiffFiles(vcs, left, null, right, null);
@@ -55,6 +46,16 @@ namespace megahistorylib
 																 System.Text.RegularExpressions.RegexOptions.IgnoreCase |
 																							 System.Text.RegularExpressions.RegexOptions.Compiled);
 		
+		/// <summary>
+		/// get the branch part of the given path.
+		/// </summary>
+		/// <remarks>
+		/// $/IGT_0803/development/dev_adv_cr/EGS/shared/lib/win32/PinUtil.dll
+		/// 
+		/// $/IGT_0803/development/dev_adv_cr/EGS/
+		/// </remarks>
+		/// <param name="fullPath"></param>
+		/// <returns></returns>
 		public static string GetEGSBranch(string fullPath)
 		{
 			string path = string.Empty;
@@ -73,8 +74,9 @@ namespace megahistorylib
 			return path;
 		}
 		
-		/** retrieve the base tfs path of the branch.
-		 */
+		/// <summary>
+		/// retrieve the base tfs path of the branch.
+		/// </summary>
 		public static string GetPathPart(string path)
 		{
 			string path_part = string.Empty;
@@ -96,6 +98,12 @@ namespace megahistorylib
 			return path_part;
 		}
 		
+		/// <summary>
+		/// is the changeset passed in a merge changeset?
+		/// it looks at the changes contained in the changeset to make that determiniation
+		/// </summary>
+		/// <param name="cs"></param>
+		/// <returns></returns>
 		public static bool IsMergeChangeset(Changeset cs)
 		{
 			bool isMerge = false;

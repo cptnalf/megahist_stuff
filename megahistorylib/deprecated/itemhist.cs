@@ -13,6 +13,9 @@ using MH = megahistory.deprecated.MegaHistory;
 
 namespace megahistory.deprecated
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class ItemHistory
 	{
 		private long _queries;

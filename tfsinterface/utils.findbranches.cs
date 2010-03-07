@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using	Microsoft.TeamFoundation.VersionControl.Client;
 using System;
 
-namespace megahistorylib
+namespace tfsinterface
 {
 	using BranchCont = treelib.AVLTree<string,treelib.StringSorterInsensitive>;
 	
@@ -15,7 +15,7 @@ namespace megahistorylib
 		/// <summary>
 		/// 
 		/// </summary>
-		public static uint FindChangesetBranchesCalls = 0;
+		public static uint FindChangesetBranchesCalls;
 		/// <summary>
 		/// 
 		/// </summary>
@@ -77,7 +77,7 @@ namespace megahistorylib
 		public static List<string> FindChangesetBranches(Changeset cs, 
 		                                                 ChangeTypeToConsiderDelegate op)
 		{
-			Timer timer = new Timer();
+			saastdlib.Timer timer = new saastdlib.Timer();
 			List<string> itemBranches = new List<string>();
 			
 			++FindChangesetBranchesCalls;
@@ -326,3 +326,4 @@ namespace megahistorylib
 		}
 	}
 }
+

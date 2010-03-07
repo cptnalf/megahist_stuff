@@ -4,6 +4,18 @@
   </PropertyGroup>
   <Import Project=".\MSBuild.Community.Tasks.targets" />
 	
+  <ItemGroup>
+    <GitExe Include="c:\programs\git\bin\git.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResTemplate Include="$(GitResourcePath)generalinfo.resx.template">
+      <OutputFile>generalinfo.resx</OutputFile>
+    </ResTemplate>
+    <ResTemplate Include="$(GitResourcePath)AssemblyInfo.cs.template">
+      <OutputFile>assemblyinfo.cs</OutputFile>
+    </ResTemplate>
+  </ItemGroup>
+		
 	<!-- git version resource. -->
 	<Target Name="_GitVersionValue" >
 		<Exec 
@@ -19,14 +31,9 @@
       </Tokens>
     </ItemGroup>
 		
-    <PropertyGroup>
-      <_ResTemplateFile>@(ResTemplate -> '%(Identity)')</_ResTemplateFile>
-			<_ResOutputFile>@(ResTemplate -> '%(OutputFile)' )</_ResOutputFile>
-    </PropertyGroup>
-		
 		<TemplateFile 
-			 Template="$(_ResTemplateFile)" 
-			 OutputFilename="$(_ResOutputFile)" 
+			 Template="@(ResTemplate)" 
+			 OutputFilename="%(ResTemplate.OutputFile)" 
 			 Tokens="@(Tokens)" />
 	</Target>
 </Project>

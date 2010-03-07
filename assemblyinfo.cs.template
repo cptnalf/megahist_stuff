@@ -1,0 +1,6 @@
+
+using System.Reflection;
+
+#pragma warning disable 1607
+[assembly: AssemblyInformationalVersion("${GitVersion}")]
+#pragma warning restore 1607

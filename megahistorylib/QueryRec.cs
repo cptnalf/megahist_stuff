@@ -6,7 +6,7 @@ namespace megahistorylib
 	/// <summary>
 	/// 
 	/// </summary>
-	public class MergeHistQueryRec
+	public class QueryRec
 	{
 		/// <summary>
 		/// 

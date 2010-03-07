@@ -4,47 +4,20 @@ using System.Collections.Generic;
 
 namespace megahistorylib
 {
+	using ChangesetCont = treelib.AVLTree<Changeset, ChangesetSorter>;
 	using SortedPaths_T = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
-	using ChangesetDict_T = 
-		treelib.AVLDict<int, treelib.AVLTree<string, treelib.StringSorterInsensitive> >;
-		
+	using ChangesetDict_T =
+		treelib.AVLDict<int, treelib.AVLTree<string, treelib.StringSorterInsensitive>>;
+	
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class MergeHist<T>
+	public partial class MegaHistory
 	{
-		private IVisitor<T> _visitor;
-		private VersionControlServer _vcs;
-		
-		private ulong _qc = 0;
-		private Timer _qt = new Timer();
-		
-		private ulong _gic = 0;
-		private Timer _git = new Timer();
-
-		private ulong _gcc = 0;
-		private Timer _gct = new Timer();
-		
-		private Item _getItem(string targetPath, int csID, int deletionID, bool downloadInfo)
-		{
-			Timer t = new Timer();
-			VersionSpec targetVer = new ChangesetVersionSpec(csID);
-			
-			t.start();
-			Item itm = _vcs.GetItem(targetPath, targetVer, 0, false);
-			t.stop();
-			
-			lock(_git)
-				{
-					++_gic;
-					_git.TotalT += t.DeltaT;
-				}
-			
-			return itm;
-		}
-		
-		private Item _getItem(string targetPath) { return _vcs.GetItem(targetPath); }
+		/// <summary>
+		/// the number of threads to create when querying
+		/// </summary>
+		public static int THREAD_COUNT = 8;
 		
 		/// <summary>
 		/// get a changeset.
@@ -53,7 +26,7 @@ namespace megahistorylib
 		/// <returns></returns>
 		public Changeset getCS(int csID)
 		{
-			Timer t = new Timer();
+			saastdlib.Timer t = new saastdlib.Timer();
 			t.start();
 			Changeset cs = _vcs.GetChangeset(csID);
 			t.stop();
@@ -66,6 +39,24 @@ namespace megahistorylib
 			
 			return cs;
 		}
+		
+		/// <summary>
+		/// run the merge query threaded.
+		/// </summary>
+		public bool Threaded { get { return _threaded; } }
+		/// <summary>
+		/// base query depth
+		/// do this many queries, no more.
+		/// when distance = 0, no more queries are done, nor is the target changeset visited
+		/// 
+		/// so:
+		/// BaseDistance=3
+		/// #1 csid=12, branch=main,       distance=3
+		/// #2 csid=10, branch=dev_adv,    distance=2
+		/// #3 csid=8,  branch=dev_adv_cr, distance=1
+		/// 
+		/// </summary>
+		public int BaseDistance { get { return _baseDistance; } }
 		
 		/// <summary>
 		/// the number of calls to QueryMergeDetails
@@ -94,24 +85,140 @@ namespace megahistorylib
 		public System.TimeSpan GetChangesetTime { get { return _gct.Total; } }
 		
 		/// <summary>
-		/// 
+		/// constructor
 		/// </summary>
-		/// <param name="vcs"></param>
+		/// <param name="tfsServerName"></param>
 		/// <param name="visitor"></param>
-		public MergeHist(VersionControlServer vcs, IVisitor<T> visitor)
+		/// <param name="distance"></param>
+		public MegaHistory(string tfsServerName, IVisitor visitor, int distance)
 		{
-			_vcs = vcs;
 			_visitor = visitor;
+			_vcs = tfsinterface.SCMUtils.GetTFSServer(tfsServerName);
+			_baseDistance = distance;
 			
 			Logger.LoadLogger();
 		}
 		
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="vcs"></param>
+		/// <param name="visitor"></param>
+		/// <param name="distance"></param>
+		public MegaHistory(VersionControlServer vcs, IVisitor visitor, int distance)
+		{
+			_vcs = vcs;
+			_visitor = visitor;
+			_baseDistance = distance;
+			
+			Logger.LoadLogger();
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="pathVer"></param>
+		/// <param name="limit"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <param name="user"></param>
+		public void query(string path, VersionSpec pathVer, 
+		                  int limit, VersionSpec from, VersionSpec to, string user)
+		{
+			Item item = _getItem(path, pathVer, 0, false);
+			query(item, limit, from, to, user);
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="limit"></param>
+		public void query(Item path, int limit) { query(path, limit, null, null, null); }
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="limit"></param>
+		/// <param name="from"></param>
+		/// <param name="to"></param>
+		/// <param name="user"></param>
+		public void query(Item path, int limit, VersionSpec from, VersionSpec to, string user)
+		{
+			ChangesetVersionSpec ver = new ChangesetVersionSpec(path.ChangesetId);
+			ChangesetCont history = new ChangesetCont();
+			
+			System.Collections.IEnumerable stuff = _vcs.QueryHistory(path.ServerItem, ver, path.DeletionId,
+			   RecursionType.Full, user, from, to, limit, true, true, false);
+			
+			foreach(object o in stuff)
+				{
+					Changeset cs = o as Changeset;
+					
+					history.insert(cs);
+				}
+
+			{
+				/* this is used by the 'FindChangesetBranches' to figure out which
+				 * changes to pay attention to.
+				 */
+				tfsinterface.Utils.ChangeTypeToConsiderDelegate IsCngToConsider =
+					(cng) =>
+						{
+							/* only merge = screw you change
+							 * if branch or merge & other stuff = ok
+							 */
+							return
+								(
+								 (cng.ChangeType != ChangeType.Merge)
+								 && (
+										 ((cng.ChangeType & ChangeType.Merge) == ChangeType.Merge)
+										 || ((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch)
+										 )
+								 );
+						};
+			}
+			
+			QueryProcessor qp = new QueryProcessor(this, THREAD_COUNT);
+			string branch = tfsinterface.Utils.GetEGSBranch(path.ServerItem);
+			
+			for(ChangesetCont.iterator it = history.begin();
+			    it != history.end();
+			    ++it)
+				{
+					_queueOrVisit(qp, it.item(), this._baseDistance -1, branch);
+				}
+			qp.runThreads();
+			
+			{
+				int prev = 0;
+				
+				for(ChangesetCont.iterator it = history.begin();
+						it != history.end();
+						++it)
+					{
+						if (prev != 0)
+							{
+								/* fix up the parent.
+								 * this will only add the parent if they're not already in the list.
+								 */
+								_visitor.addParent(prev, it.item().ChangesetId);
+							}
+						
+						prev = it.item().ChangesetId;
+						_visitor.addPrimaryID(prev);
+					}
+			}
+		}
+		
+		/// <summary>
 		/// this function acts as a proxy for the function below it.
 		/// </summary>
-		public List<MergeHistQueryRec> queryMerge(Changeset cs, string targetPath, int distance)
+		public IList<QueryRec> queryMerge(Changeset cs, string targetPath, int distance)
 		{
-			Timer t = new Timer();
+			saastdlib.Timer t = new saastdlib.Timer();
 			t.start();
 			
 			/* pull down the item type. 
@@ -119,7 +226,7 @@ namespace megahistorylib
 			 */
 			Item itm = _getItem(targetPath, cs.ChangesetId, 0, false);
 			
-			List<MergeHistQueryRec> queries = queryMerge(cs, itm, distance);
+			IList<QueryRec> queries = queryMerge(cs, itm, distance);
 			
 			t.stop();
 			Logger.logger.DebugFormat("qm[{0} queries took {1}]", this.QueryCount, this.QueryTime);
@@ -137,7 +244,7 @@ namespace megahistorylib
 		/// <param name="targetItem"></param>
 		/// <param name="distance"></param>
 		/// <returns></returns>
-		public List<MergeHistQueryRec> queryMerge(Changeset cs, Item targetItem, int distance)
+		public IList<QueryRec> queryMerge(Changeset cs, Item targetItem, int distance)
 		{
 			string srcPath = null;
 			VersionSpec srcVer = null;
@@ -147,7 +254,7 @@ namespace megahistorylib
 			VersionSpec toVer = targetVer;
 			RecursionType recurType = RecursionType.None; /* assume these are all files */
 			ChangesetMergeDetails mergedetails;
-			T data;
+			IRevision revision;
 			
 			ChangesetDict_T visitedItems;
 			/* map a changeset id to a list of items in that changeset which were merged.
@@ -155,12 +262,12 @@ namespace megahistorylib
 			 */
 			
 			/* don't do queries when we've reached the distance limit. */
-			if (distance == 0) { return new List<MergeHistQueryRec>(); }
+			if (distance == 0) { return new List<QueryRec>(); }
 			
 			if (targetItem.ItemType != ItemType.File) 
 				{ recurType = RecursionType.Full; }
-			
-			Timer t = new Timer();
+
+			saastdlib.Timer t = new saastdlib.Timer();
 			t.start();
 			mergedetails = 
 				_vcs.QueryMergesWithDetails(srcPath, srcVer, srcDelID,
@@ -183,13 +290,13 @@ namespace megahistorylib
 				if (targetItem.ItemType != ItemType.File) { itemPath += '/'; }
 				
 				Logger.logger.DebugFormat("v[{0}{1}]", itemPath, cs.ChangesetId);
-				data = _visitor.visit(itemPath, cs);
+				revision = _visitor.construct(itemPath, cs);
 			}
 			
 			/* now walk the list of compiled changesetid + itempath and 
 			 * construct a versioned item for each that we can actually go and query.
 			 */
-			List<MergeHistQueryRec> items = new List<MergeHistQueryRec>();
+			List<QueryRec> items = new List<QueryRec>();
 			for(ChangesetDict_T.iterator it= visitedItems.begin();
 					it != visitedItems.end();
 					++it)
@@ -198,7 +305,7 @@ namespace megahistorylib
 					SortedPaths_T.iterator pathsIt = it.value().begin();
 					
 					//Console.WriteLine("parent: {0}", pair.Key);
-					_visitor.addParent(data, it.item());
+					revision.addParent(it.item());
 					
 					if ((distance -1) > 0)
 						{
@@ -207,8 +314,8 @@ namespace megahistorylib
 							if (it.value().size() > 1)
 								{
 									/* so, find out what this branch is and use the changeset id. */
-									string thisBranch = Utils.GetEGSBranch(pathsIt.item());
-									string pathPart = Utils.GetPathPart(targetItem.ServerItem);
+									string thisBranch = tfsinterface.Utils.GetEGSBranch(pathsIt.item());
+									string pathPart = tfsinterface.Utils.GetPathPart(targetItem.ServerItem);
 									
 									//Console.WriteLine("---- {0} => {1} + {2}", pair.Value.Values[0], thisBranch, pathPart);
 									if (! string.IsNullOrEmpty(thisBranch))
@@ -248,7 +355,7 @@ namespace megahistorylib
 								{
 									if (!_visitor.visited(itm.ServerItem, it.item()))
 										{
-											MergeHistQueryRec rec = new MergeHistQueryRec
+											QueryRec rec = new QueryRec
 												{
 													id = it.item(),
 													item = itm,
@@ -264,33 +371,5 @@ namespace megahistorylib
 			return items;
 		}
 		
-		private ChangesetDict_T _processDetails(int csID, ChangesetMergeDetails mergedetails)
-		{
-			ChangesetDict_T visitedItems = new ChangesetDict_T();
-			/* this should always be 1 when the targetpath is a file. */
-			foreach(ItemMerge m in mergedetails.MergedItems)
-				{
-					if (m.TargetVersionFrom != csID)
-						{
-							System.Console.WriteLine("merged to a different changeset? {0}=>{1} vs {2}",
-																			 m.SourceVersionFrom, m.TargetVersionFrom,
-																			 csID);
-						}
-						
-					/* pull a list of changesets we want to visit from the merged items we get. */
-					ChangesetDict_T.iterator dictIt = visitedItems.find(m.SourceVersionFrom);
-					
-					if (dictIt == visitedItems.end())
-						{
-							SortedPaths_T itemList = new SortedPaths_T();
-							
-							/* add the new item. */
-							itemList.insert(m.SourceServerItem);
-							visitedItems.insert(m.SourceVersionFrom, itemList);
-						}
-					else { dictIt.value().insert(m.SourceServerItem); }
-				}
-			return visitedItems;
-		}
 	}
 }
