@@ -13,8 +13,12 @@ namespace megahistorylib
 	{
 		private Changeset _cs;
 		private string _branch;
-		private List<int> _parents = new List<int>();
 		private int _cngsCnt = -1;
+		
+		/// <summary>
+		/// parents.
+		/// </summary>
+		protected List<int> _parents = new List<int>();
 		
 		/// <summary>
 		/// 
@@ -24,6 +28,9 @@ namespace megahistorylib
 		
 		/// <summary>the branch the changeset belongs to</summary>
 		public string Branch { get { return _branch; } }
+		
+		/// <summary>the original changeset</summary>
+		public Changeset cs { get { return _cs; } }
 		
 		/// <summary>the id</summary>
 		public int ID { get { return _cs.ChangesetId; } }

@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\shared\tools\TFS_9.0.30729.1\Microsoft.TeamFoundation.Common.Library.dll</HintPath>
     </Reference>
+    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\saastdlib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -70,6 +74,10 @@
     <Reference Include="Microsoft.TeamFoundation.Client, Version=9.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="tree_lib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\tree_lib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +175,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Revision.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -185,6 +194,10 @@
     <ProjectReference Include="..\ObjectListView\ObjectListView2008.csproj">
       <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
       <Name>ObjectListView2008</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
+      <Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
+      <Name>tfsinterface</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

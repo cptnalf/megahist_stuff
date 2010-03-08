@@ -17,17 +17,14 @@ namespace tfs_fullhistory
 		};
 		
 		VersionControlServer _vcs;
-		private bool _branchesToo;
 		private int _maxChanges;
-		private megahistory.MegaHistory.Options _options;
+		private int _distance;
 		
-		public bool branchesToo { get { return _branchesToo; } set { _branchesToo = value; } }
 		public int maxChanges { get { return _maxChanges; } set { _maxChanges = value; } }
-		public megahistory.MegaHistory.Options options
-		{ get { return _options; } set { _options = value; } }
-	
+		public int distance { get { return _distance; } set { _distance = value; } }
 		public void setVCS(VersionControlServer vcs) { _vcs=vcs; }
 		public string getSelection() { return treeView1.SelectedNode.FullPath; }
+		
 		public PathSelector()
 		{
 			InitializeComponent();
@@ -96,7 +93,7 @@ namespace tfs_fullhistory
 			if (node != null)
 				{
 					HistoryForm hf = new HistoryForm();
-					hf.setPath(_vcs, node.FullPath, _maxChanges, _branchesToo, _options);
+					hf.setPath(_vcs.TeamFoundationServer.Name, node.FullPath, _maxChanges, _distance);
 					hf.Show();
 				}
 		}

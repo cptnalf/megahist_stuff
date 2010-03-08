@@ -15,9 +15,8 @@ namespace tfs_fullhistory
 		private BackgroundWorker _worker;
 		private string _tfsPath;
 		private int _maxChanges;
-		private bool _branchesToo;
-		private megahistory.MegaHistory.Options _options;
-		private VersionControlServer _vcs;
+		private string _tfsServer;
+		private int _distance;
 		
 		public HistoryForm()
 		{
@@ -25,15 +24,14 @@ namespace tfs_fullhistory
 			_setupTreeListView();
 		}
 		
-		public void setPath(VersionControlServer vcs,
-												string tfsPath, int maxChanges, bool branchesToo, 
-												megahistory.MegaHistory.Options options)
+		public void setPath(string tfsServer,
+												string tfsPath, int maxChanges,
+												int distance)
 		{
-			_vcs = vcs;
+			_tfsServer = tfsServer;
 			_tfsPath = tfsPath;
 			_maxChanges = maxChanges;
-			_branchesToo = branchesToo;
-			_options = options;
+			_distance = distance;
 		}
 		
 		private void _setupTreeListView()
@@ -67,9 +65,7 @@ namespace tfs_fullhistory
 				textOverlay.Rotation = -5;
 			}
 
-			_branch.AspectGetter = _aspectGetter;
-
-			BrightIdeasSoftware.TypedObjectListView<megahistory.Visitor.PatchInfo> patches = new BrightIdeasSoftware.TypedObjectListView<megahistory.Visitor.PatchInfo>(treeListView1);
+			BrightIdeasSoftware.TypedObjectListView<Revision> patches = new BrightIdeasSoftware.TypedObjectListView<Revision>(treeListView1);
 			patches.GenerateAspectGetters();
 
 			treeListView1.CanExpandGetter = _canExpandGetter;
@@ -79,37 +75,19 @@ namespace tfs_fullhistory
 		/** *****************************************
 		 *  treeview handlers.
 		 */
-		private string _aspectGetter(object model)
-		{
-			megahistory.Visitor.PatchInfo p = model as megahistory.Visitor.PatchInfo;
-			string str = string.Empty;
-
-			if (p != null)
-				{
-					if (p.treeBranches != null && p.treeBranches.Count > 0)
-						{
-							str = p.treeBranches[0];
-						}
-				}
-			return str;
-		}
 
 		private bool _canExpandGetter(object o)
 		{
 			bool result = false;
-			megahistory.Visitor.PatchInfo patch = o as megahistory.Visitor.PatchInfo;
-			if (patch != null) { result = patch.partCount > 0; }
+			Revision patch = o as Revision;
+			if (patch != null) { result = patch.hasParents(); }
 			return result;
 		}
 
 		private System.Collections.IEnumerable _childrenGetter(object model)
 		{
-			List<megahistory.Visitor.PatchInfo> patches = null;
-			megahistory.Visitor.PatchInfo patch = model as megahistory.Visitor.PatchInfo;
-			if (patch != null) { patches = patch.parts; }
-			else { patches = new List<megahistory.Visitor.PatchInfo>(); }
-
-			return patches;
+			Revision rev = model as Revision;
+			return rev.Parents;
 		}
 
 		/* ***************************************** */
@@ -160,7 +138,7 @@ namespace tfs_fullhistory
 				{ treeListView1.BeginInvoke(new ProgressChangedEventHandler(_worker_ProgressChanged)); }
 			else
 				{
-					megahistory.Visitor.PatchInfo commit = args.UserState as megahistory.Visitor.PatchInfo;
+					Revision commit = args.UserState as Revision;
 
 					if (commit != null)
 						{
@@ -178,42 +156,15 @@ namespace tfs_fullhistory
 			HistoryCollector visitor = new HistoryCollector();
 			visitor.Worker = _worker;
 						
-			if (_branchesToo)
-				{
-					megahistory.MegaHistory.IsChangeToConsider =
-						delegate(Change cng)
-						{
-							return (
-											(cng.ChangeType != ChangeType.Merge)  /* ignore only merges. */
-											&&
-											(
-											 /* look for branched items, or merged items */
-											 ((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch) ||
-											 ((cng.ChangeType & ChangeType.Merge) == ChangeType.Merge)
-											 )
-											);
-						};
-				}
-			
 			/* @TODO if/when i add deleted-item support, 
 			 * i'll need the changeset on the item id?
 			 */
 			VersionSpec ver = VersionSpec.Latest;
-			Item item = _vcs.GetItem(_tfsPath, ver);
 			
-			if (item.ItemType == ItemType.File)
-				{
-					megahistorylib.ItemHistory ih =
-						new megahistorylib.ItemHistory(_vcs, visitor);
-					
-					ih.visit(_tfsPath, ver, _maxChanges);
-				}
-			else
-				{
-					megahistory.MegaHistory mh = new megahistory.MegaHistory(_options, _vcs, visitor);
-
-					mh.visit(_tfsPath, ver, _maxChanges);
-				}
+			megahistorylib.MegaHistory mh = new megahistorylib.MegaHistory(_tfsServer, _distance);
+			
+			mh.Results = visitor;
+			mh.query(this._tfsPath, VersionSpec.Latest, this._maxChanges, null, null, null);
 			
 			{
 				long end_ticks = DateTime.Now.Ticks;

@@ -11,8 +11,10 @@ namespace BranchDifferGui
 {
 	public partial class Form1 : Form
 	{
+		// "rnoengtfs"
+		private string _tfsServer = "rnotfsat";
 		private Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer _vcs;
-		private megahistory.TFSWorkspaces _workspaces;
+		private tfsinterface.TFSWorkspaces _workspaces;
 		
 		public Form1()
 		{
@@ -20,8 +22,8 @@ namespace BranchDifferGui
 			treeListView1.CanExpandGetter = branch_order.TreeItem.HasChildren;
 			treeListView1.ChildrenGetter = branch_order.TreeItem.ChildrenGetter;
 			
-			_vcs = megahistory.Utils.GetTFSServer("rnoengtfs");
-			_workspaces = new megahistory.TFSWorkspaces(_vcs);
+			_vcs = tfsinterface.SCMUtils.GetTFSServer(_tfsServer);
+			_workspaces = new tfsinterface.TFSWorkspaces(_vcs);
 			
 			List<string> workspace_names = new List<string>();
 			foreach(Microsoft.TeamFoundation.VersionControl.Client.Workspace w in _workspaces.Workspaces)
@@ -33,7 +35,7 @@ namespace BranchDifferGui
 		private void _pathSel_Click(object sender, EventArgs e)
 		{
 			tfs_fullhistory.PathSelector sel = new tfs_fullhistory.PathSelector();
-			sel.setVCS(megahistory.Utils.GetTFSServer("rnoengtfs"));
+			sel.setVCS(tfsinterface.SCMUtils.GetTFSServer(_tfsServer));
 			if (sel.ShowDialog() == DialogResult.OK)
 			{
 				textBox1.Text = sel.getSelection();
@@ -47,7 +49,7 @@ namespace BranchDifferGui
 			branch_order.Options options;
 			options.src_path = textBox1.Text;
 			options.src_id = 0;
-			options.server = megahistory.Utils.GetTFSServer("rnoengtfs");
+			options.server = tfsinterface.SCMUtils.GetTFSServer(_tfsServer);
 			
 			root = bo.get_branches(options);
 			
@@ -75,7 +77,7 @@ namespace BranchDifferGui
 						right = _workspaces.getLocalPath((string)_workspacesCB.SelectedItem, t2.FullPath);
 					}
 					
-					megahistory.Utils.VisualDiff(left, right, _vcs);
+					tfsinterface.Utils.VisualDiff(left, right, _vcs);
 				}
 		}
 
@@ -83,7 +85,7 @@ namespace BranchDifferGui
 		{
 			if (treeListView1.SelectedIndices.Count > 0)
 			{
-				Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = megahistory.Utils.GetTFSServer("rnoengtfs");
+				Microsoft.TeamFoundation.VersionControl.Client.VersionControlServer vcs = tfsinterface.SCMUtils.GetTFSServer(_tfsServer);
 				
 				foreach(int idx in treeListView1.SelectedIndices)
 				{

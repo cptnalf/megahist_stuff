@@ -9,11 +9,14 @@ using System.Windows.Forms;
 
 namespace tfs_fullhistory
 {
+	using IntPair = saastdlib.pair<int,int>;
+	using PathsDict = SortedDictionary<string, saastdlib.pair<int, int>>;
+	
 	public partial class FileSelectionForm : Form
 	{
-		private SortedDictionary<string,pair<int,int>> _paths = new SortedDictionary<string,pair<int,int>>();
+		private PathsDict _paths = new PathsDict();
 		
-		public SortedDictionary<string,pair<int,int>> Paths { set { _paths = value; } }
+		public PathsDict Paths { set { _paths = value; } }
 		public string SelectedPath
 		{ 
 			get
@@ -22,7 +25,7 @@ namespace tfs_fullhistory
 					
 					if (objectListView1.SelectedIndex >= 0)
 						{
-							KeyValuePair<string,pair<int,int>> value = (KeyValuePair<string,pair<int,int>>)objectListView1.GetModelObject(objectListView1.SelectedIndex);
+							KeyValuePair<string,IntPair> value = (KeyValuePair<string,IntPair>)objectListView1.GetModelObject(objectListView1.SelectedIndex);
 							str = value.Key;
 						}
 					

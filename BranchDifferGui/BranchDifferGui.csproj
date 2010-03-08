@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="project.inc"/>
+  <Import Project="project.inc" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -103,13 +103,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\megahistorylib\megahistorylib.csproj">
-      <Project>{8723DA6D-9CBD-43D6-9218-88278099A063}</Project>
-      <Name>megahistorylib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ObjectListView\ObjectListView2008.csproj">
       <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
       <Name>ObjectListView2008</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
+      <Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
+      <Name>tfsinterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\TFSMegaHistoryGui\TFSMegaHistoryGui.csproj">
       <Project>{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}</Project>
@@ -124,5 +124,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-	<Import Project="$(EGSINCPATH)\EndProject.inc"/>
+  <Import Project="$(EGSINCPATH)\EndProject.inc" />
 </Project>
