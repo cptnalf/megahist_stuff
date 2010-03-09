@@ -29,11 +29,12 @@ class HistoryViewer
 	
 	private void _print(System.IO.TextWriter wr, Revision rev)
 	{
+		wr.WriteLine(rev.Branch);
+		wr.WriteLine("Changeset: {0}", rev.ID);
+		
 		wr.WriteLine("Parents: ");
 		foreach(int p in rev.Parents) { wr.WriteLine("{0}", p); }
 		
-		wr.WriteLine(rev.Branch);
-		wr.WriteLine("Changeset: {0}", rev.ID);
 		wr.WriteLine("Author: {0}", rev.User);
 		wr.WriteLine("Date: {0}", rev.CreationDate);
 		
@@ -64,15 +65,50 @@ class HistoryViewer
 	
 	private void _print(System.IO.TextWriter wr, int csID)
 	{
-		/* so when we print a parent out, we have to actually
-		 * switch up the printing...
-		 * we print the parent's parent's first, then us.
+		/* print out a descending order changeset.
+		 * first we print ourselves.
+		 * then we print our parents, in descending order, recursively.
 		 */
+		
 		Revision r = _results.getRevision(csID);
 		
-		foreach(int pID in r.Parents) { _print(wr, csID); }
-		
-		_print(wr, r);
+		if (r != null)
+			{
+				/* print out us. */
+				_print(wr, r);
+				
+				/* then print out our parents, in descending order. */
+				treelib.AVLTree<int,megahistorylib.IntDescSorter> desc = 
+					new treelib.AVLTree<int,megahistorylib.IntDescSorter>();
+				
+				treelib.AVLTree<int,megahistorylib.IntDescSorter> mybranch =
+					new treelib.AVLTree<int,megahistorylib.IntDescSorter>();
+				
+				/* separate merge parents from regular history */
+				foreach(int pID in r.Parents)
+					{
+						Revision pr = _results.getRevision(pID);
+						
+						if (pr != null)
+							{
+								if (pr.Branch == r.Branch) { mybranch.insert(pID); }
+								else { desc.insert(pID); }
+							}
+					}
+				
+				if (! desc.empty())
+					{
+						foreach(int pID in desc) { _print(wr, pID); }
+					}
+				
+				if (!mybranch.empty())
+					{
+						foreach(int pID in mybranch)
+							{
+								_print(wr, pID);
+							}
+					}
+			}
 	}
 	
 	public void print(System.IO.TextWriter wr)
@@ -80,22 +116,24 @@ class HistoryViewer
 		treelib.support.iterator_base<int> ptr = _results.primaryIDStart();
 		treelib.support.iterator_base<int> end = _results.primaryIDEnd();
 		
-		if (ptr != end)
+// 		if (ptr != end)
+// 			{
+// 				for(; ptr != end; ptr.inc())
+// 					{
+// 						/* these are in descending order.
+// 						 * so first you print the top level changeset,
+// 						 * then recursively print the rest.
+// 						 */
+// 						_print(wr, ptr.item());
+// 					}
+// 			}
+// 		else { wr.WriteLine("No changesets found."); }
+		
+		int id = _results.firstID;
+		
+		if (id > 0)
 			{
-				for(; ptr != end; ptr.inc())
-					{
-						/* these are in descending order.
-						 * so first you print the top level changeset,
-						 * then recursively print the rest.
-						 */
-						Revision r = _results.getRevision(ptr.item());
-						_print(wr, r);
-						
-						foreach(int id in r.Parents)
-							{
-								_print(wr, id);
-							}
-					}
+				_print(wr, id);
 			}
 		else { wr.WriteLine("No changesets found."); }
 	}

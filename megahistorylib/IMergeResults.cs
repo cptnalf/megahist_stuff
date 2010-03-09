@@ -9,10 +9,16 @@ namespace megahistorylib
 	public interface IMergeResults
 	{
 		/// <summary>
+		/// the biggest ID in the primary search branch.
+		/// this is where consumers should start their history traversal.
+		/// </summary>
+		int firstID { get; }
+
+		/// <summary>
 		/// an enumeration of ids.
 		/// </summary>
 		/// <returns></returns>
-		System.Collections.Generic.IEnumerable<int> getPrimaryID();
+		System.Collections.Generic.IEnumerable<int> getPrimaryIDs();
 		
 		/// <summary>
 		/// the start of the primary history.
@@ -55,5 +61,10 @@ namespace megahistorylib
 		/// </summary>
 		/// <param name="csID"></param>
 		void addPrimaryID(int csID);
+		
+		/// <summary>
+		/// set the first changeset id.
+		/// </summary>
+		void setFirstID(int csID);
 	}
 }

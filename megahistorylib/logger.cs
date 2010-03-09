@@ -30,6 +30,8 @@ namespace megahistorylib
 #else
 				catch(Exception) { }
 #endif
+				
+				logger.Debug("init'ed logger!");
 			}
 		}
 	}

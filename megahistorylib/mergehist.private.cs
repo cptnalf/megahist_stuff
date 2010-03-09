@@ -17,13 +17,31 @@ namespace megahistorylib
 		
 		private ulong _qc = 0;
 		private saastdlib.Timer _qt = new saastdlib.Timer();
+		private long _qtm = 0;
 		
 		private ulong _gic = 0;
 		private saastdlib.Timer _git = new saastdlib.Timer();
 
 		private ulong _gcc = 0;
 		private saastdlib.Timer _gct = new saastdlib.Timer();
-		
+
+
+		/* this is used by the 'FindChangesetBranches' to figure out which
+		 * changes to pay attention to.
+		 */
+		private tfsinterface.Utils.ChangeTypeToConsiderDelegate _isCngToConsider =
+			(cng) =>
+		{
+			/* include:
+			 * if branch or merge & other stuff = ok
+			 */
+			return
+			(
+			 ((cng.ChangeType & ChangeType.Merge) == ChangeType.Merge)
+			 || ((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch)
+			 );
+		};
+				
 		private Item _getItem(string targetPath, int csID, int deletionID, bool downloadInfo)
 		{
 			VersionSpec targetVer = new ChangesetVersionSpec(csID);
@@ -75,7 +93,11 @@ namespace megahistorylib
 									
 									foreach (string b in branches) { _results.construct(b, cs); }
 								}
-							else { _results.construct(branch, cs); }
+							else
+								{
+									Logger.logger.DebugFormat("building {0}", cs.ChangesetId);
+									_results.construct(branch, cs); 
+								}
 						}
 				}
 			else
@@ -134,7 +156,7 @@ namespace megahistorylib
 			 * in that case the process will probably end up trying to find branches
 			 * twice :/
 			 */
-			List<string> branchParts = tfsinterface.Utils.FindChangesetBranches(cs);
+			List<string> branchParts = tfsinterface.Utils.FindChangesetBranches(cs, _isCngToConsider);
 
 			/* @Note
 			 * i need to find a path to use as a base item for this merge history query. 

@@ -27,13 +27,21 @@ namespace megahistorylib
 		protected PrimaryIDCont _primaryIDs = new PrimaryIDCont();
 		
 		/// <summary>
+		/// the biggest ID in the primary search branch.
+		/// </summary>
+		protected int _firstID = -1;
+
+		/// <summary>
 		/// build a revision.
 		/// </summary>
 		/// <param name="branch"></param>
 		/// <param name="cs"></param>
 		/// <returns></returns>
 		protected virtual Revision _construct(string branch, Changeset cs)
-		{ return new Revision(cs, branch); }
+		{
+			branch = tfsinterface.Utils.GetEGSBranch(branch);
+			return new Revision(cs, branch); 
+		}
 		
 		/// <summary>
 		/// add the revision to the internal cache.
@@ -42,7 +50,7 @@ namespace megahistorylib
 		protected void _add(Revision rev)
 		{
 			RevisionCont.iterator it = _revisions.find(rev.ID);
-			if (it != _revisions.end())
+			if (it == _revisions.end())
 				{ _revisions.insert(rev.ID, rev); }
 		}
 		
@@ -52,10 +60,15 @@ namespace megahistorylib
 		public MergeResults() { }
 		
 		/// <summary>
+		///
+		/// </summary>
+		public virtual int firstID { get { return _firstID; } }
+		
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public virtual System.Collections.Generic.IEnumerable<int> getPrimaryID()
+		public virtual System.Collections.Generic.IEnumerable<int> getPrimaryIDs()
 		{ return _primaryIDs; }
 		
 		/// <summary>
@@ -128,6 +141,11 @@ namespace megahistorylib
 			
 			return rev != null;
 		}
+		
+		/// <summary>
+		/// </summary>
+		/// <param name="csID"></param>
+		public virtual void setFirstID(int csID) { _firstID = csID; }
 		
 		/// <summary>
 		/// 

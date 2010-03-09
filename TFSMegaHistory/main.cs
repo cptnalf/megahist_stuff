@@ -3,15 +3,6 @@
  * stephen.alfors@igt.com
  */
 
-/* this generates duplicates
- * i'm not sure if its because there really are duplicates in the merge history, or if 
- * the recursive queries are picking them up.
- * also, the rather innocent query i did turned into a frigg'n diasater.
- * 40 minutes later i have 720 different changesets (again multiples exist)
- * graphing the directed changes with dot, i get a png that's 7500x14000.
- *
- * reduced the call time to 8 minutes.
- */
 
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System;
@@ -43,6 +34,8 @@ namespace tfsmegahistory
 			internal HistoryViewer.Printwhat printWhat;
 			internal bool branchesToo;
 			internal int maxDistance;
+			internal int count;
+			internal int threads;
 			
 			internal Values(byte b)
 			{
@@ -57,6 +50,8 @@ namespace tfsmegahistory
 				printWhat = HistoryViewer.Printwhat.None;
 				branchesToo = false;
 				maxDistance = -1;
+				count = -1;
+				threads = -1;
 			}
 		}
 		
@@ -68,7 +63,7 @@ namespace tfsmegahistory
 			argParser.add(new Arg('s', "server", "server name", "the tfs server to connect to", null));
 			argParser.add(new PathVersionArg("src", "path[,version]", "the source of the changesets"));
 			argParser.add(new VersionArg("from","version[,version]","the changeset range to look in."));
-			argParser.add(new FlagArg("name-only", "add the path of the files to the changeset info", true));
+			argParser.add(new FlagArg("name-only", "add the path of the files to the changeset info", false));
 			argParser.add(new FlagArg("name-status",
 																"print the path and the change type in the changeset info", false));
 			argParser.add(new ArgInt('d', "distance", 
@@ -92,12 +87,19 @@ namespace tfsmegahistory
 			    "query changeset 12, query parents of changeset 12, starting at the first parent.",
 			    " query the first parent, <insert recursion>"
 			   }, 8));
+			argParser.add(new ArgInt('c', "count",
+															 new string[] {
+																 "max number history items to query",
+																 " defaults to 10.",
+																 " if a range isn't specified, ",
+																 "this will control how many history items that are decomposed.",
+															 }, 10));
 			
 			List<int> unknownArgs;
-			bool argError = !argParser.parse_args(args, out unknownArgs);
+			bool argError = false == argParser.parse_args(args, out unknownArgs);
 			
 			/* if we don't have any args, the user needs to fix that too. */
-			if (!argError && (unknownArgs.Count > 0)) { argError = true; }
+			if (! argError && (unknownArgs.Count < 1)) { argError = true; }
 			
 			if (argError)
 				{
@@ -166,12 +168,20 @@ namespace tfsmegahistory
 			else if ((bool)argParser.get_arg<FlagArg>("name-status")) 
 				{ values.printWhat = HistoryViewer.Printwhat.NameStatus; }
 			
-			values.maxDistance = (int)argParser.get_arg<saastdlib.ArgInt>("distance");
+			{
+				saastdlib.ArgInt arg = argParser.get_arg<saastdlib.ArgInt>('d');
+				values.maxDistance = arg;
+			}
+			
+			values.threads = argParser.get_arg<saastdlib.ArgInt>('j');
+			values.count = argParser.get_arg<saastdlib.ArgInt>('c');
 			
 			megahistorylib.MegaHistory megahistory = 
 				new megahistorylib.MegaHistory(values.server, values.maxDistance);
 			
-			megahistory.query(values.srcPath, values.srcVer, int.MaxValue, values.fromVer, values.toVer, null);
+			megahistorylib.MegaHistory.THREAD_COUNT = values.threads;
+			
+			megahistory.query(values.target, values.targetVer, values.count, values.fromVer, values.toVer, null);
 
 			HistoryViewer visitor = new HistoryViewer(values.printWhat, megahistory.Results);
 			visitor.print(Console.Out);

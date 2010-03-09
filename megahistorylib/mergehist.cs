@@ -83,6 +83,10 @@ namespace megahistorylib
 		/// </summary>
 		public System.TimeSpan QueryTime { get { return _qt.Total; } }
 		/// <summary>
+		/// the time taken for the longest QueryMergeDetails call.
+		/// </summary>
+		public System.TimeSpan QueryTimeMax { get { return new System.TimeSpan(_qtm); } }
+		/// <summary>
 		/// time taken by GetItem call.
 		/// </summary>
 		public System.TimeSpan GetItemTime { get { return _git.Total; } }
@@ -130,8 +134,22 @@ namespace megahistorylib
 											int limit, VersionSpec from, VersionSpec to, 
 											string user)
 		{
+			if (pathVer == null) { pathVer = VersionSpec.Latest; }
+			
 			Item item = _getItem(path, pathVer, 0, false);
+			
+			saastdlib.Timer t = new saastdlib.Timer();
+			
+			t.start();
 			query(item, limit, from, to, user);
+			t.stop();
+
+			Logger.logger.DebugFormat("mh_q[{0} queries took {1}]", this.QueryCount, this.QueryTime);
+			Logger.logger.DebugFormat("mh_q[{0} get items took {1}]", this.GetItemCount, this.GetItemTime);
+			Logger.logger.DebugFormat("mh_q[{0} get changesets took {1}]", 
+																this.GetChangesetCount, this.GetChangesetTime);
+			Logger.logger.DebugFormat("mh_q[max query time {0}", this.QueryTimeMax);
+			Logger.logger.DebugFormat("mh_q[total time {0}]", t.Total);
 		}
 		
 		/// <summary>
@@ -166,27 +184,9 @@ namespace megahistorylib
 					Changeset cs = o as Changeset;
 					history.insert(cs);
 				}
-
-			{
-				/* this is used by the 'FindChangesetBranches' to figure out which
-				 * changes to pay attention to.
-				 */
-				tfsinterface.Utils.ChangeTypeToConsiderDelegate IsCngToConsider =
-					(cng) =>
-						{
-							/* only merge = screw you change
-							 * if branch or merge & other stuff = ok
-							 */
-							return
-								(
-								 (cng.ChangeType != ChangeType.Merge)
-								 && (
-										 ((cng.ChangeType & ChangeType.Merge) == ChangeType.Merge)
-										 || ((cng.ChangeType & ChangeType.Branch) == ChangeType.Branch)
-										 )
-								 );
-						};
-			}
+			
+			Logger.logger.DebugFormat("priming the resultset, {0} potential items",
+																history.size());
 			
 			/* prime the result-set. */
 			for (ChangesetCont.iterator it = history.begin();
@@ -197,39 +197,48 @@ namespace megahistorylib
 			QueryProcessor qp = new QueryProcessor(this, THREAD_COUNT);
 			string branch = tfsinterface.Utils.GetEGSBranch(path.ServerItem);
 			
+			Logger.logger.DebugFormat("queuing work.");
 			for(ChangesetCont.iterator it = history.begin();
 			    it != history.end();
 			    ++it)
 				{
+					Logger.logger.DebugFormat("q[{0}]", it.item().ChangesetId);
+					
 					Revision rev = _results.getRevision(it.item().ChangesetId);
 					
-					if (rev != null)
-						{ _queueOrVisit(qp, it.item(), this._baseDistance -1, branch); }
+					if (rev == null)
+						{ _queueOrVisit(qp, it.item(), this._baseDistance, branch); }
 					else { _queueParents(qp, rev); }
 				}
-			
 			qp.runThreads();
 			
 			{
-				Revision prev = null;
+				int prevID = -1;
 				
 				for(ChangesetCont.iterator it = history.begin();
 						it != history.end();
 						++it)
 					{
-						int id = it.item().ChangesetId;
+						Revision r = _results.getRevision(it.item().ChangesetId);
 						
-						if (prev != null)
+						Logger.logger.DebugFormat("apID {0}", it.item().ChangesetId);
+						
+						if (r != null)
 							{
-								/* fix up the parent.
-								 * this will only add the parent if they're not already in the list.
-								 */
+								_results.setFirstID(it.item().ChangesetId);
 								
-								prev.addParent(id);
+								if (prevID >0)
+									{
+										/* fix up the parent.
+										 * this will only add the parent if they're not already in the list.
+										 */
+										
+										r.addParent(prevID);
+									}
 							}
+						else { Logger.logger.ErrorFormat("hf[{0} not found!]", it.item().ChangesetId); }
 						
-						prev = _results.getRevision(id);
-						_results.addPrimaryID(id);
+						prevID = it.item().ChangesetId;
 					}
 			}
 		}
@@ -287,6 +296,13 @@ namespace megahistorylib
 			
 			if (targetItem.ItemType != ItemType.File) { recurType = RecursionType.Full; }
 			
+			Logger.logger.DebugFormat("qm[{0},{1},{2},{3},{4},{5},{6},{7},{8}]",
+																(srcPath == null ? "(null)" : srcPath), 
+																(srcVer == null ? "(null)"  : srcVer.DisplayString), srcDelID, 
+																targetItem.ServerItem, targetVer.DisplayString, targetItem.DeletionId,
+																fromVer.DisplayString, toVer.DisplayString, recurType);
+																
+			
 			saastdlib.Timer t = new saastdlib.Timer();
 			t.start();
 			mergedetails = 
@@ -300,6 +316,8 @@ namespace megahistorylib
 				{
 					++_qc;
 					_qt.TotalT += t.DeltaT;
+					
+					if (t.DeltaT > _qtm) { _qtm = t.DeltaT; }
 				}
 			t = null;
 			
@@ -324,7 +342,6 @@ namespace megahistorylib
 					Item itm = null;
 					SortedPaths_T.iterator pathsIt = it.value().begin();
 					
-					//Console.WriteLine("parent: {0}", pair.Key);
 					revision.addParent(it.item());
 					
 					if ((distance -1) > 0)
