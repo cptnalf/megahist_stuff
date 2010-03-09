@@ -153,6 +153,57 @@ namespace megahistorylib
 		}
 		
 		/// <summary>
+		/// decompose just one changeset.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="pathVer"></param>
+		public void query(string path, VersionSpec pathVer)
+		{
+			if (pathVer == null) { pathVer = VersionSpec.Latest; }
+
+			Item item = _getItem(path, pathVer, 0, false);
+			
+			saastdlib.Timer t = new saastdlib.Timer();
+			
+			t.start();
+			{
+				ChangesetVersionSpec csVer = pathVer as ChangesetVersionSpec;
+				
+				/* sanity check... */
+				if (csVer == null)
+					{ throw new System.ArgumentException("pathVer must be a ChangesetVersionSpec."); }
+				
+				QueryProcessor qp = new QueryProcessor(this, THREAD_COUNT);
+				string branch = tfsinterface.Utils.GetEGSBranch(item.ServerItem);
+			
+				Logger.logger.DebugFormat("queuing work.");
+				Logger.logger.DebugFormat("q[{0}]", csVer.ChangesetId);
+					
+				Revision rev = _results.getRevision(csVer.ChangesetId);
+				
+				if (rev == null)
+					{ 
+						Changeset cs = getCS(csVer.ChangesetId);
+						
+						_queueOrVisit(qp, cs, this._baseDistance, null);
+					}
+				else { _queueParents(qp, rev); }
+				qp.runThreads();
+				
+				_results.setFirstID(csVer.ChangesetId);
+			}
+			t.stop();
+
+			Logger.logger.DebugFormat("mh_q[{0} queries took {1}]", this.QueryCount, this.QueryTime);
+			Logger.logger.DebugFormat("mh_q[{0} get items took {1}]", this.GetItemCount, this.GetItemTime);
+			Logger.logger.DebugFormat("mh_q[{0} get changesets took {1}]", 
+																this.GetChangesetCount, this.GetChangesetTime);
+			Logger.logger.DebugFormat("mh_q[max query time {0}", this.QueryTimeMax);
+			Logger.logger.DebugFormat("mh_q[total time {0}]", t.Total);
+		}
+											
+		
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="path"></param>
