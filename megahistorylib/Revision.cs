@@ -63,7 +63,7 @@ namespace megahistorylib
 		
 		/// <summary>
 		/// </summary>
-		public Revision(Changeset cs, string branch)
+		public Revision(string branch, Changeset cs)
 		{
 			_cs = cs;
 			_branch = branch;

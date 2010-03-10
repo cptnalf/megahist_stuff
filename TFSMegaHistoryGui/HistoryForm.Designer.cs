@@ -72,7 +72,7 @@
 			// 
 			// _csID
 			// 
-			this._csID.AspectName = "id";
+			this._csID.AspectName = "ID";
 			this._csID.AspectToStringFormat = "{0:d}";
 			this._csID.IsEditable = false;
 			this._csID.Text = "Changeset";
@@ -80,24 +80,25 @@
 			// 
 			// _branch
 			// 
+			this._branch.AspectName = "Branch";
 			this._branch.IsEditable = false;
 			this._branch.Text = "Branch";
 			// 
 			// _csDate
 			// 
-			this._csDate.AspectName = "creationDate";
+			this._csDate.AspectName = "CreationDate";
 			this._csDate.AspectToStringFormat = "{0}";
 			this._csDate.IsEditable = false;
 			this._csDate.Text = "Date";
 			// 
 			// _csOwner
 			// 
-			this._csOwner.AspectName = "user";
+			this._csOwner.AspectName = "User";
 			this._csOwner.Text = "user";
 			// 
 			// _csComment
 			// 
-			this._csComment.AspectName = "comment";
+			this._csComment.AspectName = "Comment";
 			this._csComment.Text = "Comment";
 			// 
 			// HistoryForm

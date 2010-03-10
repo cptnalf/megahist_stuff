@@ -13,10 +13,10 @@ namespace tfs_fullhistory
 	public partial class HistoryForm : Form
 	{
 		private BackgroundWorker _worker;
-		private string _tfsPath;
 		private int _maxChanges;
 		private string _tfsServer;
 		private int _distance;
+		private Item _item;
 		
 		public HistoryForm()
 		{
@@ -25,13 +25,15 @@ namespace tfs_fullhistory
 		}
 		
 		public void setPath(string tfsServer,
-												string tfsPath, int maxChanges,
+												Item item, int maxChanges,
 												int distance)
 		{
 			_tfsServer = tfsServer;
-			_tfsPath = tfsPath;
 			_maxChanges = maxChanges;
 			_distance = distance;
+			_item = item;
+			
+			this.Text = item.ServerItem;
 		}
 		
 		private void _setupTreeListView()
@@ -87,7 +89,7 @@ namespace tfs_fullhistory
 		private System.Collections.IEnumerable _childrenGetter(object model)
 		{
 			Revision rev = model as Revision;
-			return rev.Parents;
+			return rev.getParents();
 		}
 
 		/* ***************************************** */
@@ -103,6 +105,9 @@ namespace tfs_fullhistory
 			// progressBar1.MarqueeAnimationSpeed = 10;
 			treeListView1.ClearObjects();
 			
+			_worker.DoWork += _worker_DoWork;
+			_worker.RunWorkerCompleted += _worker_RunWorkerCompleted;
+			
 			_worker.RunWorkerAsync();
 		}
 
@@ -115,14 +120,23 @@ namespace tfs_fullhistory
 				{ treeListView1.BeginInvoke(new RunWorkerCompletedEventHandler(_worker_RunWorkerCompleted)); }
 			else
 				{
+					object[] results = e.Result as object[];
+					
 					if (e.Error != null)
 						{
 						}
 					else
 						{
+							HistoryCollector visitor = results[1] as HistoryCollector;
+							
+							foreach(Revision r in visitor.primaryRevs())
+								{
+									treeListView1.AddObject(r);
+									treeListView1.RefreshObject(r);
+								}
 						}
-
-					long delta = (long)e.Result;
+					
+					long delta = (long)results[0];
 					// button1.Enabled = true;
 					// progressBar1.Style = ProgressBarStyle.Blocks;
 					TimeSpan t = new TimeSpan(delta);
@@ -164,11 +178,12 @@ namespace tfs_fullhistory
 			megahistorylib.MegaHistory mh = new megahistorylib.MegaHistory(_tfsServer, _distance);
 			
 			mh.Results = visitor;
-			mh.query(this._tfsPath, VersionSpec.Latest, this._maxChanges, null, null, null);
+			mh.query(_item, _maxChanges, null, null, null);
 			
+			visitor.fixRevs();
 			{
 				long end_ticks = DateTime.Now.Ticks;
-				e.Result = end_ticks - start_ticks;
+				e.Result = new object[] { end_ticks - start_ticks, visitor };
 			}
 		}
 

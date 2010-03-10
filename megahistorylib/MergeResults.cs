@@ -40,7 +40,7 @@ namespace megahistorylib
 		protected virtual Revision _construct(string branch, Changeset cs)
 		{
 			branch = tfsinterface.Utils.GetEGSBranch(branch);
-			return new Revision(cs, branch); 
+			return new Revision(branch, cs); 
 		}
 		
 		/// <summary>

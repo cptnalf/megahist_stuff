@@ -246,7 +246,12 @@ namespace megahistorylib
 				{ Revision r = _results.getRevision(it.item().ChangesetId); }
 			
 			QueryProcessor qp = new QueryProcessor(this, THREAD_COUNT);
-			string branch = tfsinterface.Utils.GetEGSBranch(path.ServerItem);
+			string branch = path.ServerItem;
+			
+			/* post-pend a slash because tfs doesn't do that for folders... */
+			if (path.ItemType == ItemType.Folder) { branch += '/'; }
+			
+			branch = tfsinterface.Utils.GetEGSBranch(branch);
 			
 			Logger.logger.DebugFormat("queuing work.");
 			for(ChangesetCont.iterator it = history.begin();

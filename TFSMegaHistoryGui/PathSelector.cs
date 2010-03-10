@@ -69,7 +69,7 @@ namespace tfs_fullhistory
 							if (path != string.Empty && item.DeletionId < 1)
 								{
 									TreeNode node = root.Nodes.Add(path);
-									node.Tag = item.ServerItem;
+									node.Tag = item;
 									node.Nodes.Add(new fooNode());
 								}
 						}
@@ -92,9 +92,14 @@ namespace tfs_fullhistory
 			
 			if (node != null)
 				{
-					HistoryForm hf = new HistoryForm();
-					hf.setPath(_vcs.TeamFoundationServer.Name, node.FullPath, _maxChanges, _distance);
-					hf.Show();
+					Item item = node.Tag as Item;
+					
+					if (item != null)
+						{
+							HistoryForm hf = new HistoryForm();
+							hf.setPath(_vcs.TeamFoundationServer.Name, item, _maxChanges, _distance);
+							hf.Show();
+						}
 				}
 		}
 	}

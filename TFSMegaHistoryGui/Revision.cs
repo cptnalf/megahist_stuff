@@ -6,15 +6,14 @@ namespace tfs_fullhistory
 	
 	internal class Revision : megahistorylib.Revision, System.Collections.Generic.IComparer<Revision>
 	{
-		private ParentsCont _parents = new ParentsCont();
+		private ParentsCont _parRevs = new ParentsCont();
 
-		internal Revision(Changeset cs, string branch)
-			: base(cs, branch)
+		internal Revision(string branch, Changeset cs)
+			: base(branch, cs)
 		{
 		}
 		
-		internal System.Collections.Generic.IEnumerable<Revision> Parents
-		{ get { return _parents; } }
+		internal System.Collections.Generic.IEnumerable<Revision> getParents() { return _parRevs; }
 		
 		internal bool hasParents() { return _parents.Count > 0; }
 		
@@ -22,12 +21,12 @@ namespace tfs_fullhistory
 		{
 			bool found = false;
 			
-			foreach(Revision r in _parents)
+			foreach(Revision r in _parRevs)
 				{
 					found = r.ID == rev.ID;
 					if (! found) break;
 				}
-			if (!found) { _parents.Add(rev); }
+			if (!found) { _parRevs.Add(rev); }
 		}
 
 #region IComparer<Revision> Members

@@ -412,8 +412,12 @@ namespace tfs_fullhistory
 		private void _newTreeView_Click(object sender, EventArgs e)
 		{	
 			PathSelector ps = new PathSelector();
+			VersionControlServer vcs = tfsinterface.SCMUtils.GetTFSServer(this._tfsServerName);
 			
+			ps.setVCS(vcs);
 			ps.maxChanges = (int)_maxChanges.Value;
+			ps.distance = 3;
+			
 			ps.Show();
 		}
 	}

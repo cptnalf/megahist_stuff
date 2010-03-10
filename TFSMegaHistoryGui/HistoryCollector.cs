@@ -5,74 +5,96 @@ namespace tfs_fullhistory
 {
 	using Changeset = Microsoft.TeamFoundation.VersionControl.Client.Changeset;
 	using PrimaryIDsCont = treelib.AVLTree<int, megahistorylib.IntDescSorter>;
+	using BranchCont = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
 	using RevisionCont = treelib.AVLDict<int, Revision>;
 	
-	/* so, change the way this shit works...
-	 * 
-	 * 
-	 */
-	class HistoryCollector : megahistorylib.IMergeResults
+ 	class HistoryCollector : megahistorylib.MergeResults
 	{
-		private PrimaryIDsCont _primaryIDs = new PrimaryIDsCont();
-		private RevisionCont _revisions = new RevisionCont();
-		
+		private BranchCont _branches = new BranchCont();
 		private System.ComponentModel.BackgroundWorker _worker = null;
+		
+		private IEnumerable<Revision> _primaryRevs(int csID)
+		{
+			Queue<Revision> revs = new Queue<Revision>();
+			Revision rev = this.getRevision(csID) as Revision;
+			
+			while(rev != null)
+				{
+					yield return rev;
+					
+					/* now walk through the parents of each revision in this branch
+					 * and dump them all.
+					 */
+					foreach(Revision pr in rev.getParents())
+						{ if (rev.Branch == pr.Branch) { revs.Enqueue(pr); } }
+					
+					if (revs.Count > 0) { rev = revs.Dequeue(); }
+					else { rev = null; }
+				}
+		}
+		
+		/// <summary>
+		/// this copies over the parent revisions we have to the 
+		/// collection of 'Revision' objects. 
+		/// this way that work isn't done on the fly.
+		/// </summary>
+		private void _fixRevs(Revision r)
+		{
+			if (r != null)
+				{
+					foreach(int pID in r.Parents)
+						{
+							Revision pr = this.getRevision(pID) as Revision;
+							if (pr != null)
+								{
+									_fixRevs(pr);
+									r.addParent(pr);
+								}
+						}
+				}
+		}
+		
+		protected override megahistorylib.Revision _construct(string branch, Changeset cs)
+		{
+			Revision rev = new Revision(branch, cs);
+			
+			/* want to have a single list of branches, this ensures that. */
+			lock(_branches)
+				{
+					branch = tfsinterface.Utils.GetEGSBranch(branch);
+					BranchCont.iterator it = _branches.find(branch);
+					
+					if (it != _branches.end())
+						{
+							/* see if the branches are really exactly the same */
+							if (it.item() != branch) { branch = it.item(); }
+						}
+					else { _branches.insert(branch); }
+				}
+			
+			return rev;
+		}
 		
 		public System.ComponentModel.BackgroundWorker Worker
 		{ get { return _worker; } set { _worker = value; } }
 		
 		public HistoryCollector() { }
+				
+		public override megahistorylib.Revision construct(string branch, Changeset cs)
+		{
+			return base.construct(branch, cs);
+		}
 
 		internal IEnumerable<Revision> primaryRevs()
+		{ foreach(Revision r in _primaryRevs(this.firstID)) { yield return r; } }
+		
+		internal void fixRevs()
 		{
-			for(PrimaryIDsCont.iterator it = _primaryIDs.begin();
-			    it != _primaryIDs.end();
-			    ++it)
+			Revision r = this.getRevision(this.firstID) as Revision;
+			if (r != null)
 				{
-					RevisionCont.iterator rit = _revisions.find(it.item());
-					if (rit != _revisions.end())
-						{
-							Revision rev = rit.value();
-							yield return rev;
-						}
+					_fixRevs(r);
 				}
 		}
-
-#region IMergeResults Members
-
-		public IEnumerable<int> getPrimaryID() { return _primaryIDs; }
-
-		public treelib.support.iterator_base<int> primaryIDStart() { return _primaryIDs.begin(); }
-
-		public treelib.support.iterator_base<int> primaryIDEnd() { return _primaryIDs.end(); }
-
-		public megahistorylib.Revision getRevision(int csID)
-		{
-			Revision rev = null;
-			RevisionCont.iterator it = _revisions.find(csID);
-			if (it != _revisions.end()) { rev = it.value(); }
-			
-			return rev;
-		}
-
-		public megahistorylib.Revision construct(string branch, Changeset cs)
-		{
-			Revision rev = new Revision(cs, branch);
-			return rev;
-		}
-
-		public bool visited(int csID)
-		{
-			RevisionCont.iterator it = _revisions.find(csID);
-			return it != _revisions.end();
-		}
-
-		public void addPrimaryID(int csID)
-		{
-			PrimaryIDsCont.iterator it = _primaryIDs.find(csID);
-			if (it != _primaryIDs.end()) { _primaryIDs.insert(csID); }
-		}
-
-#endregion
 	}
 }
