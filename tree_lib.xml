@@ -3282,21 +3282,21 @@
              </summary>
              <returns></returns>
         </member>
-        <member name="M:treelib.AVLTree`2.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="M:treelib.AVLTree`2.GetEnumerator">
             <summary>
-            
+            an enumerator for this datastruct. (typed)
             </summary>
         </member>
         <member name="M:treelib.AVLTree`2.System#Collections#IEnumerable#GetEnumerator">
             <summary>
-            
+            enumerator for this datastruct (un-typed)
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`2.#ctor">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:treelib.AVLTree`2.insert(`0)">
             <summary>
@@ -3453,37 +3453,37 @@
              <returns></returns>
         </member>
         <member name="T:treelib.AVLTree`2.EnumHelper">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="M:treelib.AVLTree`2.EnumHelper.#ctor(treelib.AVLTree{`0,`1}.iterator,treelib.AVLTree{`0,`1}.iterator)">
-            <summary>
+             <summary>
             
-            </summary>
-            <param name="it"></param>
-            <param name="end"></param>
+             </summary>
+             <param name="it"></param>
+             <param name="end"></param>
         </member>
         <member name="M:treelib.AVLTree`2.EnumHelper.Reset">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="M:treelib.AVLTree`2.EnumHelper.MoveNext">
-            <summary>
+             <summary>
             
-            </summary>
-            <returns></returns>
+             </summary>
+             <returns></returns>
         </member>
         <member name="M:treelib.AVLTree`2.EnumHelper.Dispose">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="P:treelib.AVLTree`2.EnumHelper.Current">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
     </members>
 </doc>

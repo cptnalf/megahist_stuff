@@ -116,6 +116,12 @@
     <Compile Include="HistoryForm.Designer.cs">
       <DependentUpon>HistoryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="OptionSettings.cs" />
     <Compile Include="OptionsForm.cs">
       <SubType>Form</SubType>
@@ -147,6 +153,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HistoryForm.resx">
       <DependentUpon>HistoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionsForm.resx">
       <DependentUpon>OptionsForm.cs</DependentUpon>
@@ -205,5 +214,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\changeset.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deleted.ico" />
   </ItemGroup>
 </Project>

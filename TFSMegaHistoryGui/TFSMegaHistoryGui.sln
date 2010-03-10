@@ -15,7 +15,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "workitem_viewer", "..\worki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterface", "..\tfsinterface\tfsinterface.csproj", "{8A520826-8639-42DA-9D87-9504BDD74BC0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterfaceUT", "tfsinterfaceUT\tfsinterfaceUT.csproj", "{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{767E6B84-342F-4C4C-BB47-7DED9ACE98B3}"
+	ProjectSection(SolutionItems) = preProject
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		TFSMegaHistoryGui.vsmdi = TFSMegaHistoryGui.vsmdi
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = TFSMegaHistoryGui.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -48,6 +59,10 @@ Global
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

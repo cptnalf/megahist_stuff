@@ -12,11 +12,18 @@ namespace tfs_fullhistory
 {
 	public partial class HistoryForm : Form
 	{
+		private enum Mode
+		{
+			normal,
+			mega,
+		}
+		
 		private BackgroundWorker _worker;
 		private int _maxChanges;
 		private string _tfsServer;
 		private int _distance;
 		private Item _item;
+		private Mode _mode;
 		
 		public HistoryForm()
 		{
@@ -32,7 +39,16 @@ namespace tfs_fullhistory
 			_maxChanges = maxChanges;
 			_distance = distance;
 			_item = item;
+			_mode = Mode.mega;
 			
+			this.Text = item.ServerItem;
+		}
+		
+		public void setPath(string tfsServer, Item item, int maxChanges)
+		{
+			_mode = Mode.normal;
+			_maxChanges = maxChanges;
+			_item = item;
 			this.Text = item.ServerItem;
 		}
 		
@@ -105,13 +121,64 @@ namespace tfs_fullhistory
 			// progressBar1.MarqueeAnimationSpeed = 10;
 			treeListView1.ClearObjects();
 			
-			_worker.DoWork += _worker_DoWork;
-			_worker.RunWorkerCompleted += _worker_RunWorkerCompleted;
+			
+			if (_mode == Mode.mega)
+				{
+					_worker.DoWork += _worker_DoWork;
+					_worker.RunWorkerCompleted += _worker_RunWorkerCompleted;
+				}
+			else
+				{
+					_worker.DoWork += _worker_Normal;
+					//_worker.RunWorkerCompleted += _worker_NormalCompleted;
+					_worker.ProgressChanged += _worker_NormalProgChanged;
+					_worker.WorkerReportsProgress = true;
+				}
 			
 			_worker.RunWorkerAsync();
 		}
-
-
+		
+		private void _worker_Normal(object sender, DoWorkEventArgs args)
+		{
+			VersionControlServer vcs =tfsinterface.SCMUtils.GetTFSServer(_tfsServer);
+			VersionSpec ver = null;
+			
+			if (_item.DeletionId > 0) { ver = new ChangesetVersionSpec(_item.ChangesetId); }
+			else { ver = VersionSpec.Latest; }
+			
+			System.Collections.IEnumerable foo = vcs.QueryHistory(_item.ServerItem, ver, _item.DeletionId, 
+			  RecursionType.Full, null, null, null, _maxChanges, true, true, false);
+			  
+			foreach(object o in foo)
+				{
+					Changeset cs = o as Changeset;
+					
+					if (cs != null)
+						{
+							List<string> branches = tfsinterface.Utils.FindChangesetBranches(cs, (cng) => true);
+							
+							Revision rev = new Revision(branches[0], cs);
+							_worker.ReportProgress(1, rev);
+						}
+				}
+		}
+		
+		private void _worker_NormalProgChanged(object sender, ProgressChangedEventArgs args)
+		{
+			if (treeListView1.InvokeRequired)
+				{ treeListView1.BeginInvoke(new ProgressChangedEventHandler(_worker_ProgressChanged)); }
+			else
+				{
+					Revision rev = args.UserState as Revision;
+			
+					if (rev != null)
+						{
+							treeListView1.AddObject(rev);
+							treeListView1.RefreshObject(rev);
+						}
+				}
+		}
+		
 		/** cleanup after the megahistory querier is done doing it's thing.
 		 */
 		private void _worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
