@@ -9,10 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using mh_ns = megahistorylib;
-using Arg = saastdlib.Arg;
-using ArgParser = saastdlib.ArgParser;
-using FlagArg = saastdlib.FlagArg;
-using ArgInt = saastdlib.ArgInt;
+using saastdlib;
 
 namespace tfsmegahistory
 {
@@ -61,8 +58,8 @@ namespace tfsmegahistory
 			ArgParser argParser = new ArgParser();
 			
 			argParser.add(new Arg('s', "server", "server name", "the tfs server to connect to", null));
-			argParser.add(new PathVersionArg("src", "path[,version]", "the source of the changesets"));
-			argParser.add(new VersionArg("from","version[,version]","the changeset range to look in."));
+			argParser.add(new tfsinterface.PathVersionArg("src", "path[,version]", "the source of the changesets"));
+			argParser.add(new tfsinterface.VersionArg("from","version[,version]","the changeset range to look in."));
 			argParser.add(new FlagArg("name-only", "add the path of the files to the changeset info", false));
 			argParser.add(new FlagArg("name-status",
 																"print the path and the change type in the changeset info", false));
@@ -148,17 +145,17 @@ namespace tfsmegahistory
 			if (unknownArgs.Count > 0)
 				{
 					/* anything not caught by the above items is considered a target path and changeset. */
-					PathVersionArg.GetParts(args[unknownArgs[0]], out values.target, out values.targetVer);
+					tfsinterface.PathVersionArg.GetParts(args[unknownArgs[0]], out values.target, out values.targetVer);
 				}
 			
 			values.server = (string)argParser.get_arg<Arg>('s');
 			
 			{
-				PathVersionArg arg = argParser.get_arg<PathVersionArg>("src");
+				tfsinterface.PathVersionArg arg = argParser.get_arg<tfsinterface.PathVersionArg>("src");
 				if (arg.Data != null) { arg.get_parts(out values.srcPath, out values.srcVer); }
 			}
 			{
-				VersionArg arg = argParser.get_arg<VersionArg>("from");
+				tfsinterface.VersionArg arg = argParser.get_arg<tfsinterface.VersionArg>("from");
 				if (arg.Data != null) { arg.get_parts(out values.fromVer, out values.toVer); }
 			}
 			
