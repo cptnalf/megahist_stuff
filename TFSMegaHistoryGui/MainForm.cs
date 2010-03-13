@@ -43,6 +43,8 @@ namespace tfs_fullhistory
 			
 			_tfsTree.ImageList = _imgLst;
 			_tfsTree.BeforeExpand += treeView1_BeforeExpand;
+			_tfsTree.PathSeparator = "/";
+			_tfsTree.ContextMenuStrip = this.contextMenuStrip1;
 			
 			this.Icon = Properties.Resources.ico21;
 		}
@@ -123,7 +125,9 @@ namespace tfs_fullhistory
 								{
 									TreeNode node = root.Nodes.Add(path);
 									node.Tag = item;
-									node.ImageIndex = 1;
+									
+									if (item.DeletionId > 0) { node.ImageIndex = 1; }
+									else { node.ImageIndex = 0; }
 									node.Nodes.Add(new fooNode());
 								}
 						}
