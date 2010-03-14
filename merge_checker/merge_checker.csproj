@@ -135,7 +135,7 @@
   -->
   <Import Project="$(EGSINCPATH)\EndProject.inc" />
   <ItemGroup>
-    <ProjectReference Include="tfsinterface\tfsinterface.csproj">
+    <ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
       <Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
       <Name>tfsinterface</Name>
     </ProjectReference>

@@ -1,29 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFSMegaHistoryGui", "TFSMegaHistoryGui.csproj", "{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFSMegaHistoryGui", "TFSMegaHistoryGui\TFSMegaHistoryGui.csproj", "{C418934A-C9FD-4ED9-BC84-BFEFCECE0924}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistory", "..\TFSMegaHistory\megahistory.csproj", "{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistory", "TFSMegaHistory\megahistory.csproj", "{15C860E4-B312-4E07-B64B-BFEE2C9C63D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectListView2008", "..\ObjectListView\ObjectListView2008.csproj", "{18FEDA0C-D147-4286-B39A-01204808106A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectListView2008", "ObjectListView\ObjectListView2008.csproj", "{18FEDA0C-D147-4286-B39A-01204808106A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BranchDifferGui", "..\BranchDifferGui\BranchDifferGui.csproj", "{606C6A97-924C-43D1-A4A4-744C19FC228C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BranchDifferGui", "BranchDifferGui\BranchDifferGui.csproj", "{606C6A97-924C-43D1-A4A4-744C19FC228C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistorylib", "..\megahistorylib\megahistorylib.csproj", "{8723DA6D-9CBD-43D6-9218-88278099A063}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megahistorylib", "megahistorylib\megahistorylib.csproj", "{8723DA6D-9CBD-43D6-9218-88278099A063}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "workitem_viewer", "..\workitem_viewer\workitem_viewer.csproj", "{F0548DB5-04F3-403D-A77F-2E02FD3242BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "workitem_viewer", "workitem_viewer\workitem_viewer.csproj", "{F0548DB5-04F3-403D-A77F-2E02FD3242BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterface", "..\tfsinterface\tfsinterface.csproj", "{8A520826-8639-42DA-9D87-9504BDD74BC0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterfaceUT", "tfsinterfaceUT\tfsinterfaceUT.csproj", "{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterface", "tfsinterface\tfsinterface.csproj", "{8A520826-8639-42DA-9D87-9504BDD74BC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{767E6B84-342F-4C4C-BB47-7DED9ACE98B3}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
-		TFSMegaHistoryGui.vsmdi = TFSMegaHistoryGui.vsmdi
+		tfstools.vsmdi = tfstools.vsmdi
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "merge_checker", "..\merge_checker.csproj", "{EE0BF63D-5B4A-4E91-9897-4077F712080E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{B948B697-2D66-4592-813B-A95C25975D6B}"
 EndProject
@@ -31,9 +27,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "guis", "guis", "{EEC6E527-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "clis", "clis", "{8D1B3301-94DC-4AB0-B73D-2768C31A2DD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "merge_checker", "merge_checker\merge_checker.csproj", "{EE0BF63D-5B4A-4E91-9897-4077F712080E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsinterfaceUT", "tfsinterfaceUT\tfsinterfaceUT.csproj", "{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = TFSMegaHistoryGui.vsmdi
+		CategoryFile = tfstools.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,14 +111,6 @@ Global
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|x64.Build.0 = Release|x64
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|x86.ActiveCfg = Release|x86
 		{8A520826-8639-42DA-9D87-9504BDD74BC0}.Release|x86.Build.0 = Release|x86
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|x64.ActiveCfg = Release|Any CPU
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E}.Debug|x64.ActiveCfg = Debug|x64
@@ -131,19 +123,27 @@ Global
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E}.Release|x64.Build.0 = Release|x64
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E}.Release|x86.ActiveCfg = Release|x86
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E}.Release|x86.Build.0 = Release|x86
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|x64.ActiveCfg = Release|Any CPU
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8723DA6D-9CBD-43D6-9218-88278099A063} = {B948B697-2D66-4592-813B-A95C25975D6B}
-		{18FEDA0C-D147-4286-B39A-01204808106A} = {B948B697-2D66-4592-813B-A95C25975D6B}
-		{8A520826-8639-42DA-9D87-9504BDD74BC0} = {B948B697-2D66-4592-813B-A95C25975D6B}
-		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D} = {B948B697-2D66-4592-813B-A95C25975D6B}
 		{606C6A97-924C-43D1-A4A4-744C19FC228C} = {EEC6E527-E87C-4AD0-A1E9-F05A3307B26E}
-		{C418934A-C9FD-4ED9-BC84-BFEFCECE0924} = {EEC6E527-E87C-4AD0-A1E9-F05A3307B26E}
 		{F0548DB5-04F3-403D-A77F-2E02FD3242BA} = {EEC6E527-E87C-4AD0-A1E9-F05A3307B26E}
+		{C418934A-C9FD-4ED9-BC84-BFEFCECE0924} = {EEC6E527-E87C-4AD0-A1E9-F05A3307B26E}
 		{15C860E4-B312-4E07-B64B-BFEE2C9C63D0} = {8D1B3301-94DC-4AB0-B73D-2768C31A2DD1}
 		{EE0BF63D-5B4A-4E91-9897-4077F712080E} = {8D1B3301-94DC-4AB0-B73D-2768C31A2DD1}
+		{8723DA6D-9CBD-43D6-9218-88278099A063} = {B948B697-2D66-4592-813B-A95C25975D6B}
+		{8A520826-8639-42DA-9D87-9504BDD74BC0} = {B948B697-2D66-4592-813B-A95C25975D6B}
+		{18FEDA0C-D147-4286-B39A-01204808106A} = {B948B697-2D66-4592-813B-A95C25975D6B}
+		{DC593DAA-A5C0-4CCF-B222-B5A703A0164D} = {B948B697-2D66-4592-813B-A95C25975D6B}
 	EndGlobalSection
 EndGlobal
