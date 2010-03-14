@@ -23,9 +23,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\megahistorylib.xml</DocumentationFile>
-		<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-		<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-	</PropertyGroup>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -34,8 +34,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>$(SolutionDir)\bin\$(Platform)\$(Configuration)\megahistorylib.xml</DocumentationFile>
-		<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-		<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -71,21 +71,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\tree_lib.dll</HintPath>
     </Reference>
-		<Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>..\lib\saastdlib.dll</HintPath>
-		</Reference> 
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
-			<Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
-			<Name>tfsinterface</Name>
-		</ProjectReference>
-	</ItemGroup>
+    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\saastdlib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
+      <Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
+      <Name>tfsinterface</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="assembly.cs" />
     <Compile Include="$(GitResourcePath)AssemblyInfo.cs" />
-    <Compile Include="sorters\ChangesetSorter.cs" />
     <Compile Include="IMergeResults.cs" />
     <Compile Include="logger.cs" />
     <Compile Include="mergehist.cs" />

@@ -1,38 +1,15 @@
 
 using System;
 using Microsoft.TeamFoundation.VersionControl.Client;
-using System.Reflection;
 using saastdlib;
-
-[assembly: AssemblyTitle("merge checker")]
-[assembly: AssemblyDescription("checks merge dependencies.")]
-[assembly: AssemblyConfiguration("debug")]
-[assembly: AssemblyCompany("flarg")]
-[assembly: AssemblyProduct("merge checker")]
-[assembly: AssemblyCopyright("flarg")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.0.0.0")]
-
 
 namespace MergeChecker
 {
-	using ItemMap = treelib.TreapDict<Item, treelib.AVLTree<int>, ItemSorter>;
+	using ItemMap = treelib.TreapDict<Item, treelib.AVLTree<int>, tfsinterface.sorters.ItemSorter>;
 	using IntList = treelib.AVLTree<int>;
-	using ItemList = treelib.AVLTree<Item,ItemSorter>;
-	using CSItemMap = treelib.TreapDict<int, treelib.AVLTree<Item,ItemSorter>>;
-	
-	
-	public class ItemSorter : System.Collections.Generic.IComparer<Item>
-	{
-		public ItemSorter() { }
+	using ItemList = treelib.AVLTree<Item, tfsinterface.sorters.ItemSorter>;
+	using CSItemMap = treelib.TreapDict<int, treelib.AVLTree<Item, tfsinterface.sorters.ItemSorter>>;
 		
-		public int Compare(Item one, Item two)
-		{
-			return one.ItemId.CompareTo(two.ItemId);
-		}
-	}
-	
 	internal class merge_checker
 	{
 		private static VersionControlServer vcs;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace megahistorylib
 {
-	using ChangesetCont = treelib.AVLTree<Changeset, sorters.ChangesetSorter>;
+	using ChangesetCont = treelib.AVLTree<Changeset, tfsinterface.sorters.ChangesetSorter>;
 	using SortedPaths_T = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using ChangesetDict_T =
 		treelib.AVLDict<int, treelib.AVLTree<string, treelib.sorters.StringInsensitive>>;

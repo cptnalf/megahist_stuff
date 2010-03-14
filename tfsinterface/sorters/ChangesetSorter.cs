@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace megahistorylib.sorters
+namespace tfsinterface.sorters
 {
 	/// <summary>
 	/// sort a changeset in ascending order.
