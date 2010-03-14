@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace tfs_fullhistory
 {
 	using Changeset = Microsoft.TeamFoundation.VersionControl.Client.Changeset;
-	using PrimaryIDsCont = treelib.AVLTree<int, megahistorylib.IntDescSorter>;
-	using BranchCont = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using PrimaryIDsCont = treelib.AVLTree<int, treelib.sorters.IntDesc>;
+	using BranchCont = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using RevisionCont = treelib.AVLDict<int, Revision>;
 	
  	class HistoryCollector : megahistorylib.MergeResults

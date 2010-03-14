@@ -4,9 +4,9 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 
 namespace megahistorylib
 {
-	using SortedPaths_T = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using SortedPaths_T = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using ChangesetDict_T =
-		treelib.AVLDict<int, treelib.AVLTree<string, treelib.StringSorterInsensitive>>;
+		treelib.AVLDict<int, treelib.AVLTree<string, treelib.sorters.StringInsensitive>>;
 	
 	public partial class MegaHistory
 	{

@@ -119,9 +119,8 @@
   <ItemGroup>
     <Compile Include="assembly.cs" />
     <Compile Include="$(GitResourcePath)AssemblyInfo.cs" />
-    <Compile Include="ChangesetSorter.cs" />
+    <Compile Include="sorters\ChangesetSorter.cs" />
     <Compile Include="IMergeResults.cs" />
-    <Compile Include="IntDescSorter.cs" />
     <Compile Include="logger.cs" />
     <Compile Include="mergehist.cs" />
     <Compile Include="mergehist.private.cs" />

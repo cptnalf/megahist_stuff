@@ -5,7 +5,7 @@ using System;
 
 namespace tfsinterface
 {
-	using BranchCont = treelib.AVLTree<string,treelib.StringSorterInsensitive>;
+	using BranchCont = treelib.AVLTree<string,treelib.sorters.StringInsensitive>;
 	
 	/// <summary>
 	/// 

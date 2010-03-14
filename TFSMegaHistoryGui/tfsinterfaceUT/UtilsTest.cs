@@ -84,7 +84,7 @@ namespace tfsinterfaceUT
 		[TestMethod()]
 		public void GetPathPartTest()
 		{
-			string path = string.Empty; // TODO: Initialize to an appropriate value
+			string path = "";
 			string expected = string.Empty; // TODO: Initialize to an appropriate value
 			string actual;
 			actual = Utils.GetPathPart(path);
@@ -96,14 +96,78 @@ namespace tfsinterfaceUT
 		///A test for GetEGSBranch
 		///</summary>
 		[TestMethod()]
-		public void GetEGSBranchTest()
+		public void GetEGSBranch_FullFile()
 		{
-			string fullPath = string.Empty; // TODO: Initialize to an appropriate value
-			string expected = string.Empty; // TODO: Initialize to an appropriate value
-			string actual;
-			actual = Utils.GetEGSBranch(fullPath);
+			string fullPath = "$/IGT_0803/development/dev_adv_cr/EGS/shared/lib/win32/PinUtil.dll";
+			string expected = "$/IGT_0803/development/dev_adv_cr";
+			string actual = Utils.GetEGSBranch(fullPath);
+			
 			Assert.AreEqual(expected, actual);
-			Assert.Inconclusive("Verify the correctness of this test method.");
+		}
+
+		[TestMethod()]
+		public void GetEGSBranch_FullFolder()
+		{
+			string fullPath = "$/IGT_0803/development/dev_adv_cr/EGS/shared/";
+			string expected = "$/IGT_0803/development/dev_adv_cr";
+			string actual = Utils.GetEGSBranch(fullPath);
+			
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestMethod()]
+		public void GetEGSBranch_EGSFolder()
+		{
+			string fullPath = "$/IGT_0803/development/dev_adv_cr/EGS/";
+			string expected = "$/IGT_0803/development/dev_adv_cr";
+			string actual = Utils.GetEGSBranch(fullPath);
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestMethod()]
+		public void GetEGSBranch_ReleaseTest()
+		{
+			string fullPath = "$/IGT_0803/release/EGS8.2/dev_sp/EGS/shared/lib/win32/PinUtil.dll";
+			string expected = "$/IGT_0803/release/EGS8.2/dev_sp";
+			string actual = Utils.GetEGSBranch(fullPath);
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestMethod()]
+		public void GetEGSBranch_BadTest()
+		{
+			string fullPath = "$/IGT_0803/release/EGS8.2/dev_sp/EGS";
+			string expected = string.Empty;
+			string actual = Utils.GetEGSBranch(fullPath);
+
+			Assert.AreEqual(expected, actual);
+		}
+		
+		[TestMethod]
+		public void testRE()
+		{
+			System.Text.RegularExpressions.Regex re = new System.Text.RegularExpressions.Regex("^(.+)/EGS(/?|/.*)$");
+			
+			System.Text.RegularExpressions.Match m = re.Match("foo/bar/baz");
+			Assert.IsFalse(m.Success);
+			
+			m = re.Match("foo/bar/EGS/flarg");
+			Assert.IsNotNull(m);
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual<string>("foo/bar", m.Groups[1].Value);
+			Assert.AreEqual<string>("/flarg", m.Groups[2].Value);
+			
+			m = re.Match("foo/bar/EGS");
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual<string>("foo/bar", m.Groups[1].Value);
+			Assert.AreEqual<string>(string.Empty, m.Groups[2].Value);
+			
+			m = re.Match("foo/var/EGS/");
+			Assert.IsTrue(m.Success);
+			Assert.AreEqual<string>("foo/var", m.Groups[1].Value);
+			Assert.AreEqual<string>("/", m.Groups[2].Value);
 		}
 	}
 }

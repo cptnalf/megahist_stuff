@@ -61,15 +61,7 @@ namespace tfsinterface
 			string path = string.Empty;
 			System.Text.RegularExpressions.Match match = _egsRE.Match(fullPath);
 			
-			if (match != null)
-				{
-					if (! string.IsNullOrEmpty(match.Groups[1].Value))
-						{ path = match.Groups[1].Value; }
-					else
-						{
-							
-						}
-				}
+			if (match != null && match.Success) { path = match.Groups[1].Value; }
 			
 			return path;
 		}
@@ -82,10 +74,7 @@ namespace tfsinterface
 			string path_part = string.Empty;
 			System.Text.RegularExpressions.Match match = _egsRE.Match(path);
 			
-			if (match != null)
-				{
-					path_part = match.Groups[2].Value;
-				}
+			if (match != null && match.Success) { path_part = match.Groups[2].Value; }
 			else
 				{
 					int idx = path.LastIndexOf("/EGS");

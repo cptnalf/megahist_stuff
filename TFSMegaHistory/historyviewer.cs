@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using megahistorylib;
 
-using PrimaryIDsCont = treelib.AVLTree<int, megahistorylib.IntDescSorter>;
+using PrimaryIDsCont = treelib.AVLTree<int, treelib.sorters.IntDesc>;
 
 /** print the changeset when we see it.
  */
@@ -78,11 +78,8 @@ class HistoryViewer
 				_print(wr, r);
 				
 				/* then print out our parents, in descending order. */
-				treelib.AVLTree<int,megahistorylib.IntDescSorter> desc = 
-					new treelib.AVLTree<int,megahistorylib.IntDescSorter>();
-				
-				treelib.AVLTree<int,megahistorylib.IntDescSorter> mybranch =
-					new treelib.AVLTree<int,megahistorylib.IntDescSorter>();
+				PrimaryIDsCont desc = new PrimaryIDsCont();
+				PrimaryIDsCont mybranch =new PrimaryIDsCont();
 				
 				/* separate merge parents from regular history */
 				foreach(int pID in r.Parents)

@@ -4,7 +4,7 @@ using Microsoft.TeamFoundation.VersionControl.Client;
 namespace megahistorylib
 {
 	using RevisionCont = treelib.AVLDict<int,Revision>;
-	using PrimaryIDCont = treelib.AVLTree<int, IntDescSorter>;
+	using PrimaryIDCont = treelib.AVLTree<int, treelib.sorters.IntDesc>;
 	
 	/// <summary>
 	/// default results id.

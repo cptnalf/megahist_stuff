@@ -1070,12 +1070,12 @@
             end iterator, or an iterator pointing to the item in the list.
             </returns>
         </member>
-        <member name="T:treelib.IntSorterDesc">
+        <member name="T:treelib.sorters.IntDesc">
             <summary>
             descending int sorter.
             </summary>
         </member>
-        <member name="M:treelib.IntSorterDesc.Compare(System.Int32,System.Int32)">
+        <member name="M:treelib.sorters.IntDesc.Compare(System.Int32,System.Int32)">
             <summary>
             
             </summary>
@@ -1083,7 +1083,7 @@
             <param name="two"></param>
             <returns></returns>
         </member>
-        <member name="M:treelib.IntSorterDesc.Compare(System.Object,System.Object)">
+        <member name="M:treelib.sorters.IntDesc.Compare(System.Object,System.Object)">
             <summary>
             
             </summary>
@@ -1091,12 +1091,34 @@
             <param name="two"></param>
             <returns></returns>
         </member>
-        <member name="T:treelib.StringSorterInsensitive">
+        <member name="T:treelib.sorters.UlongDesc">
+            <summary>
+            64bit unsigned long descending sorter.
+            </summary>
+        </member>
+        <member name="M:treelib.sorters.UlongDesc.Compare(System.UInt64,System.UInt64)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.sorters.UlongDesc.Compare(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.sorters.StringInsensitive">
             <summary>
             case insenstive string sorter.
+            uses the invariant culture.
             </summary>
         </member>
-        <member name="M:treelib.StringSorterInsensitive.Compare(System.String,System.String)">
+        <member name="M:treelib.sorters.StringInsensitive.Compare(System.String,System.String)">
             <summary>
             
             </summary>
@@ -1104,7 +1126,7 @@
             <param name="two"></param>
             <returns></returns>
         </member>
-        <member name="M:treelib.StringSorterInsensitive.Compare(System.Object,System.Object)">
+        <member name="M:treelib.sorters.StringInsensitive.Compare(System.Object,System.Object)">
             <summary>
             
             </summary>
@@ -1112,12 +1134,42 @@
             <param name="two"></param>
             <returns></returns>
         </member>
-        <member name="T:treelib.StringSorterDesc">
+        <member name="T:treelib.sorters.StringDesc">
             <summary>
             compares two strings, returning an ordering for a decending sort.
             </summary>
         </member>
-        <member name="M:treelib.StringSorterDesc.Compare(System.String,System.String)">
+        <member name="M:treelib.sorters.StringDesc.Compare(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.sorters.StringDesc.Compare(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="T:treelib.sorters.StringInsensitiveDesc">
+            <summary>
+            sorts strings in descending order, ignoring case.
+            uses the invariant culture.
+            </summary>
+        </member>
+        <member name="M:treelib.sorters.StringInsensitiveDesc.Compare(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="one"></param>
+            <param name="two"></param>
+            <returns></returns>
+        </member>
+        <member name="M:treelib.sorters.StringInsensitiveDesc.Compare(System.Object,System.Object)">
             <summary>
             
             </summary>
@@ -1492,6 +1544,17 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:treelib.SplayTree`1.GetEnumerator">
+            <summary>
+            an enumerator for this datastruct. (typed)
+            </summary>
+        </member>
+        <member name="M:treelib.SplayTree`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            enumerator for this datastruct (un-typed)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:treelib.SplayTree`1.#ctor">
             <summary>
             construct a splaytree with a custom comparer
@@ -1653,6 +1716,39 @@
              <param name="two"></param>
              <returns></returns>
         </member>
+        <member name="T:treelib.SplayTree`1.EnumHelper">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.SplayTree`1.EnumHelper.#ctor(treelib.SplayTree{`0}.iterator,treelib.SplayTree{`0}.iterator)">
+             <summary>
+            
+             </summary>
+             <param name="it"></param>
+             <param name="end"></param>
+        </member>
+        <member name="M:treelib.SplayTree`1.EnumHelper.Reset">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.SplayTree`1.EnumHelper.MoveNext">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`1.EnumHelper.Dispose">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="P:treelib.SplayTree`1.EnumHelper.Current">
+             <summary>
+            
+             </summary>
+        </member>
         <member name="T:treelib.SplayTree`2">
             <summary>
             a splay tree.
@@ -1705,6 +1801,17 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`2.GetEnumerator">
+            <summary>
+            an enumerator for this datastruct. (typed)
+            </summary>
+        </member>
+        <member name="M:treelib.SplayTree`2.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            enumerator for this datastruct (un-typed)
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:treelib.SplayTree`2.#ctor">
             <summary>
@@ -1867,6 +1974,39 @@
              <param name="two"></param>
              <returns></returns>
         </member>
+        <member name="T:treelib.SplayTree`2.EnumHelper">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.SplayTree`2.EnumHelper.#ctor(treelib.SplayTree{`0,`1}.iterator,treelib.SplayTree{`0,`1}.iterator)">
+             <summary>
+            
+             </summary>
+             <param name="it"></param>
+             <param name="end"></param>
+        </member>
+        <member name="M:treelib.SplayTree`2.EnumHelper.Reset">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.SplayTree`2.EnumHelper.MoveNext">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:treelib.SplayTree`2.EnumHelper.Dispose">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="P:treelib.SplayTree`2.EnumHelper.Current">
+             <summary>
+            
+             </summary>
+        </member>
         <member name="T:treelib.AVLTree`1">
             <summary>
             an AVLTree.
@@ -1908,21 +2048,21 @@
              </summary>
              <returns></returns>
         </member>
-        <member name="M:treelib.AVLTree`1.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="M:treelib.AVLTree`1.GetEnumerator">
             <summary>
-            
+            an enumerator for this datastruct. (typed)
             </summary>
         </member>
         <member name="M:treelib.AVLTree`1.System#Collections#IEnumerable#GetEnumerator">
             <summary>
-            
+            enumerator for this datastruct (un-typed)
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:treelib.AVLTree`1.#ctor">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:treelib.AVLTree`1.insert(`0)">
             <summary>
@@ -2079,37 +2219,37 @@
              <returns></returns>
         </member>
         <member name="T:treelib.AVLTree`1.EnumHelper">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="M:treelib.AVLTree`1.EnumHelper.#ctor(treelib.AVLTree{`0}.iterator,treelib.AVLTree{`0}.iterator)">
-            <summary>
+             <summary>
             
-            </summary>
-            <param name="it"></param>
-            <param name="end"></param>
+             </summary>
+             <param name="it"></param>
+             <param name="end"></param>
         </member>
         <member name="M:treelib.AVLTree`1.EnumHelper.Reset">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="M:treelib.AVLTree`1.EnumHelper.MoveNext">
-            <summary>
+             <summary>
             
-            </summary>
-            <returns></returns>
+             </summary>
+             <returns></returns>
         </member>
         <member name="M:treelib.AVLTree`1.EnumHelper.Dispose">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="P:treelib.AVLTree`1.EnumHelper.Current">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="T:treelib.Treap`1">
             <summary>
@@ -2150,6 +2290,17 @@
             
              </summary>
              <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.GetEnumerator">
+            <summary>
+            an enumerator for this datastruct. (typed)
+            </summary>
+        </member>
+        <member name="M:treelib.Treap`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            enumerator for this datastruct (un-typed)
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:treelib.Treap`1.#ctor">
             <summary>
@@ -2309,6 +2460,39 @@
              <param name="one"></param>
              <param name="two"></param>
              <returns></returns>
+        </member>
+        <member name="T:treelib.Treap`1.EnumHelper">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.Treap`1.EnumHelper.#ctor(treelib.Treap{`0}.iterator,treelib.Treap{`0}.iterator)">
+             <summary>
+            
+             </summary>
+             <param name="it"></param>
+             <param name="end"></param>
+        </member>
+        <member name="M:treelib.Treap`1.EnumHelper.Reset">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.Treap`1.EnumHelper.MoveNext">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`1.EnumHelper.Dispose">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="P:treelib.Treap`1.EnumHelper.Current">
+             <summary>
+            
+             </summary>
         </member>
         <member name="T:treelib.TreapDict`3">
             <summary>
@@ -2774,6 +2958,17 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:treelib.Treap`2.GetEnumerator">
+            <summary>
+            an enumerator for this datastruct. (typed)
+            </summary>
+        </member>
+        <member name="M:treelib.Treap`2.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            enumerator for this datastruct (un-typed)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:treelib.Treap`2.#ctor">
             <summary>
             
@@ -2932,6 +3127,39 @@
              <param name="one"></param>
              <param name="two"></param>
              <returns></returns>
+        </member>
+        <member name="T:treelib.Treap`2.EnumHelper">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.Treap`2.EnumHelper.#ctor(treelib.Treap{`0,`1}.iterator,treelib.Treap{`0,`1}.iterator)">
+             <summary>
+            
+             </summary>
+             <param name="it"></param>
+             <param name="end"></param>
+        </member>
+        <member name="M:treelib.Treap`2.EnumHelper.Reset">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:treelib.Treap`2.EnumHelper.MoveNext">
+             <summary>
+            
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:treelib.Treap`2.EnumHelper.Dispose">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="P:treelib.Treap`2.EnumHelper.Current">
+             <summary>
+            
+             </summary>
         </member>
         <member name="T:treelib.AVLDict`2">
             <summary>
