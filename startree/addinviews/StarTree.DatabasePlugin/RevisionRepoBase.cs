@@ -2,10 +2,10 @@
 namespace StarTree.Plugin.Database
 {
 	using RevisionCont = treelib.AVLTree<Revision, RevisionSorterDesc>;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using BranchContainer = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using RevisionIdx = treelib.AVLDict<string, Revision>;
 	using BranchChangesets =
-		treelib.AVLDict<string, treelib.AVLDict<string,Revision>, treelib.StringSorterInsensitive>;
+		treelib.AVLDict<string, treelib.AVLDict<string,Revision>, treelib.sorters.StringInsensitive>;
 	
 	/// <summary>
 	/// base class for a repository

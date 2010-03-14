@@ -1,7 +1,7 @@
 
 using System.Text.RegularExpressions;
 ﻿
-namespace Git.Database
+namespace StarTree.Plugin.Git
 {
 	using StringList = System.Collections.Generic.List<string>;
 	using RevisionIdx = treelib.AVLTree<StarTree.Plugin.Database.Revision, StarTree.Plugin.Database.RevisionSorterDesc>;

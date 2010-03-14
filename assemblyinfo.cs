@@ -2,5 +2,5 @@
 using System.Reflection;
 
 #pragma warning disable 1607
-[assembly: AssemblyInformationalVersion("a90c3eb90fb68e3ebd4f3686d0cddcf2e306b7ff")]
+[assembly: AssemblyInformationalVersion("50ca2cdb284770af134d514c0d94ce14f2a6957e")]
 #pragma warning restore 1607

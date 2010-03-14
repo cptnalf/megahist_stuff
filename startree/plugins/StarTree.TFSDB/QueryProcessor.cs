@@ -3,9 +3,9 @@ using System.Threading;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System.Collections.Generic;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
-	using MergeHist = megahistory.MergeHist<StarTree.Plugin.Database.Revision>;
+	using MergeHist = megahistorylib.MergeHist<StarTree.Plugin.Database.Revision>;
 	using QueryRec = megahistory.MergeHistQueryRec;
 
 	internal class QueryProcessor

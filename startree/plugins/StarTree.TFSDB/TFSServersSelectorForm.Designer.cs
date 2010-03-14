@@ -1,4 +1,4 @@
-﻿namespace StarTree.Plugin.TFSDB
+﻿namespace StarTree.Plugin.TFS
 	{
 	partial class TFSServersSelectorForm
 		{

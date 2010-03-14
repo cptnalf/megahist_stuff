@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
 	public partial class TFSServersSelectorForm : Form
 	{

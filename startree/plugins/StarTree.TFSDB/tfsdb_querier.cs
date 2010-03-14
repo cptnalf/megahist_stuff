@@ -2,7 +2,7 @@
 using Microsoft.TeamFoundation.VersionControl.Client;
 using System.Collections.Generic;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
 	using Revision = StarTree.Plugin.Database.Revision;
 	using MergeHist = megahistory.MergeHist<StarTree.Plugin.Database.Revision>;

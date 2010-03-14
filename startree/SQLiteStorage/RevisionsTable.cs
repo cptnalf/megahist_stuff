@@ -5,7 +5,7 @@ namespace SQLiteStorage
 {
 	using Revision = StarTree.Plugin.Database.Revision;
 	using DbType = System.Data.DbType;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using BranchContainer = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	
 	public class RevisionsTable : TableBase
 	{

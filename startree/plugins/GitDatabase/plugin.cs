@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.Linq;
 
-namespace Git.Database
+namespace StarTree.Plugin.Git
 {
 	using Revision = StarTree.Plugin.Database.Revision;
 	using Snapshot = StarTree.Plugin.Database.Snapshot;

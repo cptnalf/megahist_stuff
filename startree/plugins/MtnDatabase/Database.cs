@@ -6,7 +6,7 @@ using System.Text;
 
 using StarTree.Plugin.Database;
 
-namespace Monotree
+namespace StarTree.Plugin.Mtn
 {
 	using RevisionCont = treelib.AVLTree<Revision,RevisionSorterDesc>;
 	

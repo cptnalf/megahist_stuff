@@ -3,7 +3,7 @@ namespace SQLiteStorage
 {
 	using Revision = StarTree.Plugin.Database.Revision;
 	using Snapshot = StarTree.Plugin.Database.Snapshot;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using BranchContainer = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using RevisionCont = treelib.AVLTree<StarTree.Plugin.Database.Revision, StarTree.Plugin.Database.RevisionSorterDesc>;
 	
 	public class SQLiteCache

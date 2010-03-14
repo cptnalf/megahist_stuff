@@ -1,6 +1,5 @@
 ﻿<Project DefaultTargets="globalInclude" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<EGSTOOLSPATH>..\libs</EGSTOOLSPATH>
-		<EGSINCPATH>..</EGSINCPATH>
-	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\version.cs" />
+	</ItemGroup>
 </Project>

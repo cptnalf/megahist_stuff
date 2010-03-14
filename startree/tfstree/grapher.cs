@@ -10,7 +10,7 @@ namespace TFSTree
 	using Snapshot = StarTree.Host.Database.Snapshot;
 	using RevisionSorterDesc = StarTree.Host.Database.RevisionSorterDesc;
 	using DrwColor = System.Drawing.Color;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using BranchContainer = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using RevisionCont = treelib.AVLTree<string>;
 	using RevisionIdx = treelib.AVLDict<string, StarTree.Host.Database.Revision>;
 	

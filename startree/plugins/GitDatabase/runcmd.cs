@@ -1,5 +1,5 @@
 
-namespace Git.Database
+namespace StarTree.Plugin.Git
 {
 	internal class RunCmd
 	{

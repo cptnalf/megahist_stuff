@@ -1,12 +1,12 @@
 
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
 	using Revision = StarTree.Plugin.Database.Revision;
-	using BranchContainer = treelib.AVLTree<string, treelib.StringSorterInsensitive>;
+	using BranchContainer = treelib.AVLTree<string, treelib.sorters.StringInsensitive>;
 	using BranchChangesets =
-		treelib.AVLDict<string, treelib.AVLDict<string, StarTree.Plugin.Database.Revision>, treelib.StringSorterInsensitive>;
+		treelib.AVLDict<string, treelib.AVLDict<string, StarTree.Plugin.Database.Revision>, treelib.sorters.StringInsensitive>;
 	using RevisionIdx = treelib.AVLDict<string, StarTree.Plugin.Database.Revision>;
 
 	internal class TFSDBVisitor

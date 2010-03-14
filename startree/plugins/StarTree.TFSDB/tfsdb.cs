@@ -1,7 +1,7 @@
 
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
 	using IEnumerable = System.Collections.IEnumerable;
 	using ChangesetsDesc = treelib.AVLTree<Changeset, ChangesetDescSorter>;

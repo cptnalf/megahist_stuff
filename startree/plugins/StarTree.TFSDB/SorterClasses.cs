@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
 	internal class ChangesetDescSorter : IComparer<Changeset>
 	{

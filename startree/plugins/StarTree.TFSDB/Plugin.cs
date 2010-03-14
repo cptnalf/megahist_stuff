@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace StarTree.Plugin.TFSDB
+namespace StarTree.Plugin.TFS
 {
 	using DisplayNames = StarTree.Plugin.Database.DisplayNames;
 	using Revision = StarTree.Plugin.Database.Revision;
