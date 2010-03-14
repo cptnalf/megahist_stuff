@@ -1,16 +1,6 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("merge checker")]
-[assembly: AssemblyDescription("checks merge dependencies.")]
-[assembly: AssemblyConfiguration("debug")]
-[assembly: AssemblyCompany("flarg")]
-[assembly: AssemblyProduct("merge checker")]
-[assembly: AssemblyCopyright("flarg")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.0.0.0")]
+using System.Reflection;
 
-[assembly: ComVisible(false)]
-
+#pragma warning disable 1607
+[assembly: AssemblyInformationalVersion("c2dbd4cde73a92af452cd5762398107fe7a1402e")]
+#pragma warning restore 1607

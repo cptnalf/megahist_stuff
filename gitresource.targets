@@ -8,16 +8,18 @@
     <GitExe Include="c:\programs\git\bin\git.exe" />
   </ItemGroup>
   <ItemGroup>
-    <ResTemplate Include="$(GitResourcePath)generalinfo.resx.template">
+    <ResTemplate Include="$(ToRoot)\generalinfo.resx.template">
       <OutputFile>generalinfo.resx</OutputFile>
     </ResTemplate>
-    <ResTemplate Include="$(GitResourcePath)AssemblyInfo.cs.template">
+    <ResTemplate Include="$(ToRoot)\AssemblyInfo.cs.template">
       <OutputFile>assemblyinfo.cs</OutputFile>
     </ResTemplate>
   </ItemGroup>
 		
-	<!-- git version resource. -->
-	<Target Name="_GitVersionValue" >
+	<!-- git version resource. 
+			 only run this task if there's a .git directory present.
+		-->
+	<Target Name="_GitVersionValue" Condition=" Exists('$(ToRoot)\.git\')" >
 		<Exec 
 			 Command="@(GitExe) rev-parse HEAD &gt;$(IntermediateOutputPath)$(TargetFileName)" 
 			 />
@@ -35,5 +37,16 @@
 			 Template="@(ResTemplate)" 
 			 OutputFilename="%(ResTemplate.OutputFile)" 
 			 Tokens="@(Tokens)" />
+		
+		<ItemGroup>
+			<ResOutput Include="@(ResTemplate -> '$(ToRoot)\%(OutputFile)')" />
+		</ItemGroup>
+		
+		<Copy 
+			 SourceFiles="@(ResOutput -> '%(FullPath)' )"
+			 DestinationFolder="$(MSBuildProjectDirectory)"
+			 SkipUnchangedFiles="False"
+		 	 OverwriteReadOnlyFiles="True"
+			 />
 	</Target>
 </Project>

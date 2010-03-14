@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="project.inc"/>
   <PropertyGroup>
@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+		<Compile Include="assemblyinfo.cs" />
     <Compile Include="workitemutils.cs" />
     <Compile Include="WorkItemViewerForm.cs">
       <SubType>Form</SubType>
@@ -102,11 +103,28 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ObjectListView\ObjectListView2008.csproj">
-      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
-      <Name>ObjectListView2008</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="generalinfo.resx">
+      <LogicalName>megahistorylib.generalinfo.resources</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
+	<Choose>
+		<When Condition=" '$(EGSSRCROOT)' == ''">
+			<ItemGroup>
+				<ProjectReference Include="..\ObjectListView\ObjectListView2008.csproj" >
+					<Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+					<Name>ObjectListView2008</Name>
+				</ProjectReference>
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(EGSSRCROOT)' != ''">
+			<ItemGroup>
+				<Reference Include="ObjectListView, Version=2.2.1.0" >
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\libs\ObjectListView.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+	</Choose>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -115,4 +133,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+	<Import Project="$(EGSINCPATH)\EndProject.inc" />
 </Project>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="project.inc" />
   <PropertyGroup>
@@ -26,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,20 +34,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.TeamFoundation.Common.Library, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\shared\tools\TFS_9.0.30729.1\Microsoft.TeamFoundation.Common.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\saastdlib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -63,6 +55,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.TeamFoundation.Common.Library, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.Common.Library.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=9.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(EGSTOOLSPATH)\TFS_9.0.30729.1\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
@@ -77,10 +73,42 @@
     </Reference>
     <Reference Include="tree_lib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\tree_lib.dll</HintPath>
+      <HintPath>..\libs\tree_lib.dll</HintPath>
+    </Reference>
+    <Reference Include="saastdlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\saastdlib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\megahistorylib\megahistorylib.csproj">
+      <Project>{8723DA6D-9CBD-43d6-9218-88278099A063}</Project>
+      <Name>megahistorylib</Name>
+    </ProjectReference>
+		<ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
+			<Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
+			<Name>tfsinterface</Name>
+    </ProjectReference>
+  </ItemGroup>
+	<Choose>
+		<When Condition=" '$(EGSSRCROOT)' == ''">
+			<ItemGroup>
+				<ProjectReference Include="..\ObjectListView\ObjectListView2008.csproj" >
+					<Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+					<Name>ObjectListView2008</Name>
+				</ProjectReference>
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(EGSSRCROOT)' != ''">
+			<ItemGroup>
+				<Reference Include="ObjectListView, Version=2.2.1.0" >
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\libs\ObjectListView.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+	</Choose>
+	<ItemGroup>
     <Compile Include="BackgroundJobs.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -186,6 +214,11 @@
     </Compile>
     <Compile Include="Revision.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ico21.ico" />
+    <None Include="Resources\changeset.ico" />
+    <None Include="Resources\deleted.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -195,27 +228,4 @@
   </Target>
   -->
   <Import Project="$(EGSINCPATH)\EndProject.inc" />
-  <ItemGroup>
-    <ProjectReference Include="..\megahistorylib\megahistorylib.csproj">
-      <Project>{8723DA6D-9CBD-43d6-9218-88278099A063}</Project>
-      <Name>megahistorylib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ObjectListView\ObjectListView2008.csproj">
-      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
-      <Name>ObjectListView2008</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\tfsinterface\tfsinterface.csproj">
-      <Project>{8A520826-8639-42DA-9D87-9504BDD74BC0}</Project>
-      <Name>tfsinterface</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ico21.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\changeset.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\deleted.ico" />
-  </ItemGroup>
 </Project>
