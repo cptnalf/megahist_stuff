@@ -12,9 +12,13 @@ namespace MergeChecker
 		
 	internal class merge_checker
 	{
-		private static VersionControlServer vcs;
-		
-		private static void _ProcessDeps(System.IO.TextWriter wr, ItemMap deps, CSItemMap keyChangesets)
+		/// <summary>
+		/// print dependencies.
+		/// </summary>
+		/// <param name="wr">place to pretty-print them to</param>
+		/// <param name="deps">the map of item->changeset list</param>
+		/// <param name="keyChangesets">the changeset->item map for the changesets we are interested in</param>
+		private static void _PrintDeps(System.IO.TextWriter wr, ItemMap deps, CSItemMap keyChangesets)
 		{
 			/* print out only our changesets, 
 			 * details:
@@ -36,10 +40,7 @@ namespace MergeChecker
 									if (imit.value().size() > 1)
 										{
 											wr.WriteLine(imit.item().ServerItem);
-											foreach(int csID in imit.value())
-												{
-													wr.WriteLine(csID);
-												}
+											foreach(int csID in imit.value()) { wr.WriteLine(csID); }
 											wr.WriteLine();
 										}
 								}
@@ -49,27 +50,30 @@ namespace MergeChecker
 				}
 		}
 		
-		private static void _GenerateDeps(ItemMap deps, IntList intTreap)
+		private static void _GenerateDeps(VersionControlServer vcs, ItemMap deps, IntList intTreap)
 		{
+			/* walk through the changeset list. */
 			for(IntList.iterator it = intTreap.begin();
 					it != intTreap.end();
 					++it)
 				{
+					/* grab the changeset. */
 					Changeset cs = vcs.GetChangeset(it.item());
 					
 					foreach(Change cng in cs.Changes)
 						{
+							/* now dump each item in the changeset into the dependency list. */
 							ItemMap.iterator imit = deps.find(cng.Item);
 							if (imit == deps.end())
 								{
+									/* new one. */
 									IntList changesetlist = new IntList();
-									
 									changesetlist.insert(cs.ChangesetId);
-									
 									deps.insert(cng.Item, changesetlist);
 								}
 							else
 								{
+									/* hey, it already exists, so find it and dump the changeset in there. */
 									IntList.iterator csit = imit.value().find(cs.ChangesetId);
 									if (csit == imit.value().end())
 										{ imit.value().insert(cs.ChangesetId); }
@@ -78,6 +82,16 @@ namespace MergeChecker
 				}
 		}
 		
+		/// <summary>
+		/// read in a file which is the result of running:
+		/// tf merge /recursive /candidate /noprompt &lt;src&gt; &lt;target&gt;
+		/// something like this:
+		///   12345   username   2009/01/01
+		///   
+		/// this function is only interested in the first number.
+		/// </summary>
+		/// <param name="rdr"></param>
+		/// <returns></returns>
 		private static IntList _ReadFile(System.IO.TextReader rdr)
 		{
 			System.Text.RegularExpressions.Regex lineRe = new System.Text.RegularExpressions.Regex("^[ \t]+([0-9]+)");
@@ -88,13 +102,10 @@ namespace MergeChecker
 				{
 					System.Text.RegularExpressions.Match m = lineRe.Match(line);
 					
-					if (m != null)
+					if (m != null && m.Success)
 						{
 							string part = m.Groups[1].Value;
-							if (!string.IsNullOrEmpty(part) )
-								{
-									cslist.insert(Int32.Parse(part));
-								}
+							cslist.insert(Int32.Parse(part));
 						}
 				}
 			
@@ -107,7 +118,12 @@ namespace MergeChecker
 			
 			ap.add(new Arg('s', "server", "tfs server name", "name of the tfs server.", null));
 			ap.add(new Arg('c', "candidates", "candidates file name",
-										 "list of stuff that hasn't moved from one branch to the other.", null));
+										 new string[] {
+										 "list of stuff that hasn't moved from one branch to the other.",
+										 " filename of '-' means stdin.",
+										 " this can be obtained with a command like:",
+										 " tf merge /recursive /candidate /noprompt <source> <destination>",
+										 }, null));
 			
 			System.Collections.Generic.List<int> unknownArgs;
 			bool argOK = ap.parse_args(args, out unknownArgs);
@@ -118,48 +134,55 @@ namespace MergeChecker
 					return 1;
 				}
 			
-			vcs = tfsinterface.SCMUtils.GetTFSServer(ap.get_arg<Arg>("server"));
 			IntList mergeCandidates;
 			IntList toMerge = new IntList();
-			
 			{
-				System.IO.TextReader rdr = 
-					new System.IO.StreamReader(new System.IO.FileStream(ap.get_arg<Arg>("candidates"), 
-					System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite));
+				System.IO.TextReader rdr = null;
+				if (ap.get_arg<Arg>("candidates") != "-")
+					{
+						rdr = new System.IO.StreamReader(new System.IO.FileStream(ap.get_arg<Arg>("candidates"), 
+							System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite));
+					}
+				else { rdr = Console.In; }
+				
 				mergeCandidates = _ReadFile(rdr);
 			}
 			
+			/* process the unknown arguments.
+			 * these should all be target changesets.
+			 */
 			foreach(int i in unknownArgs)
 				{
 					int csID = Int32.Parse(args[i]);
 					
 					IntList.iterator it = toMerge.find(csID);
-					if (it == toMerge.end())
-						{
-							toMerge.insert(csID);
-						}
+					if (it == toMerge.end()) { toMerge.insert(csID); }
 				}
 			
 			ItemMap deps = new ItemMap();
-			_GenerateDeps(deps, mergeCandidates);
+			VersionControlServer vcs = tfsinterface.SCMUtils.GetTFSServer(ap.get_arg<Arg>("server"));
+			_GenerateDeps(vcs, deps, mergeCandidates);
 			
+			/* now pull information on the target changesets.
+			 * 
+			 * note:
+			 * we really already have pulled this information,
+			 * but it would be a little difficult to dual-purpose the '_GenerateDeps' function.
+			 * it would also make it look really confusing.
+			 */
 			CSItemMap targetCSs = new CSItemMap();
 			foreach(int csID in toMerge)
 				{
 					Changeset cs = vcs.GetChangeset(csID);
 					ItemList il = new ItemList();
 					
-					foreach(Change cng in cs.Changes)
-						{
-							il.insert(cng.Item);
-						}
+					foreach(Change cng in cs.Changes) { il.insert(cng.Item); }
 					
 					targetCSs.insert(csID, il);
 				}
 			
 			Console.WriteLine("merge ordering:");
-
-			_ProcessDeps(Console.Out, deps, targetCSs);
+			_PrintDeps(Console.Out, deps, targetCSs);
 			
 			return 0;
 		}

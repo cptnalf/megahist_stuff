@@ -88,6 +88,10 @@ class HistoryViewer
 						
 						if (pr != null)
 							{
+								/* separate changesets into 2 piles:
+								 * my branch parents,
+								 * not my branch parents.
+								 */
 								if (pr.Branch == r.Branch) { mybranch.insert(pID); }
 								else { desc.insert(pID); }
 							}
@@ -95,43 +99,36 @@ class HistoryViewer
 				
 				if (! desc.empty())
 					{
+						/* print all of my parents not in my branch.
+						 * this would be changesets merged into my branch
+						 * by this changeset.
+						 */
 						foreach(int pID in desc) { _print(wr, pID); }
 					}
 				
 				if (!mybranch.empty())
 					{
-						foreach(int pID in mybranch)
-							{
-								_print(wr, pID);
-							}
+						/* now print all of my parents in my branch.
+						 * this should be just one changeset.
+						 */
+						foreach(int pID in mybranch) { _print(wr, pID); }
 					}
+			}
+		else
+			{
+				/* we failed to find the requested chagneset id.
+				 * this means most likely that the parents were
+				 * properly decomposed from the merge changeset, 
+				 * but that none of the children were retrieved and processed.
+				 */
 			}
 	}
 	
 	public void print(System.IO.TextWriter wr)
-	{
-		treelib.support.iterator_base<int> ptr = _results.primaryIDStart();
-		treelib.support.iterator_base<int> end = _results.primaryIDEnd();
-		
-// 		if (ptr != end)
-// 			{
-// 				for(; ptr != end; ptr.inc())
-// 					{
-// 						/* these are in descending order.
-// 						 * so first you print the top level changeset,
-// 						 * then recursively print the rest.
-// 						 */
-// 						_print(wr, ptr.item());
-// 					}
-// 			}
-// 		else { wr.WriteLine("No changesets found."); }
-		
+	{		
 		int id = _results.firstID;
 		
-		if (id > 0)
-			{
-				_print(wr, id);
-			}
+		if (id > 0) { _print(wr, id); }
 		else { wr.WriteLine("No changesets found."); }
 	}
 }

@@ -178,6 +178,7 @@ namespace tfsmegahistory
 			
 			megahistorylib.MegaHistory.THREAD_COUNT = values.threads;
 			
+			/* this won't do a single changeset decomposition...? */
 			megahistory.query(values.target, values.targetVer, values.count, values.fromVer, values.toVer, null);
 
 			HistoryViewer visitor = new HistoryViewer(values.printWhat, megahistory.Results);
